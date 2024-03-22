@@ -1,0 +1,40 @@
+@keyframes surface-motion {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(-512px, 512px);
+    }
+}
+
+.planet {
+    position: relative;
+    width: 512px;
+    height: 512px;
+
+    /* VARIABLES */
+    --base-texure: url("/images/planet/texture.jpg");
+    --lighting: url("/images/planet/lighting.jpg");
+    --noise: url("/images/planet/noise.jpg");
+    --circular-mask: url("/images/planet/mask.png");
+    --planet-color: #C8385A;
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    mask-image: var(--circular-mask);
+    mask-repeat: no-repeat;
+}
+
+.masked {
+    mask-image: var(--circular-mask);
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+}
+
+.animated-surface {
+    animation: surface-motion 10s infinite linear;
+}

@@ -1,10 +1,12 @@
 import './App.css';
 
+import PlanetView from './components/planet_view/PlanetView';
+
 function App() {
 
   return (
     <>
-      <h1>Hello World!</h1>
+      <PlanetView />
     </>
   );
 }
