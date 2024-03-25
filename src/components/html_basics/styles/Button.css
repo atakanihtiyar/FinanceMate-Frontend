@@ -1,0 +1,43 @@
+/* TEMPLATES */
+
+.btn {
+    width: 200px;
+    height: 50px;
+    margin: 0;
+    border-radius: 12px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.btn.disabled {
+    opacity: var(--disabled-opacity);
+    cursor: none;
+    pointer-events: none;
+}
+
+.filled {
+    background-color: var(--mate-red);
+}
+
+.filled:hover {
+    background-color: var(--mate-red-hover);
+}
+
+.filled:active {
+    background-color: var(--mate-red-active);
+}
+
+.small {}
+
+.regular {}
+
+.medium {}
+
+.large {}
+
+.xlarge {}

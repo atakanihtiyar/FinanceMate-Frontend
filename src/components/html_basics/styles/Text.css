@@ -1,0 +1,75 @@
+/* DEFAULTS */
+
+.text {
+    margin: 0;
+}
+
+/* TEMPLATES */
+
+.h1 {
+    font-family: "Raleway", sans-serif;
+    font-weight: 900;
+    font-size: 48px;
+}
+
+.hero {
+    font-family: "Raleway", sans-serif;
+    font-weight: 900;
+    font-size: 72px;
+}
+
+.basic {
+    font-family: "Outfit", sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+/* COLORS */
+
+.white {
+    color: var(--mate-white)
+}
+
+.black {
+    color: var(--mate-black)
+}
+
+.red {
+    color: var(--mate-red)
+}
+
+/* FONTS */
+
+.raleway {
+    font-family: "Raleway", sans-serif;
+}
+
+.outfit {
+    font-family: "Outfit", sans-serif;
+}
+
+/* SIZES*/
+
+.small {
+    font-size: 10px;
+}
+
+.regular {
+    font-size: 12px;
+}
+
+.medium {
+    font-size: 16px;
+}
+
+.large {
+    font-size: 20px;
+}
+
+.xlarge {
+    font-size: 24px;
+}
+
+.xxlarge {
+    font-size: 48px;
+}
