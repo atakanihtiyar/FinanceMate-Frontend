@@ -1,16 +1,16 @@
 .octave-layer {
     position: relative;
-    width: 100%;
-    height: 100%;
+    width: 200%;
+    height: 200%;
     left: 0;
-    top: 0;
-    filter: blur(16px);
+    bottom: var(--planet-size);
+    filter: blur(var(--planet-blur));
 }
 
 .texture-layer {
     position: absolute;
-    width: 200%;
-    height: 200%;
+    width: 100%;
+    height: 100%;
     left: 0;
     bottom: 0;
     background-repeat: repeat;
@@ -38,7 +38,7 @@
 
 .noise {
     background-image: var(--noise);
-    background-size: 25%;
-    filter: opacity(50%) blur(8px);
+    background-size: 100%;
+    filter: opacity(12%);
     mix-blend-mode: soft-light;
 }

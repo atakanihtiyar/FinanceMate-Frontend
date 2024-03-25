@@ -29,6 +29,6 @@ body {
   --disabled-opacity: 0.65;
 
   /* PLANET */
-  --planet-size: 512px;
-  --planet-size-negative: -512px;
+  --planet-size: 384px;
+  --planet-size-negative: -384px;
 }

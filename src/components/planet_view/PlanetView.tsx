@@ -6,14 +6,13 @@ import ReflectionLayer from './layers/ReflectionLayer';
 const PlanetView = () => {
     return (
         <div className='planet'>
-            <div className="container">
+            <div className="container masked">
                 <OctaveLayer className='animated-surface' />
                 <PlanetLayer className='color' layerType={PlanetLayerTypes.BASIC} />
                 <PlanetLayer className='noise' layerType={PlanetLayerTypes.TEXTURE} />
                 <PlanetLayer className='lighting' layerType={PlanetLayerTypes.BASIC} />
             </div>
             <ReflectionLayer />
-
         </div>
     )
 }
