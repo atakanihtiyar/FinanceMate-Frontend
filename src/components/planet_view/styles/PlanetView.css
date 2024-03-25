@@ -20,7 +20,7 @@
     --lighting: url("/images/planet/lighting.jpg");
     --noise: url("/images/planet/noise.jpg");
     --circular-mask: url("/images/planet/mask.png");
-    --planet-color: #C8385A;
+    --planet-color: var(--mate-red);
 }
 
 .container {
