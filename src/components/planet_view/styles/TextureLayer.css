@@ -1,19 +1,19 @@
 .octave-layer {
     position: relative;
-    left: 0;
-    top: 0;
     width: 100%;
     height: 100%;
+    left: 0;
+    top: 0;
     filter: blur(16px);
 }
 
 .texture-layer {
     position: absolute;
+    width: 200%;
+    height: 200%;
     left: 0;
     bottom: 0;
     background-repeat: repeat;
-    width: 200%;
-    height: 200%;
 }
 
 .quarter-octave {

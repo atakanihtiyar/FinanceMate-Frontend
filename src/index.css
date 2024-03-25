@@ -19,11 +19,16 @@ body {
   font-family: "Outfit", sans-serif;
   color: #eeeeee;
 
+  /* VARIABLES */
   --mate-white: #eeeeee;
   --mate-black: #111111;
   --mate-red: #C8385A;
   --mate-red-hover: #b42c49;
   --mate-red-active: #8b1b36;
 
-  --disabled-opacity: 0.65
+  --disabled-opacity: 0.65;
+
+  /* PLANET */
+  --planet-size: 512px;
+  --planet-size-negative: -512px;
 }

@@ -4,16 +4,16 @@
     }
 
     to {
-        transform: translate(-512px, 512px);
+        transform: translate(var(--planet-size-negative), var(--planet-size));
     }
 }
 
 .planet {
     position: relative;
-    width: 512px;
-    height: 512px;
-    min-width: 512px;
-    min-height: 512px;
+    width: var(--planet-size);
+    height: var(--planet-size);
+    min-width: var(--planet-size);
+    min-height: var(--planet-size);
 
     /* VARIABLES */
     --base-texure: url("/images/planet/texture.jpg");
