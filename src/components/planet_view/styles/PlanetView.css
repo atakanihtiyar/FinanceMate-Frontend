@@ -12,6 +12,8 @@
     position: relative;
     width: 512px;
     height: 512px;
+    min-width: 512px;
+    min-height: 512px;
 
     /* VARIABLES */
     --base-texure: url("/images/planet/texture.jpg");
@@ -22,6 +24,7 @@
 }
 
 .container {
+    position: relative;
     width: 100%;
     height: 100%;
     overflow: hidden;
