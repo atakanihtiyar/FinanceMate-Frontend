@@ -4,33 +4,42 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --mate-light-red: #d3607b;
+    --mate-red: #C8385A;
+    --mate-dark-red: #a02d48;
+    --mate-black: #111111;
+    --mate-grey: #666666;
+    --mate-white: #eeeeee;
+    --mate-destructive: #ef4444;
 
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --background: var(--mate-black);
+    --foreground: var(--mate-white);
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --card: var(--mate-white);
+    --card-foreground: var(--mate-black);
 
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
+    --popover: var(--mate-white);
+    --popover-foreground: var(--mate-black);
 
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    --primary: var(--mate-red);
+    --primary-foreground: var(--mate-white);
+    --primary-light: var(--mate-light-red);
 
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --secondary: var(--mate-white);
+    --secondary-foreground: var(--mate-dark-red);
 
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --muted: var(--mate-white);
+    --muted-foreground: var(--mate-grey);
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --accent: var(--mate-white);
+    --accent-foreground: var(--mate-dark-red);
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
+    --destructive: var(--mate-destructive);
+    --destructive-foreground: var(--mate-black);
+
+    --border: var(--mate-white);
+    --input: var(--mate-white);
+    --ring: var(--mate-black);
 
     --radius: 0.5rem;
   }
@@ -70,6 +79,7 @@
   * {
     @apply tailwind.config.jsborder-border;
   }
+
   body {
     @apply tailwind.config.jsbg-background tailwind.config.jstext-foreground;
   }
