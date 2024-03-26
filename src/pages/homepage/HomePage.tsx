@@ -1,15 +1,9 @@
 import "./styles/HomePage.css"
 import PlanetView from '../../components/planet_view/PlanetView';
 import Text, { TextTemplates } from "../../components/html_basics/Text"
-import Button, { ButtonTemplates } from "../../components/html_basics/Button";
+import { Button } from "@/components/ui/button"
 
 const HomePage = () => {
-
-    const GetStartedClickHandler = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-        console.log("source -> ", e)
-        console.log("Let's get started")
-    }
-
     return (
         <div className="homepage">
             <div className="text-content">
@@ -17,10 +11,7 @@ const HomePage = () => {
                     <Text text="Cosmic Bonds," template={TextTemplates.HEADING} />
                     <Text text="Stellar Returns." template={TextTemplates.HEADING} />
                 </div>
-                <Button disabled={false}
-                    template={ButtonTemplates.FIILED}
-                    text="Get Started"
-                    onClick={e => GetStartedClickHandler(e)} />
+                <Button variant="default">Get Started</Button>
             </div>
             <PlanetView />
         </div>
