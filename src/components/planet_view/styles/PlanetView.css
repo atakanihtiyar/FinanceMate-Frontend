@@ -25,6 +25,32 @@
     --planet-color: var(--mate-red);
 }
 
+/* RESPONSIVENESS */
+
+@media screen and (max-width: 1024px) {
+    /* Styles for tablets and larger mobile devices */
+
+    .planet {
+        --planet-size: 256px;
+        --planet-size-negative: -256px;
+        --planet-blur: 8px;
+        --planet-reflection--blur: 128px
+    }
+}
+
+@media screen and (min-width: 1025px) {
+    /* Styles for desktops and laptops */
+
+    .planet {
+        --planet-size: 512px;
+        --planet-size-negative: -512px;
+        --planet-blur: 16px;
+        --planet-reflection--blur: 256px
+    }
+}
+
+/* GENERALS */
+
 .container {
     position: relative;
     width: 100%;

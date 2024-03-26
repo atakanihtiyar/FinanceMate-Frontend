@@ -1,17 +1,40 @@
 /* TEMPLATES */
 
 .btn {
-    width: 200px;
-    height: 50px;
+    width: var(--btn-width);
+    height: var(--btn-height);
     margin: 0;
     border-radius: 12px;
 
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: var(--btn-font-size);
 
     box-sizing: border-box;
     cursor: pointer;
+}
+
+/* RESPONSIVENESS */
+
+@media screen and (max-width: 1024px) {
+    /* Styles for tablets and larger mobile devices */
+
+    .btn {
+        --btn-width: 140px;
+        --btn-height: 35px;
+        --btn-font-size: 14px;
+    }
+}
+
+@media screen and (min-width: 1025px) {
+    /* Styles for desktops and laptops */
+
+    .btn {
+        --btn-width: 200px;
+        --btn-height: 50px;
+        --btn-font-size: 14px;
+    }
 }
 
 .btn.disabled {
@@ -31,13 +54,3 @@
 .filled:active {
     background-color: var(--mate-red-active);
 }
-
-.small {}
-
-.regular {}
-
-.medium {}
-
-.large {}
-
-.xlarge {}

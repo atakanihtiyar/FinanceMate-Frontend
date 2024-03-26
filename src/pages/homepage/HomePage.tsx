@@ -14,8 +14,8 @@ const HomePage = () => {
         <div className="homepage">
             <div className="text-content">
                 <div className="slogan">
-                    <Text text="Cosmic Bonds," template={TextTemplates.HERO} />
-                    <Text text="Stellar Returns." template={TextTemplates.HERO} />
+                    <Text text="Cosmic Bonds," template={TextTemplates.HEADING} />
+                    <Text text="Stellar Returns." template={TextTemplates.HEADING} />
                 </div>
                 <Button disabled={false}
                     template={ButtonTemplates.FIILED}

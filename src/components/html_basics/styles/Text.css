@@ -2,26 +2,57 @@
 
 .text {
     margin: 0;
+    padding: 0;
+}
+
+/* RESPONSIVENESS */
+
+@media screen and (max-width: 1024px) {
+    /* Styles for tablets and larger mobile devices */
+
+    .text {
+        --headings-font-size: 1.3125em;
+        --subheadings-font-size: 1.125em;
+        --body-font-size: 1em;
+        --input-font-size: 1em;
+    }
+}
+
+@media screen and (min-width: 1025px) {
+    /* Styles for desktops and laptops */
+
+    .text {
+        --headings-font-size: 2.1875em;
+        --subheadings-font-size: 1.875em;
+        --body-font-size: 1.8em;
+        --input-font-size: 1.8em;
+    }
 }
 
 /* TEMPLATES */
 
-.h1 {
+.heading {
     font-family: "Raleway", sans-serif;
     font-weight: 900;
-    font-size: 48px;
+    font-size: var(--headings-font-size);
 }
 
-.hero {
+.subheading {
     font-family: "Raleway", sans-serif;
-    font-weight: 900;
-    font-size: 72px;
+    font-weight: 700;
+    font-size: var(--subheadings-font-size);
 }
 
 .basic {
     font-family: "Outfit", sans-serif;
     font-weight: 400;
-    font-size: 12px;
+    font-size: var(--body-font-size);
+}
+
+.input {
+    font-family: "Outfit", sans-serif;
+    font-weight: regular;
+    font-size: var(--input-font-size);
 }
 
 /* COLORS */
@@ -36,40 +67,4 @@
 
 .red {
     color: var(--mate-red)
-}
-
-/* FONTS */
-
-.raleway {
-    font-family: "Raleway", sans-serif;
-}
-
-.outfit {
-    font-family: "Outfit", sans-serif;
-}
-
-/* SIZES*/
-
-.small {
-    font-size: 10px;
-}
-
-.regular {
-    font-size: 12px;
-}
-
-.medium {
-    font-size: 16px;
-}
-
-.large {
-    font-size: 20px;
-}
-
-.xlarge {
-    font-size: 24px;
-}
-
-.xxlarge {
-    font-size: 48px;
 }

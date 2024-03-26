@@ -1,5 +1,5 @@
 import { Sizes } from "../../Style";
-import Text from "./Text";
+import Text, { TextTemplates } from "./Text";
 import "./styles/Button.css"
 
 export enum ButtonTemplates {
@@ -25,7 +25,7 @@ const Button = ({ size = Sizes.MEDIUM, disabled = false, template, text, onClick
     return (
         <a className={`btn ${template} ${size} ${disabled ? " disabled" : ""}`}
             onClick={e => ClickHandler(e)}>
-            <Text text={text} size={size} />
+            <Text template={TextTemplates.BASIC} text={text} />
         </a>
     )
 }
