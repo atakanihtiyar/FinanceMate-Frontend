@@ -1,6 +1,6 @@
 import "./styles/HomePage.css"
 import PlanetView from '../../components/planet_view/PlanetView';
-import Text, { TextTemplates } from "../../components/html_basics/Text"
+import { TextHeader } from "@/components/ui/textHeader"
 import { Button } from "@/components/ui/button"
 
 const HomePage = () => {
@@ -8,8 +8,8 @@ const HomePage = () => {
         <div className="homepage">
             <div className="text-content">
                 <div className="slogan">
-                    <Text text="Cosmic Bonds," template={TextTemplates.HEADING} />
-                    <Text text="Stellar Returns." template={TextTemplates.HEADING} />
+                    <TextHeader variant="h1" size="lg">Cosmic Bonds,</TextHeader>
+                    <TextHeader variant="h1" size="lg">Stellar Returns.</TextHeader>
                 </div>
                 <Button variant="default">Get Started</Button>
             </div>
