@@ -5,25 +5,25 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "tailwind.config.jsw-40 tailwind.config.jsh-10 tailwind.config.jsinline-flex tailwind.config.jsitems-center tailwind.config.jsjustify-center tailwind.config.jswhitespace-nowrap tailwind.config.jsrounded-md tailwind.config.jstext-sm tailwind.config.jsfont-medium tailwind.config.jsring-offset-background tailwind.config.jstransition-colors focus-visible:tailwind.config.jsoutline-none focus-visible:tailwind.config.jsring-2 focus-visible:tailwind.config.jsring-ring focus-visible:tailwind.config.jsring-offset-2 disabled:tailwind.config.jspointer-events-none disabled:tailwind.config.jsopacity-50",
+  "tw-w-40 tw-h-10 tw-inline-flex tw-items-center tw-justify-center tw-whitespace-nowrap tw-rounded-md tw-text-sm tw-font-medium tw-ring-offset-background tw-transition-colors focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-ring focus-visible:tw-ring-offset-2 disabled:tw-pointer-events-none disabled:tw-opacity-50",
   {
     variants: {
       variant: {
-        default: "tailwind.config.jsbg-primary tailwind.config.jstext-primary-foreground hover:tailwind.config.jsbg-primary/90",
+        default: "tw-bg-primary tw-text-primary-foreground hover:tw-bg-primary/90",
         destructive:
-          "tailwind.config.jsbg-destructive tailwind.config.jstext-destructive-foreground hover:tailwind.config.jsbg-destructive/90",
+          "tw-bg-destructive tw-text-destructive-foreground hover:tw-bg-destructive/90",
         outline:
-          "tailwind.config.jsborder tailwind.config.jsborder-input tailwind.config.jsbg-background hover:tailwind.config.jsbg-accent hover:tailwind.config.jstext-accent-foreground",
+          "tw-border tw-border-input tw-bg-background hover:tw-bg-accent hover:tw-text-accent-foreground",
         secondary:
-          "tailwind.config.jsbg-secondary tailwind.config.jstext-secondary-foreground hover:tailwind.config.jsbg-secondary/80",
-        ghost: "hover:tailwind.config.jsbg-accent hover:tailwind.config.jstext-accent-foreground",
-        link: "tailwind.config.jstext-primary-light tailwind.config.jsunderline-offset-4 hover:tailwind.config.jsunderline",
+          "tw-bg-secondary tw-text-secondary-foreground hover:tw-bg-secondary/80",
+        ghost: "hover:tw-bg-accent hover:tw-text-accent-foreground",
+        link: "tw-text-primary-light tw-underline-offset-4 hover:tw-underline",
       },
       size: {
-        default: "tailwind.config.jsh-10 tailwind.config.jspx-4 tailwind.config.jspy-2",
-        sm: "tailwind.config.jsh-9 tailwind.config.jsrounded-md tailwind.config.jspx-3",
-        lg: "tailwind.config.jsh-11 tailwind.config.jsrounded-md tailwind.config.jspx-8",
-        icon: "tailwind.config.jsh-10 tailwind.config.jsw-10",
+        default: "tw-h-10 tw-px-4 tw-py-2",
+        sm: "tw-h-9 tw-rounded-md tw-px-3",
+        lg: "tw-h-11 tw-rounded-md tw-px-8",
+        icon: "tw-h-10 tw-w-10",
       },
     },
     defaultVariants: {
