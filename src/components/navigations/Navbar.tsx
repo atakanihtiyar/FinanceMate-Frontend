@@ -5,7 +5,6 @@ import {
     NavigationMenuItem,
     NavigationMenuLink,
 } from "@/components/ui/navigation-menu"
-import { TextHeader } from "../ui/textHeader"
 import { Text } from "../ui/text"
 
 const Navbar = () => {
@@ -31,7 +30,7 @@ const Navbar = () => {
                 <NavigationMenuItem>
                     <a href="/">
                         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                            <TextHeader variant="h1" size="sm">FIMATE</TextHeader>
+                            <Text variant="p" size="xl">FIMATE</Text>
                         </NavigationMenuLink>
                     </a>
                 </NavigationMenuItem>

@@ -8,8 +8,8 @@ const HomePage = () => {
         <div className="homepage">
             <div className="text-content">
                 <div className="slogan">
-                    <TextHeader variant="h1" size="lg">Cosmic Bonds,</TextHeader>
-                    <TextHeader variant="h1" size="lg">Stellar Returns.</TextHeader>
+                    <TextHeader variant="h1" size="_6xl">Cosmic Bonds,</TextHeader>
+                    <TextHeader variant="h1" size="_6xl">Stellar Returns.</TextHeader>
                 </div>
                 <Button variant="default">Get Started</Button>
             </div>

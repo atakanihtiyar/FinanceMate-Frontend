@@ -14,7 +14,15 @@ const textVariants = cva(
             },
             size: {
                 default: "",
+                sm: "tw-text-sm",
+                md: "tw-text-md",
                 lg: "tw-text-lg",
+                xl: "tw-text-xl",
+                _2xl: "tw-text-2xl",
+                _3xl: "tw-text-3xl",
+                _4xl: "tw-text-4xl",
+                _5xl: "tw-text-5xl",
+                _6xl: "tw-text-6xl",
             },
         },
         defaultVariants: {

@@ -5,19 +5,26 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const textHeaderVariants = cva(
-    "tw-scroll-m-20 tw-tracking-tight",
+    "tw-scroll-m-20 tw-tracking-tight tw-m-3",
     {
         variants: {
             variant: {
-                h1: "tw-text-4xl tw-font-extrabold",
-                h2: "tw-border-b tw-pb-2 tw-text-3xl tw-font-semibold first:tw-mt-0",
-                h3: "tw-text-2xl tw-font-semibold",
-                h4: "tw-text-xl tw-font-semibold",
+                h1: "tw-text-3xl tw-font-extrabold",
+                h2: "tw-text-2xl tw-font-semibold tw-border-b tw-pb-2 first:tw-mt-0",
+                h3: "tw-text-xl tw-font-semibold",
+                h4: "tw-text-l tw-font-semibold",
             },
             size: {
                 default: "",
                 sm: "tw-text-sm",
-                lg: "tw-text-6xl",
+                md: "tw-text-md",
+                lg: "tw-text-lg",
+                xl: "tw-text-xl",
+                _2xl: "tw-text-2xl",
+                _3xl: "tw-text-3xl",
+                _4xl: "tw-text-4xl",
+                _5xl: "tw-text-5xl",
+                _6xl: "tw-text-6xl",
             },
         },
         defaultVariants: {
