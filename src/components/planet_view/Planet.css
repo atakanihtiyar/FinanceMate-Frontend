@@ -1,0 +1,15 @@
+@keyframes surface-motion {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(-50%, 50%);
+    }
+}
+
+.circular-mask {
+    mask-image: url("/images/planet/mask.png");
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+}

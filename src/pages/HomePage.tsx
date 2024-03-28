@@ -1,4 +1,4 @@
-import PlanetView from '../components/planet_view/PlanetView';
+import Planet from '../components/planet_view/Planet';
 import { TextHeader } from "@/components/ui/textHeader"
 import { Button } from "@/components/ui/button"
 
@@ -13,7 +13,7 @@ const HomePage = () => {
                 <TextHeader className="tw-text-center tw-text-nowrap md:tw-text-7xl lg:tw-text-6xl xl:tw-text-7xl" variant="h1" size="_5xl">Stellar Returns.</TextHeader>
                 <Button variant="default">Get Started</Button>
             </div>
-            <PlanetView className='tw-shrink-0' />
+            <Planet size="_16rem" blur="_0_2rem" lgSize="_32rem" lgBlur="_0_4rem" />
         </div>
     )
 }
