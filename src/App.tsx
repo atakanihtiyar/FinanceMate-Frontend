@@ -1,5 +1,4 @@
-import Navbar from './components/navigations/Navbar';
-import Footer from './components/navigations/Footer';
+import { NavigationWrapper } from './components/navigations/navigationUtils';
 import HomePage from './pages/HomePage';
 import RegisterPage from './pages/RegisterPage';
 
@@ -8,30 +7,12 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <>
-        <Navbar />
-        <HomePage />
-        <Footer />
-      </>
-    ),
+    element: NavigationWrapper(<HomePage />),
   },
   {
     path: "/register",
-    element: (
-      <>
-        <RegisterPage />
-      </>
-    )
+    element: NavigationWrapper(<RegisterPage />),
   },
-  {
-    path: "/login",
-    element: (
-      <>
-        <h1>login</h1>
-      </>
-    )
-  }
 ]);
 
 function App() {

@@ -6,6 +6,9 @@ import {
 } from "@/components/ui/navigation-menu"
 import { Typo, textVariants } from "../ui/text"
 import { VariantProps } from "class-variance-authority"
+import React from "react"
+import Navbar from "./Navbar"
+import Footer from "./Footer"
 
 interface INavigationItem {
     type: "text" | "link"
@@ -40,3 +43,22 @@ const NavigationItemFormatter = (item: INavigationItem) => {
 }
 
 export { NavigationListFormatter, type INavigationItem }
+
+
+
+interface NavigationWrapperProps {
+    toBeWrapped: React.ReactNode,
+}
+
+const NavigationWrapper = (toBeWrapped: React.ReactNode) => {
+    return (
+        <>
+            <Navbar />
+            {toBeWrapped}
+            <Footer />
+        </>
+    )
+}
+
+
+export { NavigationWrapper }
