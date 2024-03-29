@@ -1,19 +1,14 @@
-import {
-    navigationMenuTriggerStyle,
-    NavigationMenu,
-    NavigationMenuList,
-    NavigationMenuItem,
-} from "@/components/ui/navigation-menu"
-import { Typo } from "../ui/text"
+import { NavigationMenu } from "@/components/ui/navigation-menu"
+import { NavigationListFormatter as ListFormatter, INavigationItem } from "./navigationUtils"
+
+const items: INavigationItem[] = [
+    { type: "text", text: "© finance mate 2024" },
+]
 
 const Footer = () => {
     return (
         <NavigationMenu className="">
-            <NavigationMenuList>
-                <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-                    <Typo variant="body">© finance mate 2024</Typo>
-                </NavigationMenuItem>
-            </NavigationMenuList>
+            {ListFormatter(items)}
         </NavigationMenu>
     )
 }

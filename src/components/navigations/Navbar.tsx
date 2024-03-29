@@ -1,35 +1,26 @@
-import {
-    navigationMenuTriggerStyle,
-    NavigationMenu,
-    NavigationMenuList,
-    NavigationMenuLink,
-} from "@/components/ui/navigation-menu"
-import { Typo } from "../ui/text"
+import { NavigationMenu } from "@/components/ui/navigation-menu"
+import { NavigationListFormatter as ListFormatter, INavigationItem } from "./navigationUtils"
+
+const leftSideItems: INavigationItem[] = [
+    { type: "link", text: "about us", url: "/about" },
+    { type: "link", text: "pricing", url: "/pricing" },
+]
+
+const middleSideItems: INavigationItem[] = [
+    { type: "link", text: "FIMATE", url: "/", style: { size: "xl" } }
+]
+
+const rightSideItems: INavigationItem[] = [
+    { type: "link", text: "login", url: "/login" },
+    { type: "link", text: "register", url: "/register" },
+]
 
 const Navbar = () => {
     return (
         <NavigationMenu className="">
-            <NavigationMenuList>
-                <NavigationMenuLink href="/" className={navigationMenuTriggerStyle()}>
-                    <Typo variant="body">about us</Typo>
-                </NavigationMenuLink>
-                <NavigationMenuLink href="/" className={navigationMenuTriggerStyle()}>
-                    <Typo variant="body">pricing</Typo>
-                </NavigationMenuLink>
-            </NavigationMenuList>
-            <NavigationMenuList>
-                <NavigationMenuLink href="/" className={navigationMenuTriggerStyle()}>
-                    <Typo variant="body" size="xl">FIMATE</Typo>
-                </NavigationMenuLink>
-            </NavigationMenuList>
-            <NavigationMenuList>
-                <NavigationMenuLink href="/" className={navigationMenuTriggerStyle()}>
-                    <Typo variant="body">login</Typo>
-                </NavigationMenuLink>
-                <NavigationMenuLink href="/" className={navigationMenuTriggerStyle()}>
-                    <Typo variant="body">register</Typo>
-                </NavigationMenuLink>
-            </NavigationMenuList>
+            {ListFormatter(leftSideItems)}
+            {ListFormatter(middleSideItems)}
+            {ListFormatter(rightSideItems)}
         </NavigationMenu>
     )
 }
