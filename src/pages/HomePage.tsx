@@ -1,7 +1,7 @@
 import Planet from '../components/planet_view/Planet';
-import { Heading } from "@/components/custom_ui/text"
+import { Heading } from "@/components/ui/text"
 import { Button } from "@/components/ui/button"
-import PageSection from "@/components/custom_ui/pageSection"
+import PageSection from "@/components/general/pageSection"
 
 const HomePage = () => {
 

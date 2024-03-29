@@ -4,7 +4,7 @@ import {
     NavigationMenuItem as NavigationItem,
     NavigationMenuLink as NavigationLink,
 } from "@/components/ui/navigation-menu"
-import { Typo, textVariants } from "../ui/text"
+import { Typo, textVariants } from "@/components/ui/text"
 import { VariantProps } from "class-variance-authority"
 import React from "react"
 import Navbar from "./Navbar"
@@ -42,14 +42,6 @@ const NavigationItemFormatter = (item: INavigationItem) => {
     }
 }
 
-export { NavigationListFormatter, type INavigationItem }
-
-
-
-interface NavigationWrapperProps {
-    toBeWrapped: React.ReactNode,
-}
-
 const NavigationWrapper = (toBeWrapped: React.ReactNode) => {
     return (
         <>
@@ -60,5 +52,4 @@ const NavigationWrapper = (toBeWrapped: React.ReactNode) => {
     )
 }
 
-
-export { NavigationWrapper }
+export { NavigationListFormatter, type INavigationItem, NavigationWrapper }

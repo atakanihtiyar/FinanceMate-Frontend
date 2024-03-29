@@ -32,6 +32,9 @@ const textVariants = cva(
                 _4xl: "tw-text-4xl",
                 _5xl: "tw-text-5xl",
                 _6xl: "tw-text-6xl",
+                _7xl: "tw-text-7xl",
+                _8xl: "tw-text-8xl",
+                _9xl: "tw-text-9xl",
             },
             wrap: {
                 none: "",
