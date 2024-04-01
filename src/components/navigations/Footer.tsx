@@ -1,5 +1,5 @@
 import { NavigationMenu } from "@/components/ui/navigation-menu"
-import { NavigationListFormatter as ListFormatter, INavigationItem } from "./navigationUtils"
+import { NavigationListFormatter as ListFormatter, INavigationItem } from "../utils/navigationUtils"
 
 const items: INavigationItem[] = [
     { type: "text", text: "© finance mate 2024" },

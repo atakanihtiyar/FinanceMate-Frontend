@@ -7,8 +7,8 @@ import {
 import { Typo, textVariants } from "@/components/ui/text"
 import { VariantProps } from "class-variance-authority"
 import React from "react"
-import Navbar from "./Navbar"
-import Footer from "./Footer"
+import Navbar from "../navigations/Navbar"
+import Footer from "../navigations/Footer"
 
 interface INavigationItem {
     type: "text" | "link"

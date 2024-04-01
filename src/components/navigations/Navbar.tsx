@@ -1,5 +1,5 @@
 import { NavigationMenu } from "@/components/ui/navigation-menu"
-import { NavigationListFormatter as ListFormatter, INavigationItem } from "./navigationUtils"
+import { NavigationListFormatter as ListFormatter, INavigationItem } from "../utils/navigationUtils"
 
 const leftSideItems: INavigationItem[] = [
     { type: "link", text: "about us", url: "/about" },

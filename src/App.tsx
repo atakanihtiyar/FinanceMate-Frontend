@@ -1,4 +1,4 @@
-import { NavigationWrapper } from './components/navigations/navigationUtils';
+import { NavigationWrapper } from './components/utils/navigationUtils';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
