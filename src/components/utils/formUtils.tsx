@@ -27,6 +27,7 @@ interface IFieldClassNames {
 
 interface IFormInputProps {
     validation: zod.ZodTypeAny,
+    type: React.HTMLInputTypeAttribute,
     label: string,
     fieldName: string,
     placeholder: string,
@@ -37,7 +38,7 @@ interface IFormInputControl extends IFormInputProps, IFieldClassNames {
     control: Control<{ [x: string]: any; }, any>,
 }
 
-const FormInputWrapper = ({ control, fieldName, label, placeholder, description,
+const FormInputWrapper = ({ control, type, label, fieldName, placeholder, description,
     fieldCN, labelCN, inputCN, descriptionCN, messageCN }: IFormInputControl) => {
     return (
         <FormField
@@ -47,7 +48,7 @@ const FormInputWrapper = ({ control, fieldName, label, placeholder, description,
                 <FormItem className={cx("tw-w-[100%]", fieldCN)}>
                     <FormLabel className={labelCN}>{label}</FormLabel>
                     <FormControl>
-                        <Input placeholder={placeholder} {...field} className={inputCN} />
+                        <Input placeholder={placeholder} {...field} className={inputCN} type={type} />
                     </FormControl>
                     <FormDescription className={descriptionCN}>
                         {description}
@@ -96,6 +97,7 @@ const FormWrapper = ({ fields, onSubmit, direction, justify, alignItems, wrap, s
                             fieldCN={fieldCN}
                             labelCN={labelCN}
                             inputCN={inputCN}
+                            type={element.type}
                             descriptionCN={descriptionCN}
                             messageCN={messageCN}
                             control={form.control}
