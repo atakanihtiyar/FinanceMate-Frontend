@@ -10,6 +10,7 @@
     --mate-black: #222222;
     --mate-dark-black: #111111;
     --mate-grey: #666666;
+    --mate-muted: #999999;
     --mate-white: #eeeeee;
     --mate-destructive: #ef4444;
     --mate-warning: #ffdd44;
@@ -30,8 +31,8 @@
     --secondary: var(--mate-white);
     --secondary-foreground: var(--mate-dark-red);
 
-    --muted: var(--mate-white);
-    --muted-foreground: var(--mate-grey);
+    --muted: var(--mate-muted);
+    --muted-foreground: var(--mate-black);
 
     --accent: var(--mate-white);
     --accent-foreground: var(--mate-dark-red);
