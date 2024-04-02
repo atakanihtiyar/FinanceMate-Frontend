@@ -7,38 +7,36 @@ import {
 } from "@/components/ui/navigation-menu"
 
 const Navbar = () => {
-    const brandClass = "tw-text-xl"
-
     return (
         <NavigationMenu>
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                        <a href="/about">about</a>
+                    <NavigationMenuLink href="/about" className={navigationMenuTriggerStyle()}>
+                        about
                     </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                        <a href="/pricing">pricing</a>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-            </NavigationMenuList>
-            <NavigationMenuList>
-                <NavigationMenuItem>
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                        <a href="/" className={brandClass}>FIMATE</a>
+                    <NavigationMenuLink href="/pricing" className={navigationMenuTriggerStyle()}>
+                        pricing
                     </NavigationMenuLink>
                 </NavigationMenuItem>
             </NavigationMenuList>
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                        <a href="/login">login</a>
+                    <NavigationMenuLink href="/" className={`${navigationMenuTriggerStyle()} tw-text-xl`}>
+                        FIMATE
+                    </NavigationMenuLink>
+                </NavigationMenuItem>
+            </NavigationMenuList>
+            <NavigationMenuList>
+                <NavigationMenuItem>
+                    <NavigationMenuLink href="/login" className={navigationMenuTriggerStyle()}>
+                        login
                     </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                        <a href="/register">register</a>
+                    <NavigationMenuLink href="/register" className={navigationMenuTriggerStyle()}>
+                        register
                     </NavigationMenuLink>
                 </NavigationMenuItem>
             </NavigationMenuList>
