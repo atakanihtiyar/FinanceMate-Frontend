@@ -1,39 +1,76 @@
-import { Heading } from "@/components/ui/text"
 import { Navbar, Footer } from "@/components/parts/navigationMenus"
-import { FormWrapper, IFormInputProps } from "@/components/utils/formUtils"
-import { z as zod } from "zod"
-
-const inputList: IFormInputProps[] = [
-    {
-        validation: zod.string().email(),
-        type: "email",
-        label: "Email",
-        fieldName: "email",
-        placeholder: "",
-        description: "",
-    },
-    {
-        validation: zod.string().min(3).max(12),
-        type: "password",
-        label: "Password",
-        fieldName: "password",
-        placeholder: "",
-        description: "",
-    }
-]
+import { useForm } from "react-hook-form"
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Heading } from "@/components/ui/text"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 const RegisterPage = () => {
+    const formSchema = z.object({
+        email: z.string().email(),
+        password: z.string().min(3).max(12),
+    })
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            email: "",
+            password: "",
+        },
+
+    });
+
+    const onSubmit = (values: z.infer<typeof formSchema>) => {
+        console.log(values)
+    };
+
+    const fieldClass = "tw-w-[66%] tw-text-[--mate-dark-black] tw-border-[--mate-dark-black]"
+
     return (
         <>
             <Navbar />
-            <div className='tw-min-w-full tw-min-h-screen tw-flex tw-flex-col tw-justify-center tw-items-center tw-flex-nowrap tw-gap-8 lg:tw-flex-row xl:tw-gap-24'>
-                <Heading variant="h1" size="_6xl" className="tw-font-thin tw-m-8 tw-mt-32">Welcome Mate!</Heading>
-                <FormWrapper fields={inputList} onSubmit={(data) => console.log(data)}
-                    direction="col" justify="center" alignItems="center"
-                    formCN="tw-rounded-xl tw-bg-[--mate-white] tw-min-w-[360px] tw-min-h-[440px]"
-                    fieldCN="tw-w-[66%] tw-text-[--mate-dark-black] tw-border-[--mate-dark-black]"
-                    submitBtnText="Register"
-                />
+            <div className='tw-min-w-full tw-min-h-screen tw-flex tw-flex-col tw-justify-center tw-items-center tw-flex-nowrap tw-gap-8'>
+                <Heading variant="h1" size="_6xl" className="tw-font-thin tw-m-8">Welcome Mate!</Heading>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="tw-min-w-[360px] tw-min-h-[440px] tw-bg-[--mate-white] tw-rounded-xl tw-flex tw-flex-col tw-justify-center tw-items-center tw-space-y-8">
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem className={fieldClass}>
+                                    <FormLabel>Email</FormLabel>
+                                    <FormControl>
+                                        <Input type="email" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <FormItem className={fieldClass}>
+                                    <FormLabel>Password</FormLabel>
+                                    <FormControl>
+                                        <Input type="password" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <Button type="submit">Register</Button>
+                    </form>
+                </Form>
             </div>
             <Footer />
         </>
