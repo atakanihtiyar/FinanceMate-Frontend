@@ -1,6 +1,5 @@
 import { Heading } from "@/components/ui/text"
 import { Navbar, Footer } from "@/components/parts/navigationMenus"
-import PageWrapper from "../components/utils/pageWrapper"
 import { FormWrapper, IFormInputProps } from "@/components/utils/formUtils"
 import { z as zod } from "zod"
 
@@ -27,7 +26,7 @@ const RegisterPage = () => {
     return (
         <>
             <Navbar />
-            <PageWrapper direction="col" justify="start" alignItems="center" wrap="no">
+            <div className='tw-min-w-full tw-min-h-screen tw-flex tw-flex-col tw-justify-center tw-items-center tw-flex-nowrap tw-gap-8 lg:tw-flex-row xl:tw-gap-24'>
                 <Heading variant="h1" size="_6xl" className="tw-font-thin tw-m-8 tw-mt-32">Welcome Mate!</Heading>
                 <FormWrapper fields={inputList} onSubmit={(data) => console.log(data)}
                     direction="col" justify="center" alignItems="center"
@@ -35,7 +34,7 @@ const RegisterPage = () => {
                     fieldCN="tw-w-[66%] tw-text-[--mate-dark-black] tw-border-[--mate-dark-black]"
                     submitBtnText="Register"
                 />
-            </PageWrapper >
+            </div>
             <Footer />
         </>
     )
