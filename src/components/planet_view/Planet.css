@@ -8,8 +8,30 @@
     }
 }
 
-.circular-mask {
-    mask-image: url("/images/planet/mask.png");
-    mask-repeat: no-repeat;
-    mask-size: 100%;
+.planet {
+    @apply tw-static tw-drop-shadow-lg tw-w-[16rem] tw-h-[16rem] tw-min-w-[16rem] tw-min-h-[16rem] lg:tw-w-[32rem] lg:tw-h-[32rem] lg:tw-min-w-[32rem] lg:tw-min-h-[32rem] tw-rounded-[50%] tw-overflow-hidden tw-blur-[0.05rem] lg:tw-blur-[0.1rem]
+}
+
+.container {
+    @apply tw-relative tw-w-full tw-h-full tw-rounded-[50%] tw-overflow-hidden tw-blur-[0.05rem] lg:tw-blur-[0.1rem]
+}
+
+.octaves {
+    @apply tw-relative tw-w-[200%] tw-h-[200%] tw-bottom-[100%] tw-blur-[0.2rem] lg:tw-blur-[0.4rem] tw-animate-[surface-motion_10s_linear_infinite]
+}
+
+.texture-layer {
+    @apply tw-bg-[url('/images/planet/texture.jpg')] tw-absolute tw-w-full tw-h-full tw-bottom-0
+}
+
+.noise-layer {
+    @apply tw-bg-[url('/images/planet/noise.jpg')] tw-absolute tw-w-full tw-h-full tw-bottom-0 tw-bg-cover tw-opacity-[12.5%] tw-mix-blend-soft-light
+}
+
+.color-layer {
+    @apply tw-bg-[var(--mate-red)] tw-absolute tw-w-full tw-h-full tw-bottom-0 tw-bg-cover tw-mix-blend-color
+}
+
+.light-layer {
+    @apply tw-bg-[url('/images/planet/lighting.jpg')] tw-absolute tw-w-full tw-h-full tw-bottom-0 tw-bg-cover tw-mix-blend-hard-light
 }
