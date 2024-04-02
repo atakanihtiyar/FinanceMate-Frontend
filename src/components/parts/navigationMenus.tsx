@@ -4,6 +4,7 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
     navigationMenuTriggerStyle,
+    navigationMenuTriggerUnfocusableStyle,
 } from "@/components/ui/navigation-menu"
 
 const Navbar = () => {
@@ -23,7 +24,7 @@ const Navbar = () => {
             </NavigationMenuList>
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    <NavigationMenuLink href="/" className={`${navigationMenuTriggerStyle()} tw-text-xl`}>
+                    <NavigationMenuLink href="/" className={`${navigationMenuTriggerUnfocusableStyle()} tw-text-xl`}>
                         FIMATE
                     </NavigationMenuLink>
                 </NavigationMenuItem>

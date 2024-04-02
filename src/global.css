@@ -34,8 +34,8 @@
     --muted: var(--mate-muted);
     --muted-foreground: var(--mate-black);
 
-    --accent: var(--mate-white);
-    --accent-foreground: var(--mate-dark-red);
+    --accent: var(--mate-dark-red);
+    --accent-foreground: var(--mate-white);
 
     --destructive: var(--mate-destructive);
     --destructive-foreground: var(--mate-black);
@@ -55,15 +55,5 @@
 
   body {
     @apply tw-bg-background tw-text-foreground;
-  }
-}
-
-@layer components {
-  .page-section {
-    @apply tw-min-w-full tw-min-h-screen
-  }
-
-  .txt {
-    @apply tw-tracking-tight
   }
 }

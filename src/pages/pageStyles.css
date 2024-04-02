@@ -1,0 +1,11 @@
+.full-view {
+    @apply tw-min-w-full tw-min-h-screen
+}
+
+.auth-form {
+    @apply tw-min-w-[360px] tw-min-h-[440px] tw-bg-[--mate-white] tw-rounded-xl tw-flex tw-flex-col tw-justify-center tw-items-center tw-space-y-8
+}
+
+.auth-form-input {
+    @apply tw-w-[66%] tw-text-[--mate-dark-black] tw-border-[--mate-dark-black]
+}
