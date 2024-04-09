@@ -3,7 +3,6 @@ import {
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
-    navigationMenuTriggerStyle,
     navigationMenuTriggerUnfocusableStyle,
 } from "@/components/ui/navigation-menu"
 
@@ -12,12 +11,12 @@ const Navbar = () => {
         <NavigationMenu>
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    <NavigationMenuLink href="/about" className={navigationMenuTriggerStyle()}>
+                    <NavigationMenuLink href="/about" className={navigationMenuTriggerUnfocusableStyle()}>
                         about
                     </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <NavigationMenuLink href="/pricing" className={navigationMenuTriggerStyle()}>
+                    <NavigationMenuLink href="/pricing" className={navigationMenuTriggerUnfocusableStyle()}>
                         pricing
                     </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -31,18 +30,17 @@ const Navbar = () => {
             </NavigationMenuList>
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    <NavigationMenuLink href="/login" className={navigationMenuTriggerStyle()}>
+                    <NavigationMenuLink href="/login" className={navigationMenuTriggerUnfocusableStyle()}>
                         login
                     </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <NavigationMenuLink href="/register" className={navigationMenuTriggerStyle()}>
+                    <NavigationMenuLink href="/register" className={navigationMenuTriggerUnfocusableStyle()}>
                         register
                     </NavigationMenuLink>
                 </NavigationMenuItem>
             </NavigationMenuList>
         </NavigationMenu>
-
     )
 }
 
