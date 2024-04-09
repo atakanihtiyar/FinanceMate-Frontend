@@ -7,8 +7,8 @@
     --mate-light-red: #d3607b;
     --mate-red: #C8385A;
     --mate-dark-red: #a02d48;
-    --mate-black: #222222;
-    --mate-dark-black: #111111;
+    --mate-black: #111111;
+    --mate-dark-black: #000000;
     --mate-grey: #666666;
     --mate-muted: #999999;
     --mate-white: #eeeeee;
@@ -18,8 +18,11 @@
     --background: var(--mate-black);
     --foreground: var(--mate-white);
 
-    --card: var(--mate-white);
-    --card-foreground: var(--mate-black);
+    --card: var(--mate-black);
+    --card-foreground: var(--mate-white);
+
+    --navbar: var(--mate-black);
+    --navbar-foreground: var(--mate-white);
 
     --popover: var(--mate-white);
     --popover-foreground: var(--mate-black);
