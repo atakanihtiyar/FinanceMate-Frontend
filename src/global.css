@@ -7,18 +7,20 @@
     --mate-light-red: #d3607b;
     --mate-red: #C8385A;
     --mate-dark-red: #a02d48;
+    --mate-light-black: #222222;
     --mate-black: #111111;
     --mate-dark-black: #000000;
     --mate-grey: #666666;
     --mate-muted: #999999;
     --mate-white: #eeeeee;
-    --mate-destructive: #ef4444;
+    --mate-destructive: #ff6464;
     --mate-warning: #ffdd44;
 
     --background: var(--mate-black);
     --foreground: var(--mate-white);
 
     --card: var(--mate-black);
+    --card-border: var(--mate-grey);
     --card-foreground: var(--mate-white);
 
     --navbar: var(--mate-black);
@@ -41,7 +43,7 @@
     --accent-foreground: var(--mate-white);
 
     --destructive: var(--mate-destructive);
-    --destructive-foreground: var(--mate-black);
+    --destructive-foreground: var(--mate-muted);
 
     --border: var(--mate-white);
     --input: var(--mate-white);

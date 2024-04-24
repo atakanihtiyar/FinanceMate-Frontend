@@ -22,7 +22,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "tw-flex tw-h-9 tw-w-full tw-items-center tw-justify-between tw-whitespace-nowrap tw-rounded-md tw-border tw-border-zinc-200 tw-bg-transparent tw-px-3 tw-py-2 tw-text-sm tw-shadow-sm tw-ring-offset-white placeholder:tw-text-zinc-500 focus:tw-outline-none focus:tw-ring-1 focus:tw-ring-zinc-950 disabled:tw-cursor-not-allowed disabled:tw-opacity-50 [&>span]:tw-line-clamp-1 dark:tw-border-zinc-800 dark:tw-ring-offset-zinc-950 dark:placeholder:tw-text-zinc-400 dark:focus:tw-ring-zinc-300",
+      "tw-flex tw-h-9 tw-w-full tw-items-center tw-justify-between tw-whitespace-nowrap tw-bg-[rgba(238,238,238,0.1)] tw-rounded-md tw-border-solid tw-border-[0px] tw-border-primary tw-text-[--foreground] tw-px-3 tw-py-2 tw-text-sm tw-shadow-sm tw-ring-offset-white placeholder:tw-text-zinc-500 focus:tw-border-[1px] disabled:tw-cursor-not-allowed disabled:tw-opacity-50 [&>span]:tw-line-clamp-1 dark:tw-border-zinc-800 dark:tw-ring-offset-zinc-950 dark:placeholder:tw-text-zinc-400 dark:focus:tw-ring-zinc-300",
       className
     )}
     {...props}
@@ -78,9 +78,9 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "tw-relative tw-z-50 tw-max-h-96 tw-min-w-[8rem] tw-overflow-hidden tw-rounded-md tw-border tw-border-zinc-200 tw-bg-white tw-text-zinc-950 tw-shadow-md data-[state=open]:tw-animate-in data-[state=closed]:tw-animate-out data-[state=closed]:tw-fade-out-0 data-[state=open]:tw-fade-in-0 data-[state=closed]:tw-zoom-out-95 data-[state=open]:tw-zoom-in-95 data-[side=bottom]:tw-slide-in-from-top-2 data-[side=left]:tw-slide-in-from-right-2 data-[side=right]:tw-slide-in-from-left-2 data-[side=top]:tw-slide-in-from-bottom-2 dark:tw-border-zinc-800 dark:tw-bg-zinc-950 dark:tw-text-zinc-50",
+        "tw-relative tw-z-50 tw-max-h-96 tw-min-w-[8rem] tw-overflow-hidden tw-rounded-md tw-border tw-border-[--muted] tw-bg-[--background] tw-text-[--foreground] tw-shadow-md data-[state=open]:tw-animate-in data-[state=closed]:tw-animate-out data-[state=closed]:tw-fade-out-0 data-[state=open]:tw-fade-in-0 data-[state=closed]:tw-zoom-out-95 data-[state=open]:tw-zoom-in-95 data-[side=bottom]:tw-slide-in-from-top-2 data-[side=left]:tw-slide-in-from-right-2 data-[side=right]:tw-slide-in-from-left-2 data-[side=top]:tw-slide-in-from-bottom-2 dark:tw-border-zinc-800 dark:tw-bg-zinc-950 dark:tw-text-zinc-50",
         position === "popper" &&
-          "data-[side=bottom]:tw-translate-y-1 data-[side=left]:tw--translate-x-1 data-[side=right]:tw-translate-x-1 data-[side=top]:tw--translate-y-1",
+        "data-[side=bottom]:tw-translate-y-1 data-[side=left]:tw--translate-x-1 data-[side=right]:tw-translate-x-1 data-[side=top]:tw--translate-y-1",
         className
       )}
       position={position}
@@ -91,7 +91,7 @@ const SelectContent = React.forwardRef<
         className={cn(
           "tw-p-1",
           position === "popper" &&
-            "tw-h-[var(--radix-select-trigger-height)] tw-w-full tw-min-w-[var(--radix-select-trigger-width)]"
+          "tw-h-[var(--radix-select-trigger-height)] tw-w-full tw-min-w-[var(--radix-select-trigger-width)]"
         )}
       >
         {children}
