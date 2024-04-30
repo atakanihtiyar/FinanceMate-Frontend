@@ -5,8 +5,13 @@ import {
     NavigationMenuList,
     navigationMenuTriggerUnfocusableStyle,
 } from "@/components/ui/navigation-menu"
+import { UserContext, UserContextValues } from "@/context/UserContext"
+import { useContext } from "react"
+import { useNavigate } from "react-router-dom"
 
 const Navbar = () => {
+    const { isLoggedIn, LogOut } = useContext(UserContext) as UserContextValues
+    const navigate = useNavigate()
     return (
         <NavigationMenu>
             <NavigationMenuList>
@@ -28,18 +33,33 @@ const Navbar = () => {
                     </NavigationMenuLink>
                 </NavigationMenuItem>
             </NavigationMenuList>
-            <NavigationMenuList>
-                <NavigationMenuItem>
-                    <NavigationMenuLink href="/login" className={navigationMenuTriggerUnfocusableStyle()}>
-                        login
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <NavigationMenuLink href="/register" className={navigationMenuTriggerUnfocusableStyle()}>
-                        register
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-            </NavigationMenuList>
+            {
+                isLoggedIn ?
+                    <NavigationMenuList>
+                        <NavigationMenuItem>
+                            <NavigationMenuLink href="/" className={navigationMenuTriggerUnfocusableStyle()} onClick={async (e) => {
+                                e.preventDefault()
+                                await LogOut()
+                                navigate("/")
+                            }}>
+                                logout
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
+                    </NavigationMenuList> :
+                    <NavigationMenuList>
+                        <NavigationMenuItem>
+                            <NavigationMenuLink href="/login" className={navigationMenuTriggerUnfocusableStyle()}>
+                                login
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
+                        <NavigationMenuItem>
+                            <NavigationMenuLink href="/register" className={navigationMenuTriggerUnfocusableStyle()}>
+                                register
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
+                    </NavigationMenuList>
+            }
+
         </NavigationMenu>
     )
 }
