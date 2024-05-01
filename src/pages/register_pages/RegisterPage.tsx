@@ -12,7 +12,7 @@ const FormDefaultValues = {
         identity: {
             given_name: "",
             family_name: "",
-            date_of_birth: Date(),
+            date_of_birth: "",
             country_of_tax_residence: "",
             tax_id_type: "",
             tax_id: "",

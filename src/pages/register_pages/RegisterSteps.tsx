@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { RegisterDataContext } from "./RegisterPage"
 
 export const RegisterSteps = () => {
-    const { formData } = useContext(RegisterDataContext)
     const [activeStep, setActiveStep] = useState(1)
     const minStep = 1
     const maxStep = 2
@@ -24,7 +23,6 @@ export const RegisterSteps = () => {
         if (e.currentTarget.classList.contains("disabled") && minStep <= step && step >= maxStep)
             setActiveStep(oldStep => oldStep === maxStep ? oldStep : ++oldStep)
     }
-    console.log(formData)
 
     return (
 

@@ -43,8 +43,8 @@ const RegisterStep1 = ({ goNextStep }: Props) => {
     const formSchema = z.object({
         given_name: z.string().min(3).max(15),
         family_name: z.string().min(3).max(15),
-        calling_code: z.string(), // "+15555555555"
-        phone_number: z.string(), // "+15555555555"
+        calling_code: z.string().regex(/^[0-9]{1,3}$/),
+        phone_number: z.string().regex(/^[0-9]{10}$/),
         email_address: z.string().email(),
         password: z.string().min(3).max(12),
     })

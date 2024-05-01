@@ -24,7 +24,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { CalendarIcon } from "lucide-react"
-import { useContext } from "react"
+import React, { useContext } from "react"
 import { RegisterDataContext } from "./RegisterPage"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -37,6 +37,34 @@ import { format } from "date-fns"
 
 import { countries } from 'countries-list'
 import { getEmojiFlag } from 'countries-list'
+import { Checkbox } from "@/components/ui/checkbox"
+
+const funding_sources = [
+    {
+        id: "employment_income",
+        label: "Employment Income",
+    },
+    {
+        id: "investments",
+        label: "Investments",
+    },
+    {
+        id: "inheritance",
+        label: "Inheritance",
+    },
+    {
+        id: "business_income",
+        label: "Business Income",
+    },
+    {
+        id: "savings",
+        label: "Savings",
+    },
+    {
+        id: "family",
+        label: "Family",
+    },
+]
 
 interface Props {
     goPreStep: () => void,
@@ -46,18 +74,24 @@ interface Props {
 const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
     const { formData, setRegisterData } = useContext(RegisterDataContext)
 
+    const legalMaxDateOfBirth = new Date(new Date().setFullYear(new Date().getFullYear() - 18))
+    const legalMinDateOfBirth = new Date("1900-01-01")
     const formSchema = z.object({
-        date_of_birth: z.date(),
+        date_of_birth: z.date().min(legalMinDateOfBirth).max(legalMaxDateOfBirth),
         country_of_tax_residence: z.string().length(3, "You should pick one"),
-        tax_id: z.string(),
+        tax_id: z.string().min(3),
+        funding_source: z.array(z.string()).refine((value) => value.some((item) => item), {
+            message: "You have to select at least one item.",
+        }),
     })
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            date_of_birth: new Date(formData.alpaca.identity.date_of_birth),
+            date_of_birth: formData.alpaca.identity.date_of_birth ? new Date(formData.alpaca.identity.date_of_birth) : undefined,
             country_of_tax_residence: formData.alpaca.identity.country_of_tax_residence,
-            tax_id: formData.alpaca.identity.tax_id
+            tax_id: formData.alpaca.identity.tax_id,
+            funding_source: formData.alpaca.identity.funding_source
         },
 
     })
@@ -66,7 +100,8 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
         setRegisterData({
             date_of_birth: values.date_of_birth.toISOString().split("T")[0],
             country_of_tax_residence: values.country_of_tax_residence,
-            tax_id: values.tax_id
+            tax_id: values.tax_id,
+            funding_source: values.funding_source
         })
         goNextStep()
     }
@@ -76,6 +111,7 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
             date_of_birth: form.getValues("date_of_birth").toISOString().split("T")[0],
             country_of_tax_residence: form.getValues("country_of_tax_residence"),
             tax_id: form.getValues("tax_id"),
+            funding_source: form.getValues("funding_source")
         })
         goPreStep()
     }
@@ -100,7 +136,7 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                                         variant={"outline"}
                                                         className={cn(
                                                             "tw-w-full tw-pl-3 tw-text-left tw-font-normal !tw-mx-0",
-                                                            !field.value && "tw-text-muted-foreground"
+                                                            !field.value && "tw-text-muted"
                                                         )}
                                                     >
                                                         {field.value ? (
@@ -118,8 +154,11 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                                     selected={field.value}
                                                     onSelect={field.onChange}
                                                     disabled={(date) =>
-                                                        date > new Date() || date < new Date("1900-01-01")
+                                                        date > legalMaxDateOfBirth || date < legalMinDateOfBirth
                                                     }
+                                                    fromDate={legalMinDateOfBirth}
+                                                    toDate={legalMaxDateOfBirth}
+                                                    captionLayout="dropdown"
                                                     initialFocus
                                                 />
                                             </PopoverContent>
@@ -161,6 +200,54 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                     <FormControl>
                                         <Input type="text" {...field} />
                                     </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="funding_source"
+                            render={() => (
+                                <FormItem>
+                                    <div className="mb-4">
+                                        <FormLabel className="text-base">Funding Source</FormLabel>
+                                    </div>
+                                    <div className="tw-border-[1px] tw-p-4 tw-rounded-lg">
+                                        {funding_sources.map((item) => (
+                                            <FormField
+                                                key={item.id}
+                                                control={form.control}
+                                                name="funding_source"
+                                                render={({ field }) => {
+                                                    return (
+                                                        <FormItem
+                                                            key={item.id}
+                                                            className="flex flex-row items-start space-x-3 space-y-0"
+                                                        >
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    className=""
+                                                                    checked={field.value?.includes(item.id)}
+                                                                    onCheckedChange={(checked) => {
+                                                                        return checked
+                                                                            ? field.onChange([...field.value, item.id])
+                                                                            : field.onChange(
+                                                                                field.value?.filter(
+                                                                                    (value) => value !== item.id
+                                                                                )
+                                                                            )
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormLabel className="font-normal">
+                                                                {item.label}
+                                                            </FormLabel>
+                                                        </FormItem>
+                                                    )
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
                                     <FormMessage />
                                 </FormItem>
                             )}
