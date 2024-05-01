@@ -32,7 +32,11 @@ interface FormDataType {
             is_affiliated_exchange_or_finra: boolean,
             is_politically_exposed: boolean,
             immediate_family_exposed: boolean
-        }
+        },
+        agreements: {
+            agreement: "account_agreement" | "customer_agreement" | "margin_agreement",
+            signed_at: string
+        }[]
     }
 }
 
@@ -67,7 +71,8 @@ const DefaultFormData: FormDataType = {
             is_affiliated_exchange_or_finra: false,
             is_politically_exposed: false,
             immediate_family_exposed: false
-        }
+        },
+        agreements: []
     }
 }
 
@@ -92,6 +97,9 @@ interface setRegisterDataProps {
     is_affiliated_exchange_or_finra?: boolean,
     is_politically_exposed?: boolean,
     immediate_family_exposed?: boolean,
+    is_read_and_agree_account_agreement?: boolean,
+    is_read_and_agree_customer_agreement?: boolean,
+    is_read_and_agree_margin_agreement?: boolean,
 }
 
 const FormContent = {
@@ -107,7 +115,8 @@ const RegisterPage = () => {
 
     const setRegisterData = ({ email_address, password, given_name, family_name, calling_code, phone_number, country_of_tax_residence,
         date_of_birth, tax_id_type, tax_id, funding_source, street_address, unit, city, state, postal_code,
-        is_control_person, is_affiliated_exchange_or_finra, is_politically_exposed, immediate_family_exposed
+        is_control_person, is_affiliated_exchange_or_finra, is_politically_exposed, immediate_family_exposed,
+        is_read_and_agree_account_agreement, is_read_and_agree_customer_agreement, is_read_and_agree_margin_agreement
     }: setRegisterDataProps) => {
         setFormData(oldData => {
             const newData: FormDataType = {
@@ -148,6 +157,25 @@ const RegisterPage = () => {
                         immediate_family_exposed: immediate_family_exposed !== undefined ? immediate_family_exposed : oldData.alpaca.disclosures.immediate_family_exposed,
                     }
                 }
+            }
+            newData.alpaca.agreements = []
+            if (is_read_and_agree_account_agreement) {
+                newData.alpaca.agreements.push({
+                    agreement: "account_agreement",
+                    signed_at: new Date().toISOString().split(".")[0] + "Z"
+                })
+            }
+            if (is_read_and_agree_customer_agreement) {
+                newData.alpaca.agreements.push({
+                    agreement: "customer_agreement",
+                    signed_at: new Date().toISOString().split(".")[0] + "Z"
+                })
+            }
+            if (is_read_and_agree_margin_agreement) {
+                newData.alpaca.agreements.push({
+                    agreement: "margin_agreement",
+                    signed_at: new Date().toISOString().split(".")[0] + "Z"
+                })
             }
             switch (newData.alpaca.identity.country_of_tax_residence) {
                 case "USA":

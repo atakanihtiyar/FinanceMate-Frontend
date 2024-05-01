@@ -33,6 +33,11 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
             is_affiliated_exchange_or_finra: z.boolean(),
             is_politically_exposed: z.boolean(),
             immediate_family_exposed: z.boolean(),
+        }),
+        agreements: z.object({
+            is_read_and_agree_account_agreement: z.boolean().refine(item => item === true),
+            is_read_and_agree_customer_agreement: z.boolean().refine(item => item === true),
+            is_read_and_agree_margin_agreement: z.boolean().refine(item => item === true),
         })
     })
 
@@ -44,9 +49,13 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                 is_affiliated_exchange_or_finra: formData.alpaca.disclosures.is_affiliated_exchange_or_finra,
                 is_politically_exposed: formData.alpaca.disclosures.is_politically_exposed,
                 immediate_family_exposed: formData.alpaca.disclosures.immediate_family_exposed,
+            },
+            agreements: {
+                is_read_and_agree_account_agreement: false,
+                is_read_and_agree_customer_agreement: false,
+                is_read_and_agree_margin_agreement: false,
             }
-        },
-
+        }
     })
 
     const handleGoNext = (values: z.infer<typeof formSchema>) => {
@@ -55,6 +64,9 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
             is_affiliated_exchange_or_finra: values.disclosures.is_affiliated_exchange_or_finra,
             is_politically_exposed: values.disclosures.is_politically_exposed,
             immediate_family_exposed: values.disclosures.immediate_family_exposed,
+            is_read_and_agree_account_agreement: values.agreements.is_read_and_agree_account_agreement,
+            is_read_and_agree_customer_agreement: values.agreements.is_read_and_agree_customer_agreement,
+            is_read_and_agree_margin_agreement: values.agreements.is_read_and_agree_margin_agreement,
         })
         goNextStep()
     }
@@ -64,7 +76,7 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
             is_control_person: form.getValues("disclosures.is_control_person"),
             is_affiliated_exchange_or_finra: form.getValues("disclosures.is_affiliated_exchange_or_finra"),
             is_politically_exposed: form.getValues("disclosures.is_politically_exposed"),
-            immediate_family_exposed: form.getValues("disclosures.immediate_family_exposed"),
+            immediate_family_exposed: form.getValues("disclosures.immediate_family_exposed")
         })
         goPreStep()
     }
@@ -166,6 +178,80 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                         />
                                     </div>
                                     <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        {/* AGREEMENTS */}
+                        <FormField
+                            control={form.control}
+                            name="agreements"
+                            render={() => (
+                                <FormItem>
+                                    <div className="tw-mb-0">
+                                        <FormLabel>Agreements*</FormLabel>
+                                    </div>
+                                    <div>
+                                        {/* ACCOUNT AGREEMENT */}
+                                        <FormField
+                                            control={form.control}
+                                            name="agreements.is_read_and_agree_account_agreement"
+                                            render={({ field }) => (
+                                                <FormItem className="tw-w-full tw-flex tw-flex-row tw-justify-start tw-items-center tw-space-x-2 !tw-space-y-0 tw-my-1 tw-py-1">
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
+                                                        />
+                                                    </FormControl>
+                                                    <div className="tw-space-y-1 tw-leading-none">
+                                                        <FormLabel className="tw-font-normal tw-text-center tw-align-middle">
+                                                            Account Agreement
+                                                        </FormLabel>
+                                                    </div>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        {/* CUSTOMER AGREEMENT */}
+                                        <FormField
+                                            control={form.control}
+                                            name="agreements.is_read_and_agree_customer_agreement"
+                                            render={({ field }) => (
+                                                <FormItem className="tw-w-full tw-flex tw-flex-row tw-justify-start tw-items-center tw-space-x-2 !tw-space-y-0 tw-my-1 tw-py-1">
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
+                                                        />
+                                                    </FormControl>
+                                                    <div className="tw-space-y-1 tw-leading-none">
+                                                        <FormLabel className="tw-font-normal tw-text-center tw-align-middle">
+                                                            Customer Agreement
+                                                        </FormLabel>
+                                                    </div>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        {/* MARGIN AGREEMENT */}
+                                        <FormField
+                                            control={form.control}
+                                            name="agreements.is_read_and_agree_margin_agreement"
+                                            render={({ field }) => (
+                                                <FormItem className="tw-w-full tw-flex tw-flex-row tw-justify-start tw-items-center tw-space-x-2 !tw-space-y-0 tw-my-1 tw-py-1">
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
+                                                        />
+                                                    </FormControl>
+                                                    <div className="tw-space-y-1 tw-leading-none">
+                                                        <FormLabel className="tw-font-normal tw-text-center tw-align-middle">
+                                                            Margin Agreement
+                                                        </FormLabel>
+                                                    </div>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
                                 </FormItem>
                             )}
                         />
