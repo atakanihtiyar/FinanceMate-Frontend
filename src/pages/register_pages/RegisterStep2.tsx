@@ -24,7 +24,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { CalendarIcon } from "lucide-react"
-import React, { useContext } from "react"
+import { useContext } from "react"
 import { RegisterDataContext } from "./RegisterPage"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -120,7 +120,7 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
         <Card className="tw-w-[400px] tw-min-h-[500px] tw-drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
             <CardContent className="tw-w-full tw-mt-12">
                 <Form {...form}>
-                    <form className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-2">
+                    <form className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-4">
                         {/* DATE OF BIRTH */}
                         <FormField
                             control={form.control}
@@ -135,7 +135,7 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                                     <Button
                                                         variant={"outline"}
                                                         className={cn(
-                                                            "tw-w-full tw-pl-3 tw-text-left tw-font-normal !tw-mx-0",
+                                                            "tw-w-full tw-pl-3 tw-text-left tw-font-normal !tw-mx-0 !tw-border-[--muted]",
                                                             !field.value && "tw-text-muted"
                                                         )}
                                                     >
@@ -204,15 +204,16 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                 </FormItem>
                             )}
                         />
+                        {/* FUNDING SOURCES */}
                         <FormField
                             control={form.control}
                             name="funding_source"
                             render={() => (
                                 <FormItem>
-                                    <div className="mb-4">
-                                        <FormLabel className="text-base">Funding Source</FormLabel>
+                                    <div className="tw-mb-0">
+                                        <FormLabel>Funding Source</FormLabel>
                                     </div>
-                                    <div className="tw-border-[1px] tw-p-4 tw-rounded-lg">
+                                    <div>
                                         {funding_sources.map((item) => (
                                             <FormField
                                                 key={item.id}
@@ -222,11 +223,10 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                                     return (
                                                         <FormItem
                                                             key={item.id}
-                                                            className="flex flex-row items-start space-x-3 space-y-0"
+                                                            className="tw-w-full tw-flex tw-flex-row tw-justify-start tw-items-center tw-space-x-2 !tw-space-y-0 tw-my-1 tw-py-1"
                                                         >
                                                             <FormControl>
                                                                 <Checkbox
-                                                                    className=""
                                                                     checked={field.value?.includes(item.id)}
                                                                     onCheckedChange={(checked) => {
                                                                         return checked
@@ -239,7 +239,7 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                                                     }}
                                                                 />
                                                             </FormControl>
-                                                            <FormLabel className="font-normal">
+                                                            <FormLabel className="tw-font-normal tw-text-center tw-align-middle">
                                                                 {item.label}
                                                             </FormLabel>
                                                         </FormItem>
@@ -253,7 +253,7 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                             )}
                         />
                         <div className="tw-flex tw-justify-between tw-mb-4 tw-mt-4 tw-w-[80%]">
-                            <Button type="button" className="tw-font-semibold" onClick={handleGoPre} size="sm">Back</Button>
+                            <Button type="button" variant={"outline"} className="tw-font-semibold" onClick={handleGoPre} size="sm">Back</Button>
                             <Button type="submit" className="tw-font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
                         </div>
                     </form>

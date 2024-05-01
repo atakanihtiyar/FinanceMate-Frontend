@@ -85,7 +85,7 @@ const RegisterStep1 = ({ goNextStep }: Props) => {
             </CardContent>
             <CardContent className="tw-w-full tw-mt-4">
                 <Form {...form}>
-                    <form className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-2">
+                    <form className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-4">
                         {/* GIVEN NAME */}
                         <FormField
                             control={form.control}

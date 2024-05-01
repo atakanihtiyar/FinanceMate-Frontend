@@ -1,7 +1,42 @@
 import { RegisterSteps } from "./RegisterSteps"
 import { createContext, useState } from "react"
 
-const FormDefaultValues = {
+interface FormDataType {
+    given_name: string,
+    family_name: string,
+    calling_code: string,
+    phone_number: string,
+    email_address: string,
+    password: string,
+    alpaca: {
+        identity: {
+            given_name: string,
+            family_name: string,
+            date_of_birth: string,
+            country_of_tax_residence: string,
+            tax_id_type: string,
+            tax_id: string,
+            funding_source: string[]
+        },
+        contact: {
+            email_address: string,
+            phone_number: string,
+            street_address: string[],
+            unit: string,
+            city: string,
+            state: string,
+            postal_code: string
+        },
+        disclosures: {
+            is_control_person: boolean,
+            is_affiliated_exchange_or_finra: boolean,
+            is_politically_exposed: boolean,
+            immediate_family_exposed: boolean
+        }
+    }
+}
+
+const DefaultFormData: FormDataType = {
     given_name: "",
     family_name: "",
     calling_code: "",
@@ -16,16 +51,22 @@ const FormDefaultValues = {
             country_of_tax_residence: "",
             tax_id_type: "",
             tax_id: "",
-            funding_source: [""]
+            funding_source: []
         },
         contact: {
             email_address: "",
             phone_number: "",
-            street_address: [""],
+            street_address: [],
             unit: "",
             city: "",
             state: "",
             postal_code: ""
+        },
+        disclosures: {
+            is_control_person: false,
+            is_affiliated_exchange_or_finra: false,
+            is_politically_exposed: false,
+            immediate_family_exposed: false
         }
     }
 }
@@ -47,23 +88,29 @@ interface setRegisterDataProps {
     city?: string,
     state?: string,
     postal_code?: string,
+    is_control_person?: boolean,
+    is_affiliated_exchange_or_finra?: boolean,
+    is_politically_exposed?: boolean,
+    immediate_family_exposed?: boolean,
 }
 
 const FormContent = {
-    formData: FormDefaultValues,
-    setRegisterData: (_data: setRegisterDataProps) => { }
+    formData: DefaultFormData,
+    setRegisterData: (_data: setRegisterDataProps) => { },
+    register: () => { }
 }
 
 const RegisterDataContext = createContext<typeof FormContent>(FormContent)
 
 const RegisterPage = () => {
-    const [formData, setFormData] = useState<typeof FormDefaultValues>(FormDefaultValues)
+    const [formData, setFormData] = useState<FormDataType>(DefaultFormData)
 
     const setRegisterData = ({ email_address, password, given_name, family_name, calling_code, phone_number, country_of_tax_residence,
-        date_of_birth, tax_id_type, tax_id, funding_source, street_address, unit, city, state, postal_code
+        date_of_birth, tax_id_type, tax_id, funding_source, street_address, unit, city, state, postal_code,
+        is_control_person, is_affiliated_exchange_or_finra, is_politically_exposed, immediate_family_exposed
     }: setRegisterDataProps) => {
         setFormData(oldData => {
-            const newData: typeof FormDefaultValues = {
+            const newData: FormDataType = {
                 ...oldData,
                 given_name: given_name ? given_name : oldData.given_name,
                 family_name: family_name ? family_name : oldData.family_name,
@@ -92,6 +139,13 @@ const RegisterPage = () => {
                         city: city ? city : oldData.alpaca.contact.city,
                         state: state ? state : oldData.alpaca.contact.state,
                         postal_code: postal_code ? postal_code : oldData.alpaca.contact.postal_code,
+                    },
+                    disclosures: {
+                        ...oldData.alpaca.disclosures,
+                        is_control_person: is_control_person !== undefined ? is_control_person : oldData.alpaca.disclosures.is_control_person,
+                        is_affiliated_exchange_or_finra: is_affiliated_exchange_or_finra !== undefined ? is_affiliated_exchange_or_finra : oldData.alpaca.disclosures.is_affiliated_exchange_or_finra,
+                        is_politically_exposed: is_politically_exposed !== undefined ? is_politically_exposed : oldData.alpaca.disclosures.is_politically_exposed,
+                        immediate_family_exposed: immediate_family_exposed !== undefined ? immediate_family_exposed : oldData.alpaca.disclosures.immediate_family_exposed,
                     }
                 }
             }
@@ -110,9 +164,13 @@ const RegisterPage = () => {
         })
     }
 
+    const register = () => {
+        console.log(formData)
+    }
+
     return (
         <div className='tw-min-w-screen tw-min-h-screen tw-flex tw-flex-col tw-justify-center tw-items-center'>
-            <RegisterDataContext.Provider value={{ formData, setRegisterData }}>
+            <RegisterDataContext.Provider value={{ formData, setRegisterData, register }}>
                 <RegisterSteps />
             </RegisterDataContext.Provider>
         </div >

@@ -3,13 +3,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import RegisterStep1 from "./RegisterStep1"
 import RegisterStep2 from "./RegisterStep2"
 import { useContext, useState } from "react"
-import { Button } from "@/components/ui/button"
 import { RegisterDataContext } from "./RegisterPage"
+import RegisterStep3 from "./RegisterStep3"
+import RegisterStepLast from "./RegisterStepLast"
 
 export const RegisterSteps = () => {
+    const { register } = useContext(RegisterDataContext)
     const [activeStep, setActiveStep] = useState(1)
     const minStep = 1
-    const maxStep = 2
+    const maxStep = 4
 
     const goPreStep = () => {
         setActiveStep(oldStep => oldStep === minStep ? oldStep : --oldStep)
@@ -19,17 +21,29 @@ export const RegisterSteps = () => {
         setActiveStep(oldStep => oldStep === maxStep ? oldStep : ++oldStep)
     }
 
-    const goToStep = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, step: number) => {
-        if (e.currentTarget.classList.contains("disabled") && minStep <= step && step >= maxStep)
-            setActiveStep(oldStep => oldStep === maxStep ? oldStep : ++oldStep)
+    const goToStep = (step: number) => {
+        if (minStep <= step && step <= maxStep)
+            setActiveStep(step)
+    }
+
+    const onSubmit = () => {
+        register()
+    }
+
+    const generateTabTriggerClassName = (currStep: number) => {
+        return `!tw-bg-transparent tw-text-muted
+        ${currStep === activeStep && "!tw-text-primary-light"}
+        ${currStep > activeStep && "tw-pointer-events-none tw-text-foreground"}`
     }
 
     return (
 
-        <Tabs defaultValue={"1"} value={activeStep.toString()} className="w-[400px]">
-            <TabsList>
-                <TabsTrigger value="1" onClick={(e) => goToStep(e, 1)}>Base</TabsTrigger>
-                <TabsTrigger value="2" onClick={(e) => goToStep(e, 1)} className={`${activeStep < 2 && "disabled"}`}>Identity</TabsTrigger>
+        <Tabs defaultValue={"1"} value={activeStep.toString()}>
+            <TabsList className="tw-w-[400px] tw-h-[40px] !tw-bg-[--background] tw-border-[1px] tw-border-[--muted] tw-border-solid">
+                <TabsTrigger value="1" onClick={() => goToStep(1)} className={generateTabTriggerClassName(1)}>Base</TabsTrigger>
+                <TabsTrigger value="2" onClick={() => goToStep(2)} className={generateTabTriggerClassName(2)}>Identity</TabsTrigger>
+                <TabsTrigger value="3" onClick={() => goToStep(3)} className={generateTabTriggerClassName(3)}>Contact</TabsTrigger>
+                <TabsTrigger value="4" onClick={() => goToStep(4)} className={generateTabTriggerClassName(4)}>Overview</TabsTrigger>
             </TabsList>
             <TabsContent value="1">
                 <RegisterStep1 goNextStep={goNextStep} />
@@ -38,10 +52,10 @@ export const RegisterSteps = () => {
                 <RegisterStep2 goPreStep={goPreStep} goNextStep={goNextStep} />
             </TabsContent>
             <TabsContent value="3">
-                {
-                    activeStep === maxStep &&
-                    <Button onClick={() => console.log("formData")}>Register</Button>
-                }
+                <RegisterStep3 goPreStep={goPreStep} goNextStep={goNextStep} />
+            </TabsContent>
+            <TabsContent value="4">
+                <RegisterStepLast goPreStep={goPreStep} onSubmit={onSubmit} />
             </TabsContent>
         </Tabs>
     )
