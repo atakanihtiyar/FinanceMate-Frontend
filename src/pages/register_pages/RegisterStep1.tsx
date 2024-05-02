@@ -52,14 +52,13 @@ const RegisterStep1 = ({ goNextStep }: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            given_name: formData.given_name,
-            family_name: formData.family_name,
+            given_name: formData.identity.given_name,
+            family_name: formData.identity.family_name,
             calling_code: formData.calling_code,
             phone_number: formData.phone_number,
-            email_address: formData.email_address,
+            email_address: formData.contact.email_address,
             password: "",
         },
-
     })
 
     const handleGoNext = (values: z.infer<typeof formSchema>) => {

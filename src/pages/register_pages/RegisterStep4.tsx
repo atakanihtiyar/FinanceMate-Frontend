@@ -45,10 +45,10 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             disclosures: {
-                is_control_person: formData.alpaca.disclosures.is_control_person,
-                is_affiliated_exchange_or_finra: formData.alpaca.disclosures.is_affiliated_exchange_or_finra,
-                is_politically_exposed: formData.alpaca.disclosures.is_politically_exposed,
-                immediate_family_exposed: formData.alpaca.disclosures.immediate_family_exposed,
+                is_control_person: formData.disclosures.is_control_person,
+                is_affiliated_exchange_or_finra: formData.disclosures.is_affiliated_exchange_or_finra,
+                is_politically_exposed: formData.disclosures.is_politically_exposed,
+                immediate_family_exposed: formData.disclosures.immediate_family_exposed,
             },
             agreements: {
                 is_read_and_agree_account_agreement: false,

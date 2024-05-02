@@ -88,10 +88,10 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            date_of_birth: formData.alpaca.identity.date_of_birth ? new Date(formData.alpaca.identity.date_of_birth) : undefined,
-            country_of_tax_residence: formData.alpaca.identity.country_of_tax_residence,
-            tax_id: formData.alpaca.identity.tax_id,
-            funding_source: formData.alpaca.identity.funding_source
+            date_of_birth: formData.identity.date_of_birth ? new Date(formData.identity.date_of_birth) : undefined,
+            country_of_tax_residence: formData.identity.country_of_tax_residence,
+            tax_id: formData.identity.tax_id,
+            funding_source: formData.identity.funding_source
         },
 
     })

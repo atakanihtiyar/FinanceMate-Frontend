@@ -38,11 +38,11 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            street_address: formData.alpaca.contact.street_address[0] ? formData.alpaca.contact.street_address[0] : "",
-            unit: formData.alpaca.contact.unit,
-            city: formData.alpaca.contact.city,
+            street_address: formData.contact.street_address[0] ? formData.contact.street_address[0] : "",
+            unit: formData.contact.unit,
+            city: formData.contact.city,
             state: "",
-            postal_code: formData.alpaca.contact.postal_code,
+            postal_code: formData.contact.postal_code,
         },
 
     })
@@ -104,7 +104,7 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
                         />
                         {/* STATE */}
                         {
-                            formData.alpaca.identity.country_of_tax_residence === "USA" &&
+                            formData.identity.country_of_tax_residence === "USA" &&
                             <FormField
                                 control={form.control}
                                 name="state"
