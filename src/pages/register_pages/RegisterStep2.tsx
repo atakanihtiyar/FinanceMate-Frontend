@@ -13,13 +13,6 @@ import {
     Card,
     CardContent
 } from "@/components/ui/card"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,9 +27,6 @@ import {
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-
-import { countries } from 'countries-list'
-import { getEmojiFlag } from 'countries-list'
 import { Checkbox } from "@/components/ui/checkbox"
 
 const funding_sources = [
@@ -78,8 +68,19 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
     const legalMinDateOfBirth = new Date("1900-01-01")
     const formSchema = z.object({
         date_of_birth: z.date().min(legalMinDateOfBirth).max(legalMaxDateOfBirth),
-        country_of_tax_residence: z.string().length(3, "You should pick one"),
-        tax_id: z.string().min(3),
+        tax_id: formData.identity.country_of_tax_residence === "USA" ?
+            z.string().trim().length(11)
+                .regex(/(?!(^(000|666)-|.*-00-.*|-0000$)|^(0{3}-0{2}-0{4}|1{3}-1{2}-1{4}|2{3}-2{2}-2{4}|3{3}-3{2}-3{4}|4{3}-4{2}-4{4}|5{3}-5{2}-5{4}|6{3}-6{2}-6{4}|7{3}-7{2}-7{4}|8{3}-8{2}-8{4}|9{3}-9{2}-9{4}|123-45-6789|987-65-4321)$)^\d{3}-\d{2}-\d{4}$/) :
+            // other validation is not proper for all rules
+            z.string().trim().min(2).max(40)
+                .regex(/(?!^(0{3}-0{2}-0{4}|1{3}-1{2}-1{4}|2{3}-2{2}-2{4}|3{3}-3{2}-3{4}|4{3}-4{2}-4{4}|5{3}-5{2}-5{4}|6{3}-6{2}-6{4}|7{3}-7{2}-7{4}|8{3}-8{2}-8{4}|9{3}-9{2}-9{4}|123-45-6789|987-65-4321)$)^([a-zA-Z0-9\+-\.])+$/)
+                .refine(item => { // is numbers more than letters or symbols
+                    if (!item || typeof item !== "string") return false
+                    let letters: RegExpMatchArray | string = (item as String).match(/[a-zA-Z\.\+-]/g) ?? ""
+                    let numbers: RegExpMatchArray | string = (item as String).match(/[0-9]/g) ?? ""
+                    if (numbers.length <= letters.length) return false
+                    return true
+                }),
         funding_source: z.array(z.string()).refine((value) => value.some((item) => item), {
             message: "You have to select at least one item.",
         }),
@@ -89,7 +90,6 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             date_of_birth: formData.identity.date_of_birth ? new Date(formData.identity.date_of_birth) : undefined,
-            country_of_tax_residence: formData.identity.country_of_tax_residence,
             tax_id: formData.identity.tax_id,
             funding_source: formData.identity.funding_source
         },
@@ -97,9 +97,10 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
     })
 
     const handleGoNext = (values: z.infer<typeof formSchema>) => {
+        let date_of_birth = values.date_of_birth.toISOString().split("T")[0]
+        date_of_birth = date_of_birth ? date_of_birth : ""
         setRegisterData({
-            date_of_birth: values.date_of_birth.toISOString().split("T")[0],
-            country_of_tax_residence: values.country_of_tax_residence,
+            date_of_birth: date_of_birth,
             tax_id: values.tax_id,
             funding_source: values.funding_source
         })
@@ -107,9 +108,10 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
     }
 
     const handleGoPre = () => {
+        let date_of_birth = form.getValues("date_of_birth")?.toISOString().split("T")[0]
+        date_of_birth = date_of_birth ? date_of_birth : ""
         setRegisterData({
-            date_of_birth: form.getValues("date_of_birth").toISOString().split("T")[0],
-            country_of_tax_residence: form.getValues("country_of_tax_residence"),
+            date_of_birth: date_of_birth,
             tax_id: form.getValues("tax_id"),
             funding_source: form.getValues("funding_source")
         })
@@ -164,28 +166,6 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                             </PopoverContent>
                                         </Popover>
                                     </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        {/* TAX RESIDENCE */}
-                        <FormField
-                            control={form.control}
-                            name="country_of_tax_residence"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Tax Residence</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select a Country" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value={"USA"}>{getEmojiFlag("US")} {countries.US.name}</SelectItem>
-                                            <SelectItem value={"TUR"}>{getEmojiFlag("TR")} {countries.TR.name}</SelectItem>
-                                        </SelectContent>
-                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}

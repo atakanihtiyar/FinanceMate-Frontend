@@ -2,6 +2,13 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import {
     Form,
     FormControl,
     FormField,
@@ -19,6 +26,66 @@ import { Input } from "@/components/ui/input"
 import { useContext } from "react"
 import { RegisterDataContext } from "./RegisterPage"
 
+import { countries } from 'countries-list'
+import { getEmojiFlag } from 'countries-list'
+
+const usaStates = [
+    ["AA", "Armed Forces of the Americas"],
+    ["AE", "Armed Forces of Europe"],
+    ["AK", "Alaska"],
+    ["AL", "Alabama"],
+    ["AP", "Armed Forces of the Pacific"],
+    ["AR", "Arkansas"],
+    ["AZ", "Arizona"],
+    ["CA", "California"],
+    ["CO", "Colorado"],
+    ["CT", "Connecticut"],
+    ["DC", "District of Columbia"],
+    ["DE", "Delaware"],
+    ["FL", "Florida"],
+    ["GA", "Georgia"],
+    ["HI", "Hawaii"],
+    ["IA", "Iowa"],
+    ["ID", "Idaho"],
+    ["IL", "Illinois"],
+    ["IN", "Indiana"],
+    ["KS", "Kansas"],
+    ["KY", "Kentucky"],
+    ["LA", "Louisiana"],
+    ["MA", "Massachusetts"],
+    ["MD", "Maryland"],
+    ["ME", "Maine"],
+    ["MI", "Michigan"],
+    ["MN", "Minnesota"],
+    ["MO", "Missouri"],
+    ["MS", "Mississippi"],
+    ["MT", "Montana"],
+    ["NC", "North Carolina"],
+    ["ND", "North Dakota"],
+    ["NE", "Nebraska"],
+    ["NH", "New Hampshire"],
+    ["NJ", "New Jersey"],
+    ["NM", "New Mexico"],
+    ["NV", "Nevada"],
+    ["NY", "New York"],
+    ["OH", "Ohio"],
+    ["OK", "Oklahoma"],
+    ["OR", "Oregon"],
+    ["PA", "Pennsylvania"],
+    ["RI", "Rhode Island"],
+    ["SC", "South Carolina"],
+    ["SD", "South Dakota"],
+    ["TN", "Tennessee"],
+    ["TX", "Texas"],
+    ["UT", "Utah"],
+    ["VA", "Virginia"],
+    ["VT", "Vermont"],
+    ["WA", "Washington"],
+    ["WI", "Wisconsin"],
+    ["WV", "West Virginia"],
+    ["WY", "Wyoming"]
+]
+
 interface Props {
     goPreStep: () => void,
     goNextStep: () => void
@@ -28,20 +95,26 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
     const { formData, setRegisterData } = useContext(RegisterDataContext)
 
     const formSchema = z.object({
-        street_address: z.string().min(3),
-        unit: z.string(),
-        city: z.string(),
-        state: z.string(), // picked usa as country of tax residence
-        postal_code: z.string(),
+        calling_code: z.string().trim().min(1, "You have to select one item.").max(3, "You have to select one item.").regex(/^[0-9]+$/, "You have to select one item."),
+        phone_number: z.string().trim().length(10).regex(/^[0-9]+$/),
+        street_address: z.string().trim().min(1).max(60).regex(/^(?!^\d+$)^[ -~]+$/),
+        unit: z.string().trim().min(1).max(10).regex(/^[ -~]+$/),
+        city: z.string().trim().min(1).max(50).regex(/^(?!^\d+$)^[a-zA-Z0-9_ ]+$/),
+        state: formData.identity.country_of_tax_residence === "USA" ?
+            z.string().trim().length(2).regex(/^[a-zA-Z]{2}$/) :
+            z.string().trim().max(50).regex(/^(?!^\d+$)^[a-zA-Z0-9_ ]*$/),
+        postal_code: z.string().trim().min(5).max(10).regex(/^[0-9]{5}[ -~]{0,5}$/),
     })
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            calling_code: formData.calling_code,
+            phone_number: formData.phone_number,
             street_address: formData.contact.street_address[0] ? formData.contact.street_address[0] : "",
             unit: formData.contact.unit,
             city: formData.contact.city,
-            state: "",
+            state: formData.contact.state,
             postal_code: formData.contact.postal_code,
         },
 
@@ -49,6 +122,8 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
 
     const handleGoNext = (values: z.infer<typeof formSchema>) => {
         setRegisterData({
+            calling_code: values.calling_code,
+            phone_number: values.phone_number,
             street_address: [values.street_address],
             unit: values.unit,
             city: values.city,
@@ -60,6 +135,8 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
 
     const handleGoPre = () => {
         setRegisterData({
+            calling_code: form.getValues("calling_code"),
+            phone_number: form.getValues("phone_number"),
             street_address: [form.getValues("street_address")],
             unit: form.getValues("unit"),
             city: form.getValues("city"),
@@ -74,6 +151,43 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
             <CardContent className="tw-w-full tw-mt-12">
                 <Form {...form}>
                     <form className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-4">
+                        {/* PHONNE NUMBER */}
+                        <div className="tw-w-[80%] tw-flex tw-flex-row w-space-y-2">
+                            <FormField
+                                control={form.control}
+                                name="calling_code"
+                                render={({ field }) => (
+                                    <FormItem className="tw-mr-1">
+                                        <FormLabel>Phone Number</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Country Code" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent >
+                                                <SelectItem value={"1"}>{getEmojiFlag("US")} +{countries.US.phone}</SelectItem>
+                                                <SelectItem value={"90"}>{getEmojiFlag("TR")} +{countries.TR.phone}</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="phone_number"
+                                render={({ field }) => (
+                                    <FormItem className="tw-ml-1">
+                                        <FormLabel><br /></FormLabel>
+                                        <FormControl>
+                                            <Input type="text" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         {/* STREET ADDRESS */}
                         <FormField
                             control={form.control}
@@ -104,20 +218,48 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
                         />
                         {/* STATE */}
                         {
-                            formData.identity.country_of_tax_residence === "USA" &&
-                            <FormField
-                                control={form.control}
-                                name="state"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>State</FormLabel>
-                                        <FormControl>
-                                            <Input type="string" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            formData.identity.country_of_tax_residence === "USA" ?
+                                <FormField
+                                    control={form.control}
+                                    name="state"
+                                    render={({ field }) => (
+                                        <FormItem className="tw-mr-1">
+                                            <FormLabel>State</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="State" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent >
+                                                    {
+                                                        usaStates.map(item => {
+                                                            let abbreviation = item[0]
+                                                            let name = item[1]
+                                                            return (
+                                                                <SelectItem key={abbreviation} value={abbreviation}>{abbreviation} - {name}</SelectItem>
+                                                            )
+                                                        })
+                                                    }
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                /> :
+                                <FormField
+                                    control={form.control}
+                                    name="state"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>State</FormLabel>
+                                            <FormControl>
+                                                <Input type="string" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                         }
                         {/* UNIT */}
                         <FormField

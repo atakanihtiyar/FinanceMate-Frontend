@@ -1,5 +1,7 @@
+import { useNavigate } from "react-router-dom"
 import { RegisterSteps } from "./RegisterSteps"
-import { createContext, useState } from "react"
+import { createContext, useContext, useState } from "react"
+import { UserContext, UserContextValues } from "@/context/UserContext"
 
 interface FormDataType {
     password: string,
@@ -99,6 +101,8 @@ const FormContent = {
 const RegisterDataContext = createContext<typeof FormContent>(FormContent)
 
 const RegisterPage = () => {
+    const navigate = useNavigate()
+    const { saveUser } = useContext(UserContext) as UserContextValues
     const [formData, setFormData] = useState<FormDataType>(DefaultFormData)
 
     const setRegisterData = ({ email_address, password, given_name, family_name, calling_code, phone_number, country_of_tax_residence,
@@ -173,8 +177,23 @@ const RegisterPage = () => {
         })
     }
 
-    const register = () => {
-        console.log(formData)
+    const register = async () => {
+        const response = await fetch("http://localhost:5050/users", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData)
+        })
+        const data = await response.json()
+        if (response.status === 201) {
+            saveUser(true, { account_number: data.account_number, given_name: data.given_name })
+            navigate("/")
+        }
+        else {
+            console.log(data)
+        }
     }
 
     return (

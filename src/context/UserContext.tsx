@@ -14,7 +14,8 @@ type UserContextValues = {
     user: IUser | null,
     isLoggedIn: Boolean,
     TryLogIn: (email_address: String, password: String) => void,
-    LogOut: () => void
+    LogOut: () => void,
+    saveUser: (isLoggedIn: Boolean, user: IUser | null) => void
 }
 
 const UserContext = createContext<UserContextValues | null>(null)
@@ -79,7 +80,7 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     }
 
     return (
-        <UserContext.Provider value={{ user: user.user, isLoggedIn: user.isLoggedIn, TryLogIn: TryLogIn, LogOut: LogOut }}>
+        <UserContext.Provider value={{ user: user.user, isLoggedIn: user.isLoggedIn, TryLogIn: TryLogIn, LogOut: LogOut, saveUser: saveUser }}>
             {children}
         </UserContext.Provider>
     )

@@ -41,12 +41,11 @@ const RegisterStep1 = ({ goNextStep }: Props) => {
     const { formData, setRegisterData } = useContext(RegisterDataContext)
 
     const formSchema = z.object({
-        given_name: z.string().min(3).max(15),
-        family_name: z.string().min(3).max(15),
-        calling_code: z.string().regex(/^[0-9]{1,3}$/),
-        phone_number: z.string().regex(/^[0-9]{10}$/),
-        email_address: z.string().email(),
-        password: z.string().min(3).max(12),
+        given_name: z.string().trim().min(3).max(20).regex(/^[ -~]+$/),
+        family_name: z.string().trim().min(3).max(20).regex(/^[ -~]+$/),
+        country_of_tax_residence: z.string().trim().length(3, "You should pick one"),
+        email_address: z.string().trim().min(1).max(60).email(),
+        password: z.string().min(3).max(16).regex(/^[ -~]+$/),
     })
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -54,8 +53,7 @@ const RegisterStep1 = ({ goNextStep }: Props) => {
         defaultValues: {
             given_name: formData.identity.given_name,
             family_name: formData.identity.family_name,
-            calling_code: formData.calling_code,
-            phone_number: formData.phone_number,
+            country_of_tax_residence: formData.identity.country_of_tax_residence,
             email_address: formData.contact.email_address,
             password: "",
         },
@@ -65,8 +63,7 @@ const RegisterStep1 = ({ goNextStep }: Props) => {
         setRegisterData({
             given_name: values.given_name,
             family_name: values.family_name,
-            calling_code: values.calling_code,
-            phone_number: values.phone_number,
+            country_of_tax_residence: values.country_of_tax_residence,
             email_address: values.email_address,
             password: values.password,
         })
@@ -113,43 +110,28 @@ const RegisterStep1 = ({ goNextStep }: Props) => {
                                 </FormItem>
                             )}
                         />
-                        {/* PHONNE NUMBER */}
-                        <div className="tw-w-[80%] tw-flex tw-flex-row w-space-y-2">
-                            <FormField
-                                control={form.control}
-                                name="calling_code"
-                                render={({ field }) => (
-                                    <FormItem className="tw-mr-1">
-                                        <FormLabel>Phone Number</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Country Code" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent >
-                                                <SelectItem value={"1"}>{getEmojiFlag("US")} +{countries.US.phone}</SelectItem>
-                                                <SelectItem value={"90"}>{getEmojiFlag("TR")} +{countries.TR.phone}</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="phone_number"
-                                render={({ field }) => (
-                                    <FormItem className="tw-ml-1">
-                                        <FormLabel><br /></FormLabel>
+                        {/* TAX RESIDENCE */}
+                        <FormField
+                            control={form.control}
+                            name="country_of_tax_residence"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Tax Residence</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
-                                            <Input type="text" {...field} />
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a Country" />
+                                            </SelectTrigger>
                                         </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                                        <SelectContent>
+                                            <SelectItem value={"USA"}>{getEmojiFlag("US")} {countries.US.name}</SelectItem>
+                                            <SelectItem value={"TUR"}>{getEmojiFlag("TR")} {countries.TR.name}</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         {/* EMAIL */}
                         <FormField
                             control={form.control}
