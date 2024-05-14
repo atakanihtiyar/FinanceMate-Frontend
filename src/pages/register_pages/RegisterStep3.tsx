@@ -109,8 +109,8 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            calling_code: formData.calling_code,
-            phone_number: formData.phone_number,
+            calling_code: formData.contact.phone_number.length > 10 ? formData.contact.phone_number.slice(1, formData.contact.phone_number.length - 10) : "",
+            phone_number: formData.contact.phone_number.length > 10 ? formData.contact.phone_number.slice(-10) : "",
             street_address: formData.contact.street_address[0] ? formData.contact.street_address[0] : "",
             unit: formData.contact.unit,
             city: formData.contact.city,
@@ -122,8 +122,7 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
 
     const handleGoNext = (values: z.infer<typeof formSchema>) => {
         setRegisterData({
-            calling_code: values.calling_code,
-            phone_number: values.phone_number,
+            phone_number: `+${values.calling_code}${values.phone_number}`,
             street_address: [values.street_address],
             unit: values.unit,
             city: values.city,
@@ -135,8 +134,7 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
 
     const handleGoPre = () => {
         setRegisterData({
-            calling_code: form.getValues("calling_code"),
-            phone_number: form.getValues("phone_number"),
+            phone_number: `+${form.getValues("calling_code")}${form.getValues("phone_number")}`,
             street_address: [form.getValues("street_address")],
             unit: form.getValues("unit"),
             city: form.getValues("city"),

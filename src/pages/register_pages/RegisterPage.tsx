@@ -5,8 +5,6 @@ import { UserContext, UserContextValues } from "@/context/UserContext"
 
 interface FormDataType {
     password: string,
-    calling_code: string,
-    phone_number: string,
     identity: {
         given_name: string,
         family_name: string,
@@ -18,6 +16,7 @@ interface FormDataType {
     },
     contact: {
         email_address: string,
+        phone_number: string,
         street_address: string[],
         unit: string,
         city: string,
@@ -37,8 +36,6 @@ interface FormDataType {
 }
 
 const DefaultFormData: FormDataType = {
-    calling_code: "",
-    phone_number: "",
     password: "",
     identity: {
         given_name: "",
@@ -51,6 +48,7 @@ const DefaultFormData: FormDataType = {
     },
     contact: {
         email_address: "",
+        phone_number: "",
         street_address: [],
         unit: "",
         city: "",
@@ -105,7 +103,7 @@ const RegisterPage = () => {
     const { saveUser } = useContext(UserContext) as UserContextValues
     const [formData, setFormData] = useState<FormDataType>(DefaultFormData)
 
-    const setRegisterData = ({ email_address, password, given_name, family_name, calling_code, phone_number, country_of_tax_residence,
+    const setRegisterData = ({ email_address, password, given_name, family_name, phone_number, country_of_tax_residence,
         date_of_birth, tax_id_type, tax_id, funding_source, street_address, unit, city, state, postal_code,
         is_control_person, is_affiliated_exchange_or_finra, is_politically_exposed, immediate_family_exposed,
         is_read_and_agree_account_agreement, is_read_and_agree_customer_agreement, is_read_and_agree_margin_agreement
@@ -114,8 +112,6 @@ const RegisterPage = () => {
             const newData: FormDataType = {
                 ...oldData,
                 password: password ? password : oldData.password,
-                calling_code: calling_code ? calling_code : oldData.calling_code,
-                phone_number: phone_number ? phone_number : oldData.phone_number,
                 identity: {
                     ...oldData.identity,
                     date_of_birth: date_of_birth ? date_of_birth : oldData.identity.date_of_birth,
@@ -129,10 +125,11 @@ const RegisterPage = () => {
                 contact: {
                     ...oldData.contact,
                     email_address: email_address ? email_address : oldData.contact.email_address,
+                    phone_number: phone_number ? phone_number : oldData.contact.phone_number,
                     street_address: street_address ? street_address : oldData.contact.street_address,
                     unit: unit ? unit : oldData.contact.unit,
                     city: city ? city : oldData.contact.city,
-                    state: state ? state : oldData.contact.state,
+                    state: state || state === "" ? state : oldData.contact.state,
                     postal_code: postal_code ? postal_code : oldData.contact.postal_code,
                 },
                 disclosures: {
