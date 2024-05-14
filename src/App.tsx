@@ -4,6 +4,7 @@ import RegisterPage from './pages/register_pages/RegisterPage';
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { UserProvider } from './context/UserContext';
+import { Footer, Navbar } from './components/parts/navigationMenus';
 
 const router = createBrowserRouter([
   {
@@ -12,11 +13,23 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <RegisterPage />,
+    element: (
+      <>
+        <Navbar />
+        <RegisterPage />
+        <Footer />
+      </>
+    ),
   },
   {
     path: "/login",
-    element: <LoginPage />,
+    element: (
+      <>
+        <Navbar />
+        <LoginPage />
+        <Footer />
+      </>
+    ),
   },
 ]);
 
