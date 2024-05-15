@@ -97,8 +97,8 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
     })
 
     const handleGoNext = (values: z.infer<typeof formSchema>) => {
-        let date_of_birth = values.date_of_birth.toISOString().split("T")[0]
-        date_of_birth = date_of_birth ? date_of_birth : ""
+        const date_of_birth = new Date(values.date_of_birth.getTime() - (values.date_of_birth.getTimezoneOffset() * 60 * 1000)).toISOString().split("T")[0]
+        console.log(date_of_birth)
         setRegisterData({
             date_of_birth: date_of_birth,
             tax_id: values.tax_id,
@@ -130,42 +130,43 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Date of Birth</FormLabel>
-                                    <FormControl>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <FormControl>
-                                                    <Button
-                                                        variant={"outline"}
-                                                        className={cn(
-                                                            "tw-w-full tw-pl-3 tw-text-left tw-font-normal !tw-mx-0 !tw-border-[--muted]",
-                                                            !field.value && "tw-text-muted"
-                                                        )}
-                                                    >
-                                                        {field.value ? (
-                                                            format(field.value, "PPP")
-                                                        ) : (
-                                                            <span>Pick a date</span>
-                                                        )}
-                                                        <CalendarIcon className="tw-ml-auto tw-h-4 tw-w-4 tw-opacity-50" />
-                                                    </Button>
-                                                </FormControl>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="tw-w-auto tw-p-0" align="start">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={field.value}
-                                                    onSelect={field.onChange}
-                                                    disabled={(date) =>
-                                                        date > legalMaxDateOfBirth || date < legalMinDateOfBirth
-                                                    }
-                                                    fromDate={legalMinDateOfBirth}
-                                                    toDate={legalMaxDateOfBirth}
-                                                    captionLayout="dropdown"
-                                                    initialFocus
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                    </FormControl>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "tw-w-full tw-text-left tw-font-normal !tw-mx-0 !tw-border-[--muted]",
+                                                        !field.value && "tw-text-muted"
+                                                    )}
+                                                >
+                                                    {field.value ? (
+                                                        format(field.value, "PPP")
+                                                    ) : (
+                                                        <span>Pick a date</span>
+                                                    )}
+                                                    <CalendarIcon className="tw-ml-auto tw-h-4 tw-w-4 tw-opacity-50" />
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="tw-w-full tw-p-4 !tw-bg-[var(--background)]" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={field.value}
+                                                onSelect={e => {
+                                                    console.log(e)
+                                                    field.onChange(e)
+                                                }}
+                                                disabled={(date) =>
+                                                    date > legalMaxDateOfBirth || date < legalMinDateOfBirth
+                                                }
+                                                fromDate={legalMinDateOfBirth}
+                                                toDate={legalMaxDateOfBirth}
+                                                captionLayout="dropdown"
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
                                     <FormMessage />
                                 </FormItem>
                             )}
