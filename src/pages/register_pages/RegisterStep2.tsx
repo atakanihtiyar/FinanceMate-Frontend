@@ -98,7 +98,6 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
 
     const handleGoNext = (values: z.infer<typeof formSchema>) => {
         const date_of_birth = new Date(values.date_of_birth.getTime() - (values.date_of_birth.getTimezoneOffset() * 60 * 1000)).toISOString().split("T")[0]
-        console.log(date_of_birth)
         setRegisterData({
             date_of_birth: date_of_birth,
             tax_id: values.tax_id,
@@ -153,10 +152,7 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                             <Calendar
                                                 mode="single"
                                                 selected={field.value}
-                                                onSelect={e => {
-                                                    console.log(e)
-                                                    field.onChange(e)
-                                                }}
+                                                onSelect={field.onChange}
                                                 disabled={(date) =>
                                                     date > legalMaxDateOfBirth || date < legalMinDateOfBirth
                                                 }
