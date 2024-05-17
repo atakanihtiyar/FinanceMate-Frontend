@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { RegisterSteps } from "./RegisterSteps"
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 
 interface FormDataType {
@@ -100,6 +100,11 @@ const RegisterDataContext = createContext<typeof FormContent>(FormContent)
 
 const RegisterPage = () => {
     const navigate = useNavigate()
+    const { isLoggedIn } = useContext(UserContext) as UserContextValues
+    useEffect(() => {
+        if (isLoggedIn) navigate("/")
+    }, [isLoggedIn])
+
     const { saveUser } = useContext(UserContext) as UserContextValues
     const [formData, setFormData] = useState<FormDataType>(DefaultFormData)
 

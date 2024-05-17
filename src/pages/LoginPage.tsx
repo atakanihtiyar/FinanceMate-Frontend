@@ -17,14 +17,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { useNavigate } from "react-router-dom"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 
 //#endregion
 
 const LoginPage = () => {
     const navigate = useNavigate()
     const { isLoggedIn, TryLogIn } = useContext(UserContext) as UserContextValues
-    if (isLoggedIn) navigate("/")
+    useEffect(() => {
+        if (isLoggedIn) navigate("/")
+    }, [isLoggedIn])
 
     const formSchema = z.object({
         email_address: z.string().email(),
