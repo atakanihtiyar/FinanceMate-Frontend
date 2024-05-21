@@ -14,6 +14,7 @@
     --mate-muted: #999999;
     --mate-white: #eeeeee;
     --mate-destructive: #ff6464;
+    --mate-success: #66DD99;
     --mate-warning: #ffdd44;
 
     --background: var(--mate-black);
@@ -44,6 +45,9 @@
 
     --destructive: var(--mate-destructive);
     --destructive-foreground: var(--mate-muted);
+
+    --success: var(--mate-success);
+    --success-foreground: var(--mate-black);
 
     --border: var(--mate-white);
     --input: var(--mate-white);

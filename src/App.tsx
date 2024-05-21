@@ -5,6 +5,7 @@ import RegisterPage from './pages/register_pages/RegisterPage';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { UserProvider } from './context/UserContext';
 import { Footer, Navbar } from './components/parts/navigationMenus';
+import DashboardPage from './pages/DashboardPage';
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,16 @@ const router = createBrowserRouter([
       <>
         <Navbar />
         <LoginPage />
+        <Footer />
+      </>
+    ),
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <>
+        <Navbar />
+        <DashboardPage />
         <Footer />
       </>
     ),
