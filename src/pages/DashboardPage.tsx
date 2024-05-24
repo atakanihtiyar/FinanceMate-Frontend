@@ -16,64 +16,57 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
+import { UserContext, UserContextValues } from "@/context/UserContext"
 
 const initialTradingData = {
     currency: "USD",
-    portfolio_value: 0,
-    cash: 0,
-    long_market_value: 0,
-    short_market_value: 0,
-    last_portfolio_value: 0,
-    last_cash: 0,
-    last_long_market_value: 0,
-    last_short_market_value: 0,
+    portfolio_value: "0",
+    cash: "0",
+    long_market_value: "0",
+    short_market_value: "0",
+    last_portfolio_value: "0",
+    last_cash: "0",
+    last_long_market_value: "0",
+    last_short_market_value: "0",
     positions: [{
         symbol: "",
         exchange: "",
-        avg_entry_price: 0,
-        qty: 0,
+        avg_entry_price: "0",
+        qty: "0",
         side: "",
-        cost_basis: 0,
-        market_value: 0,
-        unrealized_pl: 0,
-        unrealized_plpc: 0,
-        unrealized_intraday_pl: 0,
-        unrealized_intraday_plpc: 0,
-        current_price: 0,
-        change_today: 0
+        cost_basis: "0",
+        market_value: "0",
+        unrealized_pl: "0",
+        unrealized_plpc: "0",
+        unrealized_intraday_pl: "0",
+        unrealized_intraday_plpc: "0",
+        current_price: "0",
+        change_today: "0"
     }],
     orders: [{
         order_id: "",
         symbol: "",
         filled_at: "",
         created_at: "",
-        qty: 0,
-        filled_qty: 0,
-        filled_avg_price: 0,
+        qty: "0",
+        filled_qty: "0",
+        filled_avg_price: "0",
         order_type: "",
         side: "",
-        limit_price: 0,
-        stop_price: 0,
-        commission: 0,
+        limit_price: "0",
+        stop_price: "0",
+        commission: "0",
     }],
 }
 
 const DashboardPage = () => {
     const navigate = useNavigate()
+    const { user, isLoggedIn, isAuthRequestEnd } = useContext(UserContext) as UserContextValues
     const [tradingData, setTradingData] = useState<typeof initialTradingData>(initialTradingData)
 
-    const calculatePNL = (oldValue: number, newValue: number) => {
-        const pnl = (newValue * 100 / oldValue) - 100
-        return (
-            <span className={`${pnl > 0 ? "tw-text-[var(--success)]" : (pnl < 0 && "tw-text-[var(--destructive)]")}`}>
-                {pnl}%
-            </span>
-        )
-    }
-
     const GetTradingData = async () => {
-        const response = await fetch("http://localhost:5050/trading/asd", {
+        const response = await fetch(`http://localhost:5050/trading/${user?.account_number}`, {
             method: "GET",
             credentials: "include",
             headers: {
@@ -87,8 +80,25 @@ const DashboardPage = () => {
     }
 
     useEffect(() => {
-        GetTradingData()
-    }, [])
+        if (!isAuthRequestEnd) return
+        if (isLoggedIn) {
+            GetTradingData()
+        }
+        else {
+            navigate("/")
+        }
+    }, [isAuthRequestEnd])
+
+    const calculatePNL = (oldValue: string, newValue: string) => {
+        const _old = parseFloat(oldValue)
+        const _new = parseFloat(newValue)
+        const pnl = _old === 0 && _new === 0 ? 0 : (_new * 100 / _old) - 100
+        return (
+            <span className={`${pnl > 0 ? "tw-text-[var(--success)]" : (pnl < 0 && "tw-text-[var(--destructive)]")}`}>
+                {pnl.toFixed(2)}%
+            </span>
+        )
+    }
 
     return (
         <div className="tw-min-w-screen tw-min-h-screen tw-flex tw-flex-row">
@@ -124,7 +134,7 @@ const DashboardPage = () => {
                         <CardHeader>
                             <CardTitle>Short Market Value</CardTitle>
                             <p>$ {tradingData.short_market_value}</p>
-                            <CardDescription>PNL: 0%</CardDescription>
+                            <CardDescription>PNL: {calculatePNL(tradingData.last_short_market_value, tradingData.short_market_value)}</CardDescription>
                         </CardHeader>
                     </Card>
                 </div>
@@ -158,20 +168,22 @@ const DashboardPage = () => {
                                 </TableHeader>
                                 <TableBody>
                                     {
-                                        tradingData.positions.map((item) => {
-                                            return (
-                                                <TableRow key={item.symbol}>
-                                                    <TableCell className="font-medium">
-                                                        <div>{item.symbol}</div>
-                                                        <div className="tw-text-xs tw-text-[var(--muted)]">{item.exchange}</div>
-                                                    </TableCell>
-                                                    <TableCell>{item.cost_basis}</TableCell>
-                                                    <TableCell>{item.market_value}</TableCell>
-                                                    <TableCell>{item.unrealized_pl}</TableCell>
-                                                    <TableCell>{item.current_price}</TableCell>
-                                                    <TableCell className="text-right">{item.change_today * 100}</TableCell>
-                                                </TableRow>)
-                                        })
+                                        tradingData.positions.length > 0 ?
+                                            tradingData.positions.map((item) => {
+                                                return (
+                                                    <TableRow key={item.symbol}>
+                                                        <TableCell className="font-medium">{item.symbol}</TableCell>
+                                                        <TableCell>{item.cost_basis}</TableCell>
+                                                        <TableCell>{item.market_value}</TableCell>
+                                                        <TableCell>{item.unrealized_pl}</TableCell>
+                                                        <TableCell>{item.current_price}</TableCell>
+                                                        <TableCell className="tw-text-right">{(parseFloat(item.change_today) * 100).toFixed(2)}</TableCell>
+                                                    </TableRow>)
+                                            }) : (
+                                                <TableRow>
+                                                    <TableCell className="tw-text-center" colSpan={6}>No Data</TableCell>
+                                                </TableRow>
+                                            )
                                     }
                                 </TableBody>
                             </Table>
@@ -197,18 +209,23 @@ const DashboardPage = () => {
                                 </TableHeader>
                                 <TableBody>
                                     {
-                                        tradingData.orders.map((item) => {
-                                            return (
-                                                <TableRow key={item.symbol}>
-                                                    <TableCell className="font-medium">{item.symbol}</TableCell>
-                                                    <TableCell>{new Date(item.created_at).toLocaleString()}</TableCell>
-                                                    <TableCell>{new Date(item.filled_at).toLocaleString()}</TableCell>
-                                                    <TableCell>{item.filled_at ? item.filled_qty : item.qty}</TableCell>
-                                                    <TableCell>{item.limit_price}</TableCell>
-                                                    <TableCell>{item.stop_price}</TableCell>
-                                                    <TableCell className="text-right">{item.side}</TableCell>
-                                                </TableRow>)
-                                        })
+                                        tradingData.orders.length > 0 ?
+                                            tradingData.orders.map((item) => {
+                                                return (
+                                                    <TableRow key={item.symbol}>
+                                                        <TableCell className="font-medium">{item.symbol}</TableCell>
+                                                        <TableCell>{new Date(item.created_at).toLocaleString()}</TableCell>
+                                                        <TableCell>{new Date(item.filled_at).toLocaleString()}</TableCell>
+                                                        <TableCell>{item.filled_at ? item.filled_qty : item.qty}</TableCell>
+                                                        <TableCell>{item.limit_price}</TableCell>
+                                                        <TableCell>{item.stop_price}</TableCell>
+                                                        <TableCell className="text-right">{item.side}</TableCell>
+                                                    </TableRow>)
+                                            }) : (
+                                                <TableRow>
+                                                    <TableCell className="tw-text-center" colSpan={7}>No Data</TableCell>
+                                                </TableRow>
+                                            )
                                     }
                                 </TableBody>
                             </Table>
