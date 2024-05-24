@@ -8,11 +8,13 @@ interface IUser {
 type UserContent = {
     user: IUser | null,
     isLoggedIn: Boolean,
+    isAuthRequestEnd: Boolean,
 }
 
 type UserContextValues = {
     user: IUser | null,
     isLoggedIn: Boolean,
+    isAuthRequestEnd: Boolean,
     TryLogIn: (email_address: String, password: String) => void,
     LogOut: () => void,
     saveUser: (isLoggedIn: Boolean, user: IUser | null) => void
@@ -21,7 +23,7 @@ type UserContextValues = {
 const UserContext = createContext<UserContextValues | null>(null)
 
 const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<UserContent>({ user: null, isLoggedIn: false })
+    const [user, setUser] = useState<UserContent>({ user: null, isLoggedIn: false, isAuthRequestEnd: false })
 
     const saveUser = (isLoggedIn: Boolean, user: IUser | null) => {
         if (isLoggedIn && user) {
@@ -29,11 +31,11 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
                 user: {
                     given_name: user.given_name,
                     account_number: user.account_number
-                }, isLoggedIn: true
+                }, isLoggedIn: true, isAuthRequestEnd: true
             })
         }
         else {
-            setUser({ user: null, isLoggedIn: false })
+            setUser({ user: null, isLoggedIn: false, isAuthRequestEnd: true })
         }
     }
 
@@ -80,7 +82,7 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     }
 
     return (
-        <UserContext.Provider value={{ user: user.user, isLoggedIn: user.isLoggedIn, TryLogIn: TryLogIn, LogOut: LogOut, saveUser: saveUser }}>
+        <UserContext.Provider value={{ user: user.user, isLoggedIn: user.isLoggedIn, isAuthRequestEnd: user.isAuthRequestEnd, TryLogIn: TryLogIn, LogOut: LogOut, saveUser: saveUser }}>
             {children}
         </UserContext.Provider>
     )
