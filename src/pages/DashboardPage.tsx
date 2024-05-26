@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import {
     Card,
     CardContent,
@@ -10,7 +10,6 @@ import {
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -18,14 +17,17 @@ import {
 } from "@/components/ui/table"
 import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
+import { Separator } from "@/components/ui/separator"
 
 const initialTradingData = {
     currency: "USD",
     portfolio_value: "0",
+    buying_power: "0",
     cash: "0",
     long_market_value: "0",
     short_market_value: "0",
     last_portfolio_value: "0",
+    last_buying_power: "0",
     last_cash: "0",
     last_long_market_value: "0",
     last_short_market_value: "0",
@@ -62,9 +64,13 @@ const initialTradingData = {
 
 const DashboardPage = () => {
     const navigate = useNavigate()
+    const location = useLocation()
     const { user, isLoggedIn, isAuthRequestEnd } = useContext(UserContext) as UserContextValues
     const [tradingData, setTradingData] = useState<typeof initialTradingData>(initialTradingData)
 
+    /* 
+        api service
+    */
     const GetTradingData = async () => {
         const response = await fetch(`http://localhost:5050/trading/${user?.account_number}`, {
             method: "GET",
@@ -92,6 +98,7 @@ const DashboardPage = () => {
     const calculatePNL = (oldValue: string, newValue: string) => {
         const _old = parseFloat(oldValue)
         const _new = parseFloat(newValue)
+
         const pnl = _old === 0 && _new === 0 ? 0 : (_new * 100 / _old) - 100
         return (
             <span className={`${pnl > 0 ? "tw-text-[var(--success)]" : (pnl < 0 && "tw-text-[var(--destructive)]")}`}>
@@ -101,36 +108,62 @@ const DashboardPage = () => {
     }
 
     return (
-        <div className="tw-min-w-screen tw-min-h-screen tw-flex tw-flex-row">
-            <div className="tw-min-h-screen tw-max-w-max tw-flex tw-flex-col tw-justify-start tw-items-start tw-py-8 tw-gap-y-1">
-                <Button variant="ghost" className="!tw-m-0 tw-rounded-l-[0px]" onClick={() => navigate("/overview")}>Overview</Button>
-                <Button variant="ghost" className="!tw-m-0 tw-rounded-l-[0px]" onClick={() => navigate("/balances")}>Balances</Button>
-                <Button variant="ghost" className="!tw-m-0 tw-rounded-l-[0px]" onClick={() => navigate("/positions")}>Positions</Button>
+        <div className="tw-min-w-screen tw-min-h-screen tw-flex tw-flex-row tw-space-x-48">
+            <div className="tw-min-h-screen tw-max-w-max tw-flex tw-flex-col tw-justify-start tw-items-start tw-py-8 tw-gap-y-2">
+                <Button variant="ghost" className={`!tw-m-0 tw-rounded-md tw-rounded-l-[0px]
+                ${!location.pathname.includes("/dashboard") && "tw-text-[var(--muted)]"}`} onClick={() => navigate("/dashboard")}>Overview</Button>
+
+                <Button variant="ghost" className={`!tw-m-0 tw-rounded-md tw-rounded-l-[0px]
+                ${!location.pathname.includes("/balances") && "tw-text-[var(--muted)]"}`} onClick={() => navigate("/balances")}>Balances</Button>
+
+                <Button variant="ghost" className={`!tw-m-0 tw-rounded-md tw-rounded-l-[0px]
+                ${!location.pathname.includes("/positions") && "tw-text-[var(--muted)]"}`} onClick={() => navigate("/positions")}>Positions</Button>
             </div>
-            <div className="tw-w-full tw-grow tw-py-8 tw-px-16 tw-flex tw-flex-col tw-justify-start tw-items-start tw-gap-12">
-                <div className="tw-w-full tw-grid tw-grid-cols-4 tw-justify-center tw-items-start tw-gap-4">
-                    <Card className="">
-                        <CardHeader>
-                            <CardTitle>Portfolio Value</CardTitle>
-                            <p>$ {tradingData.portfolio_value}</p>
-                            <CardDescription>PNL: {calculatePNL(tradingData.last_portfolio_value, tradingData.portfolio_value)}</CardDescription>
-                        </CardHeader>
-                    </Card>
-                    <Card className="">
+            <div className="tw-w-full tw-grow tw-py-8 tw-flex tw-flex-col tw-justify-start tw-items-start tw-gap-12">
+                <div className="tw-w-full tw-grid tw-grid-cols-4 tw-justify-center tw-items-start tw-gap-2">
+                    <div dir="rtl" className="">
+                        <Card className="tw-border-0 tw-mb-8">
+                            <CardHeader>
+                                <CardTitle className="tw-text-xl">{user?.given_name + " " + user?.family_name}</CardTitle>
+                                <CardDescription className="tw-text-sm">#{user?.account_number.toString()}</CardDescription>
+                            </CardHeader>
+                        </Card>
+                        <Separator />
+                        <Card className="tw-border-0">
+                            <CardHeader className="tw-flex tw-flex-col">
+                                <CardDescription className="tw-w-[50%] tw-col-span-1">Portfolio Value</CardDescription>
+                                <CardDescription className="tw-w-[50%] tw-col-span-1">$ {tradingData.portfolio_value}</CardDescription>
+                            </CardHeader>
+                        </Card>
+                        <Separator />
+                        <Card className="tw-border-0">
+                            <CardHeader className="tw-flex tw-flex-col">
+                                <CardDescription>Buying Power</CardDescription>
+                                <CardDescription>$ {tradingData.buying_power}</CardDescription>
+                            </CardHeader>
+                        </Card>
+                        <Separator />
+                    </div>
+                    <div className="tw-h-full tw-w-full tw-col-span-3 tw-border-[1px] tw-border-[var(--muted)] tw-rounded-sm tw-flex tw-justify-center tw-items-center">
+                        <p className="tw-text-center">GRAPH PLACEHOLDER</p>
+                    </div>
+                </div>
+                <div className="tw-w-full tw-grid tw-grid-cols-3 tw-justify-center tw-items-start tw-gap-2">
+                    <Card className="tw-rounded-sm">
                         <CardHeader>
                             <CardTitle>Cash</CardTitle>
                             <p>$ {tradingData.cash}</p>
                             <CardDescription>PNL: {calculatePNL(tradingData.last_cash, tradingData.cash)}</CardDescription>
                         </CardHeader>
                     </Card>
-                    <Card className="">
+                    <Card className="tw-rounded-sm">
                         <CardHeader>
                             <CardTitle>Long Market Value</CardTitle>
                             <p>$ {tradingData.long_market_value}</p>
                             <CardDescription>PNL: {calculatePNL(tradingData.last_long_market_value, tradingData.long_market_value)}</CardDescription>
                         </CardHeader>
                     </Card>
-                    <Card className="">
+                    <Card className="tw-rounded-sm">
                         <CardHeader>
                             <CardTitle>Short Market Value</CardTitle>
                             <p>$ {tradingData.short_market_value}</p>
@@ -138,24 +171,13 @@ const DashboardPage = () => {
                         </CardHeader>
                     </Card>
                 </div>
-                <div className="tw-w-full tw-flex tw-justify-center tw-items-center tw-gap-4">
-                    <Card className="tw-w-full">
-                        <CardHeader>
-                            <CardTitle>Overview</CardTitle>
-                        </CardHeader>
-                        <CardContent className="tw-h-[480px] tw-w-full tw-flex tw-justify-center tw-items-center tw-border">
-                            <p className="tw-text-center">PLACEHOLDER</p>
-                        </CardContent>
-                    </Card>
-                </div>
-                <div className="tw-w-full tw-grid tw-grid-cols-2 tw-justify-center tw-items-start tw-gap-4">
-                    <Card>
+                <div className="tw-w-full tw-grid tw-grid-cols-2 tw-justify-center tw-items-start tw-gap-2">
+                    <Card className="tw-rounded-sm">
                         <CardHeader>
                             <CardTitle>Positions</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Table>
-                                <TableCaption>A list of your recent invoices.</TableCaption>
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead className="w-[100px]">Symbol</TableHead>
@@ -189,13 +211,12 @@ const DashboardPage = () => {
                             </Table>
                         </CardContent>
                     </Card>
-                    <Card>
+                    <Card className="tw-rounded-sm">
                         <CardHeader>
                             <CardTitle>Orders</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Table>
-                                <TableCaption>A list of your recent invoices.</TableCaption>
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead className="w-[100px]">Symbol</TableHead>

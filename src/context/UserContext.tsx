@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 
 interface IUser {
     given_name: String,
+    family_name: String,
     account_number: Number
 }
 
@@ -29,8 +30,9 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         if (isLoggedIn && user) {
             setUser({
                 user: {
+                    account_number: user.account_number,
                     given_name: user.given_name,
-                    account_number: user.account_number
+                    family_name: user.family_name,
                 }, isLoggedIn: true, isAuthRequestEnd: true
             })
         }

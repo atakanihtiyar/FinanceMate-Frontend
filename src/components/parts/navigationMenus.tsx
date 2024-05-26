@@ -7,25 +7,44 @@ import {
 } from "@/components/ui/navigation-menu"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { useContext } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 const Navbar = () => {
     const { isLoggedIn, LogOut } = useContext(UserContext) as UserContextValues
     const navigate = useNavigate()
+    const location = useLocation()
+    const isThisDashboard = location.pathname.includes("/dashboard")
+
     return (
         <NavigationMenu>
-            <NavigationMenuList>
-                <NavigationMenuItem>
-                    <NavigationMenuLink href="/about" className={navigationMenuTriggerUnfocusableStyle()}>
-                        about
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <NavigationMenuLink href="/pricing" className={navigationMenuTriggerUnfocusableStyle()}>
-                        pricing
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-            </NavigationMenuList>
+            {
+                !isThisDashboard &&
+                <>{
+                    isLoggedIn ?
+                        <>
+                            <NavigationMenuList>
+                                <NavigationMenuItem>
+                                    <NavigationMenuLink href="/dashboard" className={navigationMenuTriggerUnfocusableStyle()}>
+                                        dashboard
+                                    </NavigationMenuLink>
+                                </NavigationMenuItem>
+                            </NavigationMenuList>
+                        </> : <>
+                            <NavigationMenuList>
+                                <NavigationMenuItem>
+                                    <NavigationMenuLink href="/about" className={navigationMenuTriggerUnfocusableStyle()}>
+                                        about
+                                    </NavigationMenuLink>
+                                </NavigationMenuItem>
+                                <NavigationMenuItem>
+                                    <NavigationMenuLink href="/pricing" className={navigationMenuTriggerUnfocusableStyle()}>
+                                        pricing
+                                    </NavigationMenuLink>
+                                </NavigationMenuItem>
+                            </NavigationMenuList>
+                        </>
+                }</>
+            }
             <NavigationMenuList>
                 <NavigationMenuItem>
                     <NavigationMenuLink href="/" className={`${navigationMenuTriggerUnfocusableStyle()} tw-text-xl`}>
