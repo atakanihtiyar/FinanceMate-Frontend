@@ -190,7 +190,7 @@ const RegisterPage = () => {
         })
         const data = await response.json()
         if (response.status === 201) {
-            saveUser(true, { account_number: data.account_number, given_name: data.given_name })
+            saveUser(true, { account_number: data.account_number, given_name: data.given_name, family_name: data.family_name })
             navigate("/")
         }
         else {
