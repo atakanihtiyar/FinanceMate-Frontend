@@ -71,17 +71,17 @@ const RegisterStep1 = ({ goNextStep }: Props) => {
     }
 
     return (
-        <Card className="tw-w-[400px] tw-min-h-[500px] tw-drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
-            <CardHeader className="tw-w-full tw-text-center tw-mt-4 tw-mb-2">
-                <CardTitle className="tw-tracking-tight tw-font-thin tw-text-5xl tw-p-0">Welcome Mate!</CardTitle>
-                <CardDescription className="tw-tracking-wide tw-font-thin tw-text-lg tw-p-0">Start the journey with us today.</CardDescription>
+        <Card className="w-[400px] min-h-[500px] drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
+            <CardHeader className="w-full text-center mt-4 mb-2">
+                <CardTitle className="tracking-tight font-thin text-5xl p-0">Welcome Mate!</CardTitle>
+                <CardDescription className="tracking-wide font-thin text-lg p-0">Start the journey with us today.</CardDescription>
             </CardHeader>
-            <CardContent className="tw-w-full tw-min-h-max tw-flex tw-flex-col tw-justify-center tw-items-center tw-p-0">
-                <Separator className="tw-w-[85%]" />
+            <CardContent className="w-full min-h-max flex flex-col justify-center items-center p-0">
+                <Separator className="w-[85%]" />
             </CardContent>
-            <CardContent className="tw-w-full tw-mt-4">
+            <CardContent className="w-full mt-4">
                 <Form {...form}>
-                    <form className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-4">
+                    <form className="flex flex-col justify-center items-center gap-4">
                         {/* GIVEN NAME */}
                         <FormField
                             control={form.control}
@@ -160,8 +160,8 @@ const RegisterStep1 = ({ goNextStep }: Props) => {
                                 </FormItem>
                             )}
                         />
-                        <div className="tw-flex tw-justify-end tw-mb-4 tw-mt-4 tw-w-[80%]">
-                            <Button type="submit" className="tw-font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
+                        <div className="flex justify-end mb-4 mt-4 w-[80%]">
+                            <Button type="submit" className="font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
                         </div>
                     </form>
                 </Form>

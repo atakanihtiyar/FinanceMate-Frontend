@@ -199,7 +199,7 @@ const RegisterPage = () => {
     }
 
     return (
-        <div className='tw-min-w-screen tw-min-h-screen tw-flex tw-flex-col tw-justify-center tw-items-center'>
+        <div className='min-w-screen min-h-screen flex flex-col justify-center items-center'>
             <RegisterDataContext.Provider value={{ formData, setRegisterData, register }}>
                 <RegisterSteps />
             </RegisterDataContext.Provider>

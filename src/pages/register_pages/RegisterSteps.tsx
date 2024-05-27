@@ -32,14 +32,14 @@ export const RegisterSteps = () => {
     }
 
     const generateTabTriggerClassName = (currStep: number) => {
-        return `!tw-bg-transparent tw-text-muted
-        ${currStep === activeStep && "!tw-text-primary-light"}
-        ${currStep > activeStep && "tw-pointer-events-none tw-text-foreground"}`
+        return `!bg-transparent text-muted
+        ${currStep === activeStep && "!text-primary-light"}
+        ${currStep > activeStep && "pointer-events-none text-foreground"}`
     }
 
     return (
         <Tabs defaultValue={"1"} value={activeStep.toString()}>
-            <TabsList className="tw-w-[400px] tw-h-[40px] !tw-bg-[--background] tw-border-[1px] tw-border-[--muted] tw-border-solid">
+            <TabsList className="w-[400px] h-[40px] !bg-[--background] border-[1px] border-[--muted] border-solid">
                 <TabsTrigger value="1" onClick={() => goToStep(1)} className={generateTabTriggerClassName(1)}>Base</TabsTrigger>
                 <TabsTrigger value="2" onClick={() => goToStep(2)} className={generateTabTriggerClassName(2)}>Identity</TabsTrigger>
                 <TabsTrigger value="3" onClick={() => goToStep(3)} className={generateTabTriggerClassName(3)}>Contact</TabsTrigger>

@@ -82,17 +82,17 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
     }
 
     return (
-        <Card className="tw-w-[400px] tw-min-h-[500px] tw-drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
-            <CardContent className="tw-w-full tw-mt-12">
+        <Card className="w-[400px] min-h-[500px] drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
+            <CardContent className="w-full mt-12">
                 <Form {...form}>
-                    <form className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-4">
+                    <form className="flex flex-col justify-center items-center gap-4">
                         {/* DISCLOSURES */}
                         <FormField
                             control={form.control}
                             name="disclosures"
                             render={() => (
                                 <FormItem>
-                                    <div className="tw-mb-0">
+                                    <div className="mb-0">
                                         <FormLabel>Disclosures</FormLabel>
                                     </div>
                                     <div>
@@ -101,15 +101,15 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                             control={form.control}
                                             name="disclosures.is_control_person"
                                             render={({ field }) => (
-                                                <FormItem className="tw-w-full tw-flex tw-flex-row tw-justify-start tw-items-center tw-space-x-2 !tw-space-y-0 tw-my-1 tw-py-1">
+                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
                                                     <FormControl>
                                                         <Checkbox
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                         />
                                                     </FormControl>
-                                                    <div className="tw-space-y-1 tw-leading-none">
-                                                        <FormLabel className="tw-font-normal tw-text-center tw-align-middle">
+                                                    <div className="space-y-1 leading-none">
+                                                        <FormLabel className="font-normal text-center align-middle">
                                                             Do you hold a significant leadership role in a publicly traded company?
                                                         </FormLabel>
                                                     </div>
@@ -121,15 +121,15 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                             control={form.control}
                                             name="disclosures.is_affiliated_exchange_or_finra"
                                             render={({ field }) => (
-                                                <FormItem className="tw-w-full tw-flex tw-flex-row tw-justify-start tw-items-center tw-space-x-2 !tw-space-y-0 tw-my-1 tw-py-1">
+                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
                                                     <FormControl>
                                                         <Checkbox
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                         />
                                                     </FormControl>
-                                                    <div className="tw-space-y-1 tw-leading-none">
-                                                        <FormLabel className="tw-font-normal tw-text-center tw-align-middle">
+                                                    <div className="space-y-1 leading-none">
+                                                        <FormLabel className="font-normal text-center align-middle">
                                                             Are you affiliated with a stock exchange or FINRA?
                                                         </FormLabel>
                                                     </div>
@@ -141,15 +141,15 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                             control={form.control}
                                             name="disclosures.is_politically_exposed"
                                             render={({ field }) => (
-                                                <FormItem className="tw-w-full tw-flex tw-flex-row tw-justify-start tw-items-center tw-space-x-2 !tw-space-y-0 tw-my-1 tw-py-1">
+                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
                                                     <FormControl>
                                                         <Checkbox
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                         />
                                                     </FormControl>
-                                                    <div className="tw-space-y-1 tw-leading-none">
-                                                        <FormLabel className="tw-font-normal tw-text-center tw-align-middle">
+                                                    <div className="space-y-1 leading-none">
+                                                        <FormLabel className="font-normal text-center align-middle">
                                                             Are you a politically exposed person (PEP)
                                                         </FormLabel>
                                                     </div>
@@ -161,15 +161,15 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                             control={form.control}
                                             name="disclosures.immediate_family_exposed"
                                             render={({ field }) => (
-                                                <FormItem className="tw-w-full tw-flex tw-flex-row tw-justify-start tw-items-center tw-space-x-2 !tw-space-y-0 tw-my-1 tw-py-1">
+                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
                                                     <FormControl>
                                                         <Checkbox
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                         />
                                                     </FormControl>
-                                                    <div className="tw-space-y-1 tw-leading-none">
-                                                        <FormLabel className="tw-font-normal tw-text-center tw-align-middle">
+                                                    <div className="space-y-1 leading-none">
+                                                        <FormLabel className="font-normal text-center align-middle">
                                                             Is any of your immediate family a PEP or hold a significant leadership role in a publicly traded company?
                                                         </FormLabel>
                                                     </div>
@@ -187,7 +187,7 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                             name="agreements"
                             render={() => (
                                 <FormItem>
-                                    <div className="tw-mb-0">
+                                    <div className="mb-0">
                                         <FormLabel>Agreements*</FormLabel>
                                     </div>
                                     <div>
@@ -196,15 +196,15 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                             control={form.control}
                                             name="agreements.is_read_and_agree_account_agreement"
                                             render={({ field }) => (
-                                                <FormItem className="tw-w-full tw-flex tw-flex-row tw-justify-start tw-items-center tw-space-x-2 !tw-space-y-0 tw-my-1 tw-py-1">
+                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
                                                     <FormControl>
                                                         <Checkbox
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                         />
                                                     </FormControl>
-                                                    <div className="tw-space-y-1 tw-leading-none">
-                                                        <FormLabel className="tw-font-normal tw-text-center tw-align-middle">
+                                                    <div className="space-y-1 leading-none">
+                                                        <FormLabel className="font-normal text-center align-middle">
                                                             Account Agreement
                                                         </FormLabel>
                                                     </div>
@@ -216,15 +216,15 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                             control={form.control}
                                             name="agreements.is_read_and_agree_customer_agreement"
                                             render={({ field }) => (
-                                                <FormItem className="tw-w-full tw-flex tw-flex-row tw-justify-start tw-items-center tw-space-x-2 !tw-space-y-0 tw-my-1 tw-py-1">
+                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
                                                     <FormControl>
                                                         <Checkbox
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                         />
                                                     </FormControl>
-                                                    <div className="tw-space-y-1 tw-leading-none">
-                                                        <FormLabel className="tw-font-normal tw-text-center tw-align-middle">
+                                                    <div className="space-y-1 leading-none">
+                                                        <FormLabel className="font-normal text-center align-middle">
                                                             Customer Agreement
                                                         </FormLabel>
                                                     </div>
@@ -236,15 +236,15 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                             control={form.control}
                                             name="agreements.is_read_and_agree_margin_agreement"
                                             render={({ field }) => (
-                                                <FormItem className="tw-w-full tw-flex tw-flex-row tw-justify-start tw-items-center tw-space-x-2 !tw-space-y-0 tw-my-1 tw-py-1">
+                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
                                                     <FormControl>
                                                         <Checkbox
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
                                                         />
                                                     </FormControl>
-                                                    <div className="tw-space-y-1 tw-leading-none">
-                                                        <FormLabel className="tw-font-normal tw-text-center tw-align-middle">
+                                                    <div className="space-y-1 leading-none">
+                                                        <FormLabel className="font-normal text-center align-middle">
                                                             Margin Agreement
                                                         </FormLabel>
                                                     </div>
@@ -255,9 +255,9 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                 </FormItem>
                             )}
                         />
-                        <div className="tw-flex tw-justify-between tw-mb-4 tw-mt-4 tw-w-[80%]">
-                            <Button type="button" variant={"outline"} className="tw-font-semibold" onClick={handleGoPre} size="sm">Back</Button>
-                            <Button type="submit" className="tw-font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
+                        <div className="flex justify-between mb-4 mt-4 w-[80%]">
+                            <Button type="button" variant={"outline"} className="font-semibold" onClick={handleGoPre} size="sm">Back</Button>
+                            <Button type="submit" className="font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
                         </div>
                     </form>
                 </Form>

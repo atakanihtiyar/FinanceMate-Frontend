@@ -118,10 +118,10 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
     }
 
     return (
-        <Card className="tw-w-[400px] tw-min-h-[500px] tw-drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
-            <CardContent className="tw-w-full tw-mt-12">
+        <Card className="w-[400px] min-h-[500px] drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
+            <CardContent className="w-full mt-12">
                 <Form {...form}>
-                    <form className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-4">
+                    <form className="flex flex-col justify-center items-center gap-4">
                         {/* DATE OF BIRTH */}
                         <FormField
                             control={form.control}
@@ -135,8 +135,8 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                                 <Button
                                                     variant={"outline"}
                                                     className={cn(
-                                                        "tw-w-full tw-text-left tw-font-normal !tw-mx-0 !tw-border-[--muted]",
-                                                        !field.value && "tw-text-muted"
+                                                        "w-full text-left font-normal !mx-0 !border-[--muted]",
+                                                        !field.value && "text-muted"
                                                     )}
                                                 >
                                                     {field.value ? (
@@ -144,11 +144,11 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                                     ) : (
                                                         <span>Pick a date</span>
                                                     )}
-                                                    <CalendarIcon className="tw-ml-auto tw-h-4 tw-w-4 tw-opacity-50" />
+                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                                 </Button>
                                             </FormControl>
                                         </PopoverTrigger>
-                                        <PopoverContent className="tw-w-full tw-p-4 !tw-bg-[var(--background)]" align="start">
+                                        <PopoverContent className="w-full p-4 !bg-[var(--background)]" align="start">
                                             <Calendar
                                                 mode="single"
                                                 selected={field.value}
@@ -187,7 +187,7 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                             name="funding_source"
                             render={() => (
                                 <FormItem>
-                                    <div className="tw-mb-0">
+                                    <div className="mb-0">
                                         <FormLabel>Funding Source</FormLabel>
                                     </div>
                                     <div>
@@ -200,7 +200,7 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                                     return (
                                                         <FormItem
                                                             key={item.id}
-                                                            className="tw-w-full tw-flex tw-flex-row tw-justify-start tw-items-center tw-space-x-2 !tw-space-y-0 tw-my-1 tw-py-1"
+                                                            className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1"
                                                         >
                                                             <FormControl>
                                                                 <Checkbox
@@ -216,7 +216,7 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                                                     }}
                                                                 />
                                                             </FormControl>
-                                                            <FormLabel className="tw-font-normal tw-text-center tw-align-middle">
+                                                            <FormLabel className="font-normal text-center align-middle">
                                                                 {item.label}
                                                             </FormLabel>
                                                         </FormItem>
@@ -229,9 +229,9 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                 </FormItem>
                             )}
                         />
-                        <div className="tw-flex tw-justify-between tw-mb-4 tw-mt-4 tw-w-[80%]">
-                            <Button type="button" variant={"outline"} className="tw-font-semibold" onClick={handleGoPre} size="sm">Back</Button>
-                            <Button type="submit" className="tw-font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
+                        <div className="flex justify-between mb-4 mt-4 w-[80%]">
+                            <Button type="button" variant={"outline"} className="font-semibold" onClick={handleGoPre} size="sm">Back</Button>
+                            <Button type="submit" className="font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
                         </div>
                     </form>
                 </Form>

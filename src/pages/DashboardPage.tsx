@@ -101,69 +101,69 @@ const DashboardPage = () => {
 
         const pnl = _old === 0 && _new === 0 ? 0 : (_new * 100 / _old) - 100
         return (
-            <span className={`${pnl > 0 ? "tw-text-[var(--success)]" : (pnl < 0 && "tw-text-[var(--destructive)]")}`}>
+            <span className={`${pnl > 0 ? "text-[var(--success)]" : (pnl < 0 && "text-[var(--destructive)]")}`}>
                 {pnl.toFixed(2)}%
             </span>
         )
     }
 
     return (
-        <div className="tw-min-w-screen tw-min-h-screen tw-flex tw-flex-row tw-space-x-48">
-            <div className="tw-min-h-screen tw-max-w-max tw-flex tw-flex-col tw-justify-start tw-items-start tw-py-8 tw-gap-y-2">
-                <Button variant="ghost" className={`!tw-m-0 tw-rounded-md tw-rounded-l-[0px]
-                ${!location.pathname.includes("/dashboard") && "tw-text-[var(--muted)]"}`} onClick={() => navigate("/dashboard")}>Overview</Button>
+        <div className="min-w-screen min-h-screen flex flex-row space-x-48">
+            <div className="min-h-screen max-w-max flex flex-col justify-start items-start py-8 gap-y-2">
+                <Button variant="ghost" className={`!m-0 rounded-md rounded-l-[0px]
+                ${!location.pathname.includes("/dashboard") && "text-[var(--muted)]"}`} onClick={() => navigate("/dashboard")}>Overview</Button>
 
-                <Button variant="ghost" className={`!tw-m-0 tw-rounded-md tw-rounded-l-[0px]
-                ${!location.pathname.includes("/balances") && "tw-text-[var(--muted)]"}`} onClick={() => navigate("/balances")}>Balances</Button>
+                <Button variant="ghost" className={`!m-0 rounded-md rounded-l-[0px]
+                ${!location.pathname.includes("/balances") && "text-[var(--muted)]"}`} onClick={() => navigate("/balances")}>Balances</Button>
 
-                <Button variant="ghost" className={`!tw-m-0 tw-rounded-md tw-rounded-l-[0px]
-                ${!location.pathname.includes("/positions") && "tw-text-[var(--muted)]"}`} onClick={() => navigate("/positions")}>Positions</Button>
+                <Button variant="ghost" className={`!m-0 rounded-md rounded-l-[0px]
+                ${!location.pathname.includes("/positions") && "text-[var(--muted)]"}`} onClick={() => navigate("/positions")}>Positions</Button>
             </div>
-            <div className="tw-w-full tw-grow tw-py-8 tw-flex tw-flex-col tw-justify-start tw-items-start tw-gap-12">
-                <div className="tw-w-full tw-grid tw-grid-cols-4 tw-justify-center tw-items-start tw-gap-2">
+            <div className="w-full grow py-8 flex flex-col justify-start items-start gap-12">
+                <div className="w-full grid grid-cols-4 justify-center items-start gap-2">
                     <div dir="rtl" className="">
-                        <Card className="tw-border-0 tw-mb-8">
+                        <Card className="border-0 mb-8">
                             <CardHeader>
-                                <CardTitle className="tw-text-xl">{user?.given_name + " " + user?.family_name}</CardTitle>
-                                <CardDescription className="tw-text-sm">#{user?.account_number.toString()}</CardDescription>
+                                <CardTitle className="text-xl">{user?.given_name + " " + user?.family_name}</CardTitle>
+                                <CardDescription className="text-sm">#{user?.account_number.toString()}</CardDescription>
                             </CardHeader>
                         </Card>
                         <Separator />
-                        <Card className="tw-border-0">
-                            <CardHeader className="tw-flex tw-flex-col">
-                                <CardDescription className="tw-w-[50%] tw-col-span-1">Portfolio Value</CardDescription>
-                                <CardDescription className="tw-w-[50%] tw-col-span-1">$ {tradingData.portfolio_value}</CardDescription>
+                        <Card className="border-0">
+                            <CardHeader className="flex flex-col">
+                                <CardDescription className="w-[50%] col-span-1">Portfolio Value</CardDescription>
+                                <CardDescription className="w-[50%] col-span-1">$ {tradingData.portfolio_value}</CardDescription>
                             </CardHeader>
                         </Card>
                         <Separator />
-                        <Card className="tw-border-0">
-                            <CardHeader className="tw-flex tw-flex-col">
+                        <Card className="border-0">
+                            <CardHeader className="flex flex-col">
                                 <CardDescription>Buying Power</CardDescription>
                                 <CardDescription>$ {tradingData.buying_power}</CardDescription>
                             </CardHeader>
                         </Card>
                         <Separator />
                     </div>
-                    <div className="tw-h-full tw-w-full tw-col-span-3 tw-border-[1px] tw-border-[var(--muted)] tw-rounded-sm tw-flex tw-justify-center tw-items-center">
-                        <p className="tw-text-center">GRAPH PLACEHOLDER</p>
+                    <div className="h-full w-full col-span-3 border-[1px] border-[var(--muted)] rounded-sm flex justify-center items-center">
+                        <p className="text-center">GRAPH PLACEHOLDER</p>
                     </div>
                 </div>
-                <div className="tw-w-full tw-grid tw-grid-cols-3 tw-justify-center tw-items-start tw-gap-2">
-                    <Card className="tw-rounded-sm">
+                <div className="w-full grid grid-cols-3 justify-center items-start gap-2">
+                    <Card className="rounded-sm">
                         <CardHeader>
                             <CardTitle>Cash</CardTitle>
                             <p>$ {tradingData.cash}</p>
                             <CardDescription>PNL: {calculatePNL(tradingData.last_cash, tradingData.cash)}</CardDescription>
                         </CardHeader>
                     </Card>
-                    <Card className="tw-rounded-sm">
+                    <Card className="rounded-sm">
                         <CardHeader>
                             <CardTitle>Long Market Value</CardTitle>
                             <p>$ {tradingData.long_market_value}</p>
                             <CardDescription>PNL: {calculatePNL(tradingData.last_long_market_value, tradingData.long_market_value)}</CardDescription>
                         </CardHeader>
                     </Card>
-                    <Card className="tw-rounded-sm">
+                    <Card className="rounded-sm">
                         <CardHeader>
                             <CardTitle>Short Market Value</CardTitle>
                             <p>$ {tradingData.short_market_value}</p>
@@ -171,8 +171,8 @@ const DashboardPage = () => {
                         </CardHeader>
                     </Card>
                 </div>
-                <div className="tw-w-full tw-grid tw-grid-cols-2 tw-justify-center tw-items-start tw-gap-2">
-                    <Card className="tw-rounded-sm">
+                <div className="w-full grid grid-cols-2 justify-center items-start gap-2">
+                    <Card className="rounded-sm">
                         <CardHeader>
                             <CardTitle>Positions</CardTitle>
                         </CardHeader>
@@ -199,11 +199,11 @@ const DashboardPage = () => {
                                                         <TableCell>{item.market_value}</TableCell>
                                                         <TableCell>{item.unrealized_pl}</TableCell>
                                                         <TableCell>{item.current_price}</TableCell>
-                                                        <TableCell className="tw-text-right">{(parseFloat(item.change_today) * 100).toFixed(2)}</TableCell>
+                                                        <TableCell className="text-right">{(parseFloat(item.change_today) * 100).toFixed(2)}</TableCell>
                                                     </TableRow>)
                                             }) : (
                                                 <TableRow>
-                                                    <TableCell className="tw-text-center" colSpan={6}>No Data</TableCell>
+                                                    <TableCell className="text-center" colSpan={6}>No Data</TableCell>
                                                 </TableRow>
                                             )
                                     }
@@ -211,7 +211,7 @@ const DashboardPage = () => {
                             </Table>
                         </CardContent>
                     </Card>
-                    <Card className="tw-rounded-sm">
+                    <Card className="rounded-sm">
                         <CardHeader>
                             <CardTitle>Orders</CardTitle>
                         </CardHeader>
@@ -244,7 +244,7 @@ const DashboardPage = () => {
                                                     </TableRow>)
                                             }) : (
                                                 <TableRow>
-                                                    <TableCell className="tw-text-center" colSpan={7}>No Data</TableCell>
+                                                    <TableCell className="text-center" colSpan={7}>No Data</TableCell>
                                                 </TableRow>
                                             )
                                     }
@@ -254,8 +254,8 @@ const DashboardPage = () => {
                     </Card>
                 </div>
             </div>
-            <div className="tw-min-h-screen tw-max-w-max tw-flex tw-flex-col tw-justify-start tw-items-center tw-py-8 tw-gap-y-1">
-                <Button variant="ghost" className="!tw-m-0 tw-rounded-l-[0px]" disabled>        </Button>
+            <div className="min-h-screen max-w-max flex flex-col justify-start items-center py-8 gap-y-1">
+                <Button variant="ghost" className="!m-0 rounded-l-[0px]" disabled>        </Button>
             </div>
         </div>
     )

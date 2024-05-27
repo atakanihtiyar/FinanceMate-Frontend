@@ -47,7 +47,7 @@ const Navbar = () => {
             }
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    <NavigationMenuLink href="/" className={`${navigationMenuTriggerUnfocusableStyle()} tw-text-xl`}>
+                    <NavigationMenuLink href="/" className={`${navigationMenuTriggerUnfocusableStyle()} text-xl`}>
                         FIMATE
                     </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -87,7 +87,7 @@ const Footer = () => {
     return (
         <NavigationMenu>
             <NavigationMenuList>
-                <NavigationMenuItem className="tw-text-muted tw-text-sm">
+                <NavigationMenuItem className="text-muted text-sm">
                     © finance mate 2024
                 </NavigationMenuItem>
             </NavigationMenuList>

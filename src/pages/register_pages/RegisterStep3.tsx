@@ -145,17 +145,17 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
     }
 
     return (
-        <Card className="tw-w-[400px] tw-min-h-[500px] tw-drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
-            <CardContent className="tw-w-full tw-mt-12">
+        <Card className="w-[400px] min-h-[500px] drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
+            <CardContent className="w-full mt-12">
                 <Form {...form}>
-                    <form className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-4">
+                    <form className="flex flex-col justify-center items-center gap-4">
                         {/* PHONNE NUMBER */}
-                        <div className="tw-w-[80%] tw-flex tw-flex-row w-space-y-2">
+                        <div className="w-[80%] flex flex-row w-space-y-2">
                             <FormField
                                 control={form.control}
                                 name="calling_code"
                                 render={({ field }) => (
-                                    <FormItem className="tw-mr-1">
+                                    <FormItem className="mr-1">
                                         <FormLabel>Phone Number</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl>
@@ -176,7 +176,7 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
                                 control={form.control}
                                 name="phone_number"
                                 render={({ field }) => (
-                                    <FormItem className="tw-ml-1">
+                                    <FormItem className="ml-1">
                                         <FormLabel><br /></FormLabel>
                                         <FormControl>
                                             <Input type="text" {...field} />
@@ -221,7 +221,7 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
                                     control={form.control}
                                     name="state"
                                     render={({ field }) => (
-                                        <FormItem className="tw-mr-1">
+                                        <FormItem className="mr-1">
                                             <FormLabel>State</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
@@ -287,9 +287,9 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
                                 </FormItem>
                             )}
                         />
-                        <div className="tw-flex tw-justify-between tw-mb-4 tw-mt-4 tw-w-[80%]">
-                            <Button type="button" variant={"outline"} className="tw-font-semibold" onClick={handleGoPre} size="sm">Back</Button>
-                            <Button type="submit" className="tw-font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
+                        <div className="flex justify-between mb-4 mt-4 w-[80%]">
+                            <Button type="button" variant={"outline"} className="font-semibold" onClick={handleGoPre} size="sm">Back</Button>
+                            <Button type="submit" className="font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
                         </div>
                     </form>
                 </Form>
