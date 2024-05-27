@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { UserProvider } from './context/UserContext';
 import { Footer, Navbar } from './components/parts/navigationMenus';
 import DashboardPage from './pages/DashboardPage';
+import { ThemeProvider } from './components/theme-provider';
 
 const router = createBrowserRouter([
   {
@@ -47,9 +48,11 @@ const router = createBrowserRouter([
 function App() {
 
   return (
-    <UserProvider>
-      <RouterProvider router={router} />
-    </UserProvider>
+    <ThemeProvider defaultTheme="system" storageKey='ui-theme'>
+      <UserProvider>
+        <RouterProvider router={router} />
+      </UserProvider>
+    </ThemeProvider>
   );
 }
 

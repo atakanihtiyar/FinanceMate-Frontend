@@ -8,6 +8,7 @@ import {
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { useContext } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
+import { ModeToggle } from "../mode-toggle"
 
 const Navbar = () => {
     const { isLoggedIn, LogOut } = useContext(UserContext) as UserContextValues
@@ -75,6 +76,9 @@ const Navbar = () => {
                             <NavigationMenuLink href="/register" className={navigationMenuTriggerStyle()}>
                                 register
                             </NavigationMenuLink>
+                        </NavigationMenuItem>
+                        <NavigationMenuItem>
+                            <ModeToggle />
                         </NavigationMenuItem>
                     </NavigationMenuList>
             }
