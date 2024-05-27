@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form"
 import {
     Card,
-    CardContent
+    CardHeader
 } from "@/components/ui/card"
 
 import { Button } from "@/components/ui/button"
@@ -145,17 +145,17 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
     }
 
     return (
-        <Card className="w-[400px] min-h-[500px] drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
-            <CardContent className="w-full mt-12">
+        <Card className="w-[400px] min-h-[250px]">
+            <CardHeader>
                 <Form {...form}>
-                    <form className="flex flex-col justify-center items-center gap-4">
+                    <form className="flex flex-col justify-center items-center gap-2">
                         {/* PHONNE NUMBER */}
-                        <div className="w-[80%] flex flex-row w-space-y-2">
+                        <div className="w-[80%] flex flex-row w-space-y-2 w-space-x-2">
                             <FormField
                                 control={form.control}
                                 name="calling_code"
                                 render={({ field }) => (
-                                    <FormItem className="mr-1">
+                                    <FormItem>
                                         <FormLabel>Phone Number</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl>
@@ -287,13 +287,13 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
                                 </FormItem>
                             )}
                         />
-                        <div className="flex justify-between mb-4 mt-4 w-[80%]">
-                            <Button type="button" variant={"outline"} className="font-semibold" onClick={handleGoPre} size="sm">Back</Button>
-                            <Button type="submit" className="font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
+                        <div className="w-[80%] flex justify-between mb-4 mt-4">
+                            <Button type="button" variant="outline" className="w-20" onClick={handleGoPre}>Back</Button>
+                            <Button type="submit" className="w-20" onClick={form.handleSubmit(handleGoNext)}>Next</Button>
                         </div>
                     </form>
                 </Form>
-            </CardContent>
+            </CardHeader>
         </Card>
     )
 }

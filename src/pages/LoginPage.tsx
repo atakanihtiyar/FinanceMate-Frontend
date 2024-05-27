@@ -48,14 +48,14 @@ const LoginPage = () => {
 
     return (
         <div className='min-w-screen min-h-screen flex justify-center items-center'>
-            <Card className="w-[400px] min-h-[500px] drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
-                <CardHeader className="w-full text-center mt-4 mb-2">
-                    <CardTitle className="tracking-tight font-thin text-5xl p-0">Welcome <br /> Again Mate!</CardTitle>
+            <Card className="w-[400px] min-h-[250px]">
+                <CardHeader className="text-center">
+                    <CardTitle className="font-thin text-5xl">Welcome <br /> Again Mate!</CardTitle>
                 </CardHeader>
-                <CardContent className="w-full min-h-max flex flex-col justify-center items-center p-0">
-                    <Separator className="w-[85%]" />
+                <CardContent>
+                    <Separator />
                 </CardContent>
-                <CardContent className="w-full mt-4">
+                <CardContent className="">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-center items-center gap-2">
                             {/* EMAIL */}
@@ -86,7 +86,7 @@ const LoginPage = () => {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="mb-2 mt-8">Login</Button>
+                            <Button type="submit" className="mb-4 mt-4 w-32">Login</Button>
                         </form>
                     </Form>
                 </CardContent>

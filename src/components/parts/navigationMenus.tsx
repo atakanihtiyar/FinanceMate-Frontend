@@ -3,7 +3,7 @@ import {
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
-    navigationMenuTriggerUnfocusableStyle,
+    navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { useContext } from "react"
@@ -24,7 +24,7 @@ const Navbar = () => {
                         <>
                             <NavigationMenuList>
                                 <NavigationMenuItem>
-                                    <NavigationMenuLink href="/dashboard" className={navigationMenuTriggerUnfocusableStyle()}>
+                                    <NavigationMenuLink href="/dashboard" className={navigationMenuTriggerStyle()}>
                                         dashboard
                                     </NavigationMenuLink>
                                 </NavigationMenuItem>
@@ -32,12 +32,12 @@ const Navbar = () => {
                         </> : <>
                             <NavigationMenuList>
                                 <NavigationMenuItem>
-                                    <NavigationMenuLink href="/about" className={navigationMenuTriggerUnfocusableStyle()}>
+                                    <NavigationMenuLink href="/about" className={navigationMenuTriggerStyle()}>
                                         about
                                     </NavigationMenuLink>
                                 </NavigationMenuItem>
                                 <NavigationMenuItem>
-                                    <NavigationMenuLink href="/pricing" className={navigationMenuTriggerUnfocusableStyle()}>
+                                    <NavigationMenuLink href="/pricing" className={navigationMenuTriggerStyle()}>
                                         pricing
                                     </NavigationMenuLink>
                                 </NavigationMenuItem>
@@ -47,7 +47,7 @@ const Navbar = () => {
             }
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    <NavigationMenuLink href="/" className={`${navigationMenuTriggerUnfocusableStyle()} text-xl`}>
+                    <NavigationMenuLink href="/" className={`${navigationMenuTriggerStyle()} text-xl`}>
                         FIMATE
                     </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -56,7 +56,7 @@ const Navbar = () => {
                 isLoggedIn ?
                     <NavigationMenuList>
                         <NavigationMenuItem>
-                            <NavigationMenuLink href="/" className={navigationMenuTriggerUnfocusableStyle()} onClick={async (e) => {
+                            <NavigationMenuLink href="/" className={navigationMenuTriggerStyle()} onClick={async (e) => {
                                 e.preventDefault()
                                 await LogOut()
                                 navigate("/")
@@ -67,12 +67,12 @@ const Navbar = () => {
                     </NavigationMenuList> :
                     <NavigationMenuList>
                         <NavigationMenuItem>
-                            <NavigationMenuLink href="/login" className={navigationMenuTriggerUnfocusableStyle()}>
+                            <NavigationMenuLink href="/login" className={navigationMenuTriggerStyle()}>
                                 login
                             </NavigationMenuLink>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
-                            <NavigationMenuLink href="/register" className={navigationMenuTriggerUnfocusableStyle()}>
+                            <NavigationMenuLink href="/register" className={navigationMenuTriggerStyle()}>
                                 register
                             </NavigationMenuLink>
                         </NavigationMenuItem>

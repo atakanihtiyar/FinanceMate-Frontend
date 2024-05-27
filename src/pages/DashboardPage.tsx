@@ -149,21 +149,21 @@ const DashboardPage = () => {
                     </div>
                 </div>
                 <div className="w-full grid grid-cols-3 justify-center items-start gap-2">
-                    <Card className="rounded-sm">
+                    <Card>
                         <CardHeader>
                             <CardTitle>Cash</CardTitle>
                             <p>$ {tradingData.cash}</p>
                             <CardDescription>PNL: {calculatePNL(tradingData.last_cash, tradingData.cash)}</CardDescription>
                         </CardHeader>
                     </Card>
-                    <Card className="rounded-sm">
+                    <Card>
                         <CardHeader>
                             <CardTitle>Long Market Value</CardTitle>
                             <p>$ {tradingData.long_market_value}</p>
                             <CardDescription>PNL: {calculatePNL(tradingData.last_long_market_value, tradingData.long_market_value)}</CardDescription>
                         </CardHeader>
                     </Card>
-                    <Card className="rounded-sm">
+                    <Card>
                         <CardHeader>
                             <CardTitle>Short Market Value</CardTitle>
                             <p>$ {tradingData.short_market_value}</p>
@@ -172,7 +172,7 @@ const DashboardPage = () => {
                     </Card>
                 </div>
                 <div className="w-full grid grid-cols-2 justify-center items-start gap-2">
-                    <Card className="rounded-sm">
+                    <Card>
                         <CardHeader>
                             <CardTitle>Positions</CardTitle>
                         </CardHeader>
@@ -211,7 +211,7 @@ const DashboardPage = () => {
                             </Table>
                         </CardContent>
                     </Card>
-                    <Card className="rounded-sm">
+                    <Card>
                         <CardHeader>
                             <CardTitle>Orders</CardTitle>
                         </CardHeader>

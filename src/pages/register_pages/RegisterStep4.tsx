@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form"
 import {
     Card,
-    CardContent
+    CardHeader
 } from "@/components/ui/card"
 
 import { Button } from "@/components/ui/button"
@@ -82,101 +82,88 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
     }
 
     return (
-        <Card className="w-[400px] min-h-[500px] drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
-            <CardContent className="w-full mt-12">
+        <Card className="w-[400px] min-h-[250px]">
+            <CardHeader>
                 <Form {...form}>
-                    <form className="flex flex-col justify-center items-center gap-4">
+                    <form className="flex flex-col justify-center items-center gap-2">
                         {/* DISCLOSURES */}
                         <FormField
                             control={form.control}
                             name="disclosures"
                             render={() => (
                                 <FormItem>
-                                    <div className="mb-0">
-                                        <FormLabel>Disclosures</FormLabel>
-                                    </div>
-                                    <div>
-                                        {/* IS CONTROL PERSON */}
-                                        <FormField
-                                            control={form.control}
-                                            name="disclosures.is_control_person"
-                                            render={({ field }) => (
-                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    </FormControl>
-                                                    <div className="space-y-1 leading-none">
-                                                        <FormLabel className="font-normal text-center align-middle">
-                                                            Do you hold a significant leadership role in a publicly traded company?
-                                                        </FormLabel>
-                                                    </div>
-                                                </FormItem>
-                                            )}
-                                        />
-                                        {/* IS AFFILLIATED EXCHANGE OR FINRA */}
-                                        <FormField
-                                            control={form.control}
-                                            name="disclosures.is_affiliated_exchange_or_finra"
-                                            render={({ field }) => (
-                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    </FormControl>
-                                                    <div className="space-y-1 leading-none">
-                                                        <FormLabel className="font-normal text-center align-middle">
-                                                            Are you affiliated with a stock exchange or FINRA?
-                                                        </FormLabel>
-                                                    </div>
-                                                </FormItem>
-                                            )}
-                                        />
-                                        {/* IS POLITICALLY EXPOSED */}
-                                        <FormField
-                                            control={form.control}
-                                            name="disclosures.is_politically_exposed"
-                                            render={({ field }) => (
-                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    </FormControl>
-                                                    <div className="space-y-1 leading-none">
-                                                        <FormLabel className="font-normal text-center align-middle">
-                                                            Are you a politically exposed person (PEP)
-                                                        </FormLabel>
-                                                    </div>
-                                                </FormItem>
-                                            )}
-                                        />
-                                        {/* IS POLITICALLY EXPOSED */}
-                                        <FormField
-                                            control={form.control}
-                                            name="disclosures.immediate_family_exposed"
-                                            render={({ field }) => (
-                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    </FormControl>
-                                                    <div className="space-y-1 leading-none">
-                                                        <FormLabel className="font-normal text-center align-middle">
-                                                            Is any of your immediate family a PEP or hold a significant leadership role in a publicly traded company?
-                                                        </FormLabel>
-                                                    </div>
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                                    <FormLabel>Disclosures</FormLabel>{/* IS CONTROL PERSON */}
+                                    <FormField
+                                        control={form.control}
+                                        name="disclosures.is_control_person"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full flex flex-row justify-start items-center space-x-1 space-y-0">
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                                <FormLabel>
+                                                    Do you hold a significant leadership role in a publicly traded company?
+                                                </FormLabel>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    {/* IS AFFILLIATED EXCHANGE OR FINRA */}
+                                    <FormField
+                                        control={form.control}
+                                        name="disclosures.is_affiliated_exchange_or_finra"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full flex flex-row justify-start items-center space-x-1 space-y-0">
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                                <FormLabel>
+                                                    Are you affiliated with a stock exchange or FINRA?
+                                                </FormLabel>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    {/* IS POLITICALLY EXPOSED */}
+                                    <FormField
+                                        control={form.control}
+                                        name="disclosures.is_politically_exposed"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full flex flex-row justify-start items-center space-x-1 space-y-0">
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                                <FormLabel>
+                                                    Are you a politically exposed person (PEP)
+                                                </FormLabel>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    {/* IS POLITICALLY EXPOSED */}
+                                    <FormField
+                                        control={form.control}
+                                        name="disclosures.immediate_family_exposed"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full flex flex-row justify-start items-center space-x-1 space-y-0">
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                                <FormLabel>
+                                                    Is any of your immediate family a PEP or hold a significant leadership role in a publicly traded company?
+                                                </FormLabel>
+                                            </FormItem>
+                                        )}
+                                    />
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -187,81 +174,71 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                             name="agreements"
                             render={() => (
                                 <FormItem>
-                                    <div className="mb-0">
-                                        <FormLabel>Agreements*</FormLabel>
-                                    </div>
-                                    <div>
-                                        {/* ACCOUNT AGREEMENT */}
-                                        <FormField
-                                            control={form.control}
-                                            name="agreements.is_read_and_agree_account_agreement"
-                                            render={({ field }) => (
-                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    </FormControl>
-                                                    <div className="space-y-1 leading-none">
-                                                        <FormLabel className="font-normal text-center align-middle">
-                                                            Account Agreement
-                                                        </FormLabel>
-                                                    </div>
-                                                </FormItem>
-                                            )}
-                                        />
-                                        {/* CUSTOMER AGREEMENT */}
-                                        <FormField
-                                            control={form.control}
-                                            name="agreements.is_read_and_agree_customer_agreement"
-                                            render={({ field }) => (
-                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    </FormControl>
-                                                    <div className="space-y-1 leading-none">
-                                                        <FormLabel className="font-normal text-center align-middle">
-                                                            Customer Agreement
-                                                        </FormLabel>
-                                                    </div>
-                                                </FormItem>
-                                            )}
-                                        />
-                                        {/* MARGIN AGREEMENT */}
-                                        <FormField
-                                            control={form.control}
-                                            name="agreements.is_read_and_agree_margin_agreement"
-                                            render={({ field }) => (
-                                                <FormItem className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1">
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    </FormControl>
-                                                    <div className="space-y-1 leading-none">
-                                                        <FormLabel className="font-normal text-center align-middle">
-                                                            Margin Agreement
-                                                        </FormLabel>
-                                                    </div>
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                                    <FormLabel>Agreements*</FormLabel>
+                                    {/* ACCOUNT AGREEMENT */}
+                                    <FormField
+                                        control={form.control}
+                                        name="agreements.is_read_and_agree_account_agreement"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full flex flex-row justify-start items-center space-x-1 space-y-0">
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                                <FormLabel>
+                                                    Account Agreement
+                                                </FormLabel>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    {/* CUSTOMER AGREEMENT */}
+                                    <FormField
+                                        control={form.control}
+                                        name="agreements.is_read_and_agree_customer_agreement"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full flex flex-row justify-start items-center space-x-1 space-y-0">
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                                <FormLabel>
+                                                    Customer Agreement
+                                                </FormLabel>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    {/* MARGIN AGREEMENT */}
+                                    <FormField
+                                        control={form.control}
+                                        name="agreements.is_read_and_agree_margin_agreement"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full flex flex-row justify-start items-center space-x-1 space-y-0">
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                                <FormLabel>
+                                                    Margin Agreement
+                                                </FormLabel>
+                                            </FormItem>
+                                        )}
+                                    />
                                 </FormItem>
                             )}
                         />
-                        <div className="flex justify-between mb-4 mt-4 w-[80%]">
-                            <Button type="button" variant={"outline"} className="font-semibold" onClick={handleGoPre} size="sm">Back</Button>
-                            <Button type="submit" className="font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
+                        <div className="w-[80%] flex justify-between mb-4 mt-4">
+                            <Button type="button" variant="outline" className="w-20" onClick={handleGoPre}>Back</Button>
+                            <Button type="submit" className="w-20" onClick={form.handleSubmit(handleGoNext)}>Next</Button>
                         </div>
                     </form>
                 </Form>
-            </CardContent>
+            </CardHeader>
         </Card>
     )
 }

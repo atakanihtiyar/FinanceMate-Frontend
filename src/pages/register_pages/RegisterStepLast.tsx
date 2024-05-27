@@ -21,19 +21,19 @@ const RegisterStepLast = ({ onSubmit, goPreStep }: Props) => {
     }
 
     return (
-        <Card className="w-[400px] min-h-[250px] drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
-            <CardHeader className="w-full text-center mt-4 mb-2">
-                <CardTitle className="tracking-tight font-thin text-5xl p-0">Push the button and join us</CardTitle>
+        <Card className="w-[400px] min-h-[250px]">
+            <CardHeader className="text-center">
+                <CardTitle className="font-thin text-5xl">Push the button and join us</CardTitle>
             </CardHeader>
-            <CardContent className="w-full min-h-max flex flex-col justify-center items-center p-0">
-                <Separator className="w-[85%]" />
+            <CardContent>
+                <Separator />
             </CardContent>
-            <CardContent className="w-full mt-0">
+            <CardContent>
                 <Form {...form}>
                     <form className="flex flex-col justify-center items-center gap-2">
-                        <div className="flex justify-between mb-4 mt-4 w-[80%]">
-                            <Button type="button" variant={"outline"} className="font-semibold" onClick={handleGoPre} size="sm">Back</Button>
-                            <Button type="submit" className="font-semibold" onClick={form.handleSubmit(handleSubmit)} size="sm">Register</Button>
+                        <div className="w-[80%] flex justify-between mb-4 mt-4">
+                            <Button type="button" variant="outline" className="w-20" onClick={handleGoPre}>Back</Button>
+                            <Button type="submit" className="w-20" onClick={form.handleSubmit(handleSubmit)}>Register</Button>
                         </div>
                     </form>
                 </Form>

@@ -31,20 +31,14 @@ export const RegisterSteps = () => {
         register()
     }
 
-    const generateTabTriggerClassName = (currStep: number) => {
-        return `!bg-transparent text-muted
-        ${currStep === activeStep && "!text-primary-light"}
-        ${currStep > activeStep && "pointer-events-none text-foreground"}`
-    }
-
     return (
         <Tabs defaultValue={"1"} value={activeStep.toString()}>
-            <TabsList className="w-[400px] h-[40px] !bg-[--background] border-[1px] border-[--muted] border-solid">
-                <TabsTrigger value="1" onClick={() => goToStep(1)} className={generateTabTriggerClassName(1)}>Base</TabsTrigger>
-                <TabsTrigger value="2" onClick={() => goToStep(2)} className={generateTabTriggerClassName(2)}>Identity</TabsTrigger>
-                <TabsTrigger value="3" onClick={() => goToStep(3)} className={generateTabTriggerClassName(3)}>Contact</TabsTrigger>
-                <TabsTrigger value="4" onClick={() => goToStep(4)} className={generateTabTriggerClassName(4)}>Disclosures</TabsTrigger>
-                <TabsTrigger value="5" onClick={() => goToStep(5)} className={generateTabTriggerClassName(5)}>Overview</TabsTrigger>
+            <TabsList className="w-[400px] h-[40px]">
+                <TabsTrigger value="1" onClick={() => goToStep(1)} disabled={1 > activeStep}>Base</TabsTrigger>
+                <TabsTrigger value="2" onClick={() => goToStep(2)} disabled={2 > activeStep}>Identity</TabsTrigger>
+                <TabsTrigger value="3" onClick={() => goToStep(3)} disabled={3 > activeStep}>Contact</TabsTrigger>
+                <TabsTrigger value="4" onClick={() => goToStep(4)} disabled={4 > activeStep}>Disclosures</TabsTrigger>
+                <TabsTrigger value="5" onClick={() => goToStep(5)} disabled={5 > activeStep}>Overview</TabsTrigger>
             </TabsList>
             <TabsContent value="1">
                 <RegisterStep1 goNextStep={goNextStep} />

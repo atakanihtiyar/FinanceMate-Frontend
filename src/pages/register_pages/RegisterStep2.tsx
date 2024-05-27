@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form"
 import {
     Card,
-    CardContent
+    CardHeader
 } from "@/components/ui/card"
 
 import { Button } from "@/components/ui/button"
@@ -118,10 +118,10 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
     }
 
     return (
-        <Card className="w-[400px] min-h-[500px] drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
-            <CardContent className="w-full mt-12">
+        <Card className="w-[400px] min-h-[250px]">
+            <CardHeader>
                 <Form {...form}>
-                    <form className="flex flex-col justify-center items-center gap-4">
+                    <form className="flex flex-col justify-center items-center gap-2">
                         {/* DATE OF BIRTH */}
                         <FormField
                             control={form.control}
@@ -135,8 +135,8 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                                 <Button
                                                     variant={"outline"}
                                                     className={cn(
-                                                        "w-full text-left font-normal !mx-0 !border-[--muted]",
-                                                        !field.value && "text-muted"
+                                                        "w-full text-left",
+                                                        !field.value && "opacity-75"
                                                     )}
                                                 >
                                                     {field.value ? (
@@ -148,7 +148,7 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                                                 </Button>
                                             </FormControl>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-full p-4 !bg-[var(--background)]" align="start">
+                                        <PopoverContent className="w-full p-4" align="start">
                                             <Calendar
                                                 mode="single"
                                                 selected={field.value}
@@ -187,55 +187,51 @@ const RegisterStep2 = ({ goPreStep, goNextStep }: Props) => {
                             name="funding_source"
                             render={() => (
                                 <FormItem>
-                                    <div className="mb-0">
-                                        <FormLabel>Funding Source</FormLabel>
-                                    </div>
-                                    <div>
-                                        {funding_sources.map((item) => (
-                                            <FormField
-                                                key={item.id}
-                                                control={form.control}
-                                                name="funding_source"
-                                                render={({ field }) => {
-                                                    return (
-                                                        <FormItem
-                                                            key={item.id}
-                                                            className="w-full flex flex-row justify-start items-center space-x-2 !space-y-0 my-1 py-1"
-                                                        >
-                                                            <FormControl>
-                                                                <Checkbox
-                                                                    checked={field.value?.includes(item.id)}
-                                                                    onCheckedChange={(checked) => {
-                                                                        return checked
-                                                                            ? field.onChange([...field.value, item.id])
-                                                                            : field.onChange(
-                                                                                field.value?.filter(
-                                                                                    (value) => value !== item.id
-                                                                                )
+                                    <FormLabel>Funding Source</FormLabel>
+                                    {funding_sources.map((item) => (
+                                        <FormField
+                                            key={item.id}
+                                            control={form.control}
+                                            name="funding_source"
+                                            render={({ field }) => {
+                                                return (
+                                                    <FormItem
+                                                        key={item.id}
+                                                        className="w-full flex flex-row justify-start items-center space-x-1 space-y-0"
+                                                    >
+                                                        <FormControl>
+                                                            <Checkbox
+                                                                checked={field.value?.includes(item.id)}
+                                                                onCheckedChange={(checked) => {
+                                                                    return checked
+                                                                        ? field.onChange([...field.value, item.id])
+                                                                        : field.onChange(
+                                                                            field.value?.filter(
+                                                                                (value) => value !== item.id
                                                                             )
-                                                                    }}
-                                                                />
-                                                            </FormControl>
-                                                            <FormLabel className="font-normal text-center align-middle">
-                                                                {item.label}
-                                                            </FormLabel>
-                                                        </FormItem>
-                                                    )
-                                                }}
-                                            />
-                                        ))}
-                                    </div>
+                                                                        )
+                                                                }}
+                                                            />
+                                                        </FormControl>
+                                                        <FormLabel>
+                                                            {item.label}
+                                                        </FormLabel>
+                                                    </FormItem>
+                                                )
+                                            }}
+                                        />
+                                    ))}
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <div className="flex justify-between mb-4 mt-4 w-[80%]">
-                            <Button type="button" variant={"outline"} className="font-semibold" onClick={handleGoPre} size="sm">Back</Button>
-                            <Button type="submit" className="font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
+                        <div className="w-[80%] flex justify-between mr-4 mt-4">
+                            <Button type="button" variant="outline" className="w-20" onClick={handleGoPre}>Back</Button>
+                            <Button type="submit" className="w-20" onClick={form.handleSubmit(handleGoNext)}>Next</Button>
                         </div>
                     </form>
                 </Form>
-            </CardContent>
+            </CardHeader>
         </Card>
     )
 }

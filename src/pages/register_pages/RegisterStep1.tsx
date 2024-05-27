@@ -71,17 +71,17 @@ const RegisterStep1 = ({ goNextStep }: Props) => {
     }
 
     return (
-        <Card className="w-[400px] min-h-[500px] drop-shadow-[0_0_32px_rgba(238,238,238,0.1)]">
-            <CardHeader className="w-full text-center mt-4 mb-2">
-                <CardTitle className="tracking-tight font-thin text-5xl p-0">Welcome Mate!</CardTitle>
-                <CardDescription className="tracking-wide font-thin text-lg p-0">Start the journey with us today.</CardDescription>
+        <Card className="w-[400px] min-h-[250px]">
+            <CardHeader className="text-center">
+                <CardTitle className="font-thin text-5xl">Welcome Mate!</CardTitle>
+                <CardDescription className="tracking-wide font-thin text-lg">Start the journey with us today.</CardDescription>
             </CardHeader>
-            <CardContent className="w-full min-h-max flex flex-col justify-center items-center p-0">
-                <Separator className="w-[85%]" />
+            <CardContent>
+                <Separator />
             </CardContent>
-            <CardContent className="w-full mt-4">
+            <CardContent>
                 <Form {...form}>
-                    <form className="flex flex-col justify-center items-center gap-4">
+                    <form className="flex flex-col items-center gap-2">
                         {/* GIVEN NAME */}
                         <FormField
                             control={form.control}
@@ -160,8 +160,8 @@ const RegisterStep1 = ({ goNextStep }: Props) => {
                                 </FormItem>
                             )}
                         />
-                        <div className="flex justify-end mb-4 mt-4 w-[80%]">
-                            <Button type="submit" className="font-semibold" onClick={form.handleSubmit(handleGoNext)} size="sm">Next</Button>
+                        <div className="w-[80%] flex justify-end mr-4 mt-4">
+                            <Button type="submit" className="w-20" onClick={form.handleSubmit(handleGoNext)}>Next</Button>
                         </div>
                     </form>
                 </Form>
