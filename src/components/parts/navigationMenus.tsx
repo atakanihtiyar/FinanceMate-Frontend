@@ -3,7 +3,7 @@ import {
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
-    navigationMenuTriggerStyle,
+    navigationMenuTriggerGhostStyle,
 } from "@/components/ui/navigation-menu"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { useContext } from "react"
@@ -25,7 +25,7 @@ const Navbar = () => {
                         <>
                             <NavigationMenuList>
                                 <NavigationMenuItem>
-                                    <NavigationMenuLink href="/dashboard" className={navigationMenuTriggerStyle()}>
+                                    <NavigationMenuLink href="/dashboard" className={navigationMenuTriggerGhostStyle()}>
                                         dashboard
                                     </NavigationMenuLink>
                                 </NavigationMenuItem>
@@ -33,12 +33,12 @@ const Navbar = () => {
                         </> : <>
                             <NavigationMenuList>
                                 <NavigationMenuItem>
-                                    <NavigationMenuLink href="/about" className={navigationMenuTriggerStyle()}>
+                                    <NavigationMenuLink href="/about" className={navigationMenuTriggerGhostStyle()}>
                                         about
                                     </NavigationMenuLink>
                                 </NavigationMenuItem>
                                 <NavigationMenuItem>
-                                    <NavigationMenuLink href="/pricing" className={navigationMenuTriggerStyle()}>
+                                    <NavigationMenuLink href="/pricing" className={navigationMenuTriggerGhostStyle()}>
                                         pricing
                                     </NavigationMenuLink>
                                 </NavigationMenuItem>
@@ -48,7 +48,7 @@ const Navbar = () => {
             }
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    <NavigationMenuLink href="/" className={`${navigationMenuTriggerStyle()} text-xl`}>
+                    <NavigationMenuLink href="/" className={`${navigationMenuTriggerGhostStyle()} text-xl`}>
                         FIMATE
                     </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -57,7 +57,7 @@ const Navbar = () => {
                 isLoggedIn ?
                     <NavigationMenuList>
                         <NavigationMenuItem>
-                            <NavigationMenuLink href="/" className={navigationMenuTriggerStyle()} onClick={async (e) => {
+                            <NavigationMenuLink href="/" className={navigationMenuTriggerGhostStyle()} onClick={async (e) => {
                                 e.preventDefault()
                                 await LogOut()
                                 navigate("/")
@@ -68,12 +68,12 @@ const Navbar = () => {
                     </NavigationMenuList> :
                     <NavigationMenuList>
                         <NavigationMenuItem>
-                            <NavigationMenuLink href="/login" className={navigationMenuTriggerStyle()}>
+                            <NavigationMenuLink href="/login" className={navigationMenuTriggerGhostStyle()}>
                                 login
                             </NavigationMenuLink>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
-                            <NavigationMenuLink href="/register" className={navigationMenuTriggerStyle()}>
+                            <NavigationMenuLink href="/register" className={navigationMenuTriggerGhostStyle()}>
                                 register
                             </NavigationMenuLink>
                         </NavigationMenuItem>
@@ -91,7 +91,7 @@ const Footer = () => {
     return (
         <NavigationMenu>
             <NavigationMenuList>
-                <NavigationMenuItem className="text-muted text-sm">
+                <NavigationMenuItem className="text-muted-foreground text-sm">
                     © finance mate 2024
                 </NavigationMenuItem>
             </NavigationMenuList>

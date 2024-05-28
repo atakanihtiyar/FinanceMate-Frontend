@@ -32,8 +32,8 @@ const RegisterStepLast = ({ onSubmit, goPreStep }: Props) => {
                 <Form {...form}>
                     <form className="flex flex-col justify-center items-center gap-2">
                         <div className="w-[80%] flex justify-between mb-4 mt-4">
-                            <Button type="button" variant="outline" className="w-20" onClick={handleGoPre}>Back</Button>
-                            <Button type="submit" className="w-20" onClick={form.handleSubmit(handleSubmit)}>Register</Button>
+                            <Button type="button" variant="link" className="w-20" onClick={handleGoPre}>Back</Button>
+                            <Button type="submit" variant="secondary" className="w-20" onClick={form.handleSubmit(handleSubmit)}>Register</Button>
                         </div>
                     </form>
                 </Form>

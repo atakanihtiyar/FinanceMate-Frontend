@@ -4,65 +4,83 @@
 
 @layer base {
   :root {
-    --background: hsl(0 0% 100%);
-    --foreground: hsl(240 10% 3.9%);
 
-    --card: hsl(0 0% 100%);
-    --card-foreground: hsl(240 10% 3.9%);
+    --mate-lighter-black: #242529;
+    --mate-light-black: #14151a;
+    --mate-black: #0c0c11;
 
-    --popover: hsl(0 0% 100%);
-    --popover-foreground: hsl(240 10% 3.9%);
+    --mate-pure-white: #ffffff;
+    --mate-white: #e5e5e5;
+    --mate-dark-white: #dfdfdf;
+    --mate-darker-white: #d6d6d6;
 
-    --primary: hsl(240 5.9% 10%);
-    --primary-foreground: hsl(0 0% 98%);
+    --mate-grey: #71717a;
+    --mate-teal: #008080;
+    --mate-planet: var(--mate-teal);
 
-    --secondary: hsl(240 4.8% 95.9%);
-    --secondary-foreground: hsl(240 5.9% 10%);
+    --mate-destructive: #ef4444;
+    --mate-success: #66DD99;
+    --mate-warning: #ffdd44;
 
-    --muted: hsl(240 4.8% 95.9%);
-    --muted-foreground: hsl(240 3.8% 46.1%);
+    --background: var(--mate-pure-white);
+    --foreground: var(--mate-black);
 
-    --accent: hsl(240 4.8% 95.9%);
-    --accent-foreground: hsl(240 5.9% 10%);
+    --card: var(--mate-pure-white);
+    --card-foreground: var(--mate-black);
 
-    --destructive: hsl(0 84.2% 60.2%);
-    --destructive-foreground: hsl(0 0% 98%);
+    --popover: var(--mate-pure-white);
+    --popover-foreground: var(--mate-black);
 
-    --border: hsl(240 5.9% 90%);
-    --input: hsl(240 5.9% 90%);
-    --ring: hsl(240 10% 3.9%);
+    --primary: var(--mate-light-black);
+    --primary-foreground: var(--mate-white);
+
+    --secondary: var(--mate-teal);
+    --secondary-foreground: var(--mate-white);
+
+    --muted: var(--mate-dark-white);
+    --muted-foreground: var(--mate-grey);
+
+    --accent: var(--mate-teal);
+    --accent-foreground: var(--mate-white);
+
+    --destructive: var(--mate-destructive);
+    --destructive-foreground: var(--mate-white);
+
+    --border: var(--mate-dark-white);
+    --input: var(--mate-dark-white);
+    --ring: var(--mate-lighter-black);
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: hsl(240 10% 3.9%);
-    --foreground: hsl(0 0% 98%);
+    --background: var(--mate-black);
+    --foreground: var(--mate-white);
 
-    --card: hsl(240 10% 3.9%);
-    --card-foreground: hsl(0 0% 98%);
+    --card: var(--mate-black);
+    --card-foreground: var(--mate-white);
 
-    --popover: hsl(240 10% 3.9%);
-    --popover-foreground: hsl(0 0% 98%);
+    --popover: var(--mate-black);
+    --popover-foreground: var(--mate-white);
 
-    --primary: hsl(0 0% 98%);
-    --primary-foreground: hsl(240 5.9% 10%);
+    --primary: var(--mate-white);
+    --primary-foreground: var(--mate-light-black);
 
-    --secondary: hsl(240 3.7% 15.9%);
-    --secondary-foreground: hsl(0 0% 98%);
+    --secondary: var(--mate-teal);
+    --secondary-foreground: var(--mate-white);
 
-    --muted: hsl(240 3.7% 15.9%);
-    --muted-foreground: hsl(240 5% 64.9%);
+    --muted: var(--mate-lighter-black);
+    --muted-foreground: var(--mate-grey);
 
-    --accent: hsl(240 3.7% 15.9%);
-    --accent-foreground: hsl(0 0% 98%);
+    --accent: var(--mate-teal);
+    --accent-foreground: var(--mate-white);
 
-    --destructive: hsl(0 62.8% 30.6%);
-    --destructive-foreground: hsl(0 0% 98%);
+    --destructive: var(--mate-destructive);
+    --destructive-foreground: var(--mate-white);
 
-    --border: hsl(240 3.7% 15.9%);
-    --input: hsl(240 3.7% 15.9%);
-    --ring: hsl(240 4.9% 83.9%);
+    --border: var(--mate-grey);
+    --input: var(--mate-grey);
+    --ring: var(--mate-darker-white);
 
     --radius: 0.5rem;
   }
@@ -77,59 +95,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-
-
-
-/* 
---mate-light-red: #d3607b;
-    --mate-red: #C8385A;
-    --mate-dark-red: #a02d48;
-    --mate-light-black: #222222;
-    --mate-black: #111111;
-    --mate-dark-black: #000000;
-    --mate-grey: #666666;
-    --mate-muted: #999999;
-    --mate-white: #eeeeee;
-    --mate-destructive: #ff6464;
-    --mate-success: #66DD99;
-    --mate-warning: #ffdd44;
-
-    --background: var(--mate-black);
-    --foreground: var(--mate-white);
-
-    --card: var(--mate-black);
-    --card-border: var(--mate-grey);
-    --card-foreground: var(--mate-white);
-
-    --navbar: var(--mate-black);
-    --navbar-foreground: var(--mate-white);
-
-    --popover: var(--mate-white);
-    --popover-foreground: var(--mate-black);
-
-    --primary: var(--mate-red);
-    --primary-foreground: var(--mate-white);
-    --primary-light: var(--mate-light-red);
-
-    --secondary: var(--mate-white);
-    --secondary-foreground: var(--mate-dark-red);
-
-    --muted: var(--mate-muted);
-    --muted-foreground: var(--mate-black);
-
-    --accent: var(--mate-dark-red);
-    --accent-foreground: var(--mate-white);
-
-    --destructive: var(--mate-destructive);
-    --destructive-foreground: var(--mate-muted);
-
-    --success: var(--mate-success);
-    --success-foreground: var(--mate-black);
-
-    --border: var(--mate-white);
-    --input: var(--mate-white);
-    --ring: var(--mate-black);
-
-    --radius: 0.5rem;
-*/
