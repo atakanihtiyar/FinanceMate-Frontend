@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom"
 import { RegisterSteps } from "./RegisterSteps"
 import { createContext, useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
+import { register } from "@/lib/backend_service"
 
 interface FormDataType {
     password: string,
@@ -179,28 +180,16 @@ const RegisterPage = () => {
         })
     }
 
-    const register = async () => {
-        const response = await fetch("http://localhost:5050/users", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData)
-        })
-        const data = await response.json()
-        if (response.status === 201) {
-            saveUser(true, { account_number: data.account_number, given_name: data.given_name, family_name: data.family_name })
+    const sendRegisterForm = async () => {
+        await register(formData).then((data) => {
+            saveUser(true, data)
             navigate("/")
-        }
-        else {
-            console.log(data)
-        }
+        })
     }
 
     return (
         <div className='min-w-screen min-h-screen flex flex-col justify-center items-center'>
-            <RegisterDataContext.Provider value={{ formData, setRegisterData, register }}>
+            <RegisterDataContext.Provider value={{ formData, setRegisterData, register: sendRegisterForm }}>
                 <RegisterSteps />
             </RegisterDataContext.Provider>
         </div >
