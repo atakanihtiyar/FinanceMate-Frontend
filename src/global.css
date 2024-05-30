@@ -15,12 +15,12 @@
     --mate-darker-white: #d6d6d6;
 
     --mate-grey: #71717a;
-    --mate-teal: #008080;
-    --mate-planet: var(--mate-teal);
+    --mate-main: #6F7AAC;
+    --mate-planet: var(--mate-main);
 
-    --mate-destructive: #ef4444;
-    --mate-success: #66DD99;
-    --mate-warning: #ffdd44;
+    --mate-destructive: #d73d3d;
+    --mate-success: #28ac39;
+    --mate-warning: #d6ae33;
 
     --background: var(--mate-pure-white);
     --foreground: var(--mate-black);
@@ -34,17 +34,19 @@
     --primary: var(--mate-light-black);
     --primary-foreground: var(--mate-white);
 
-    --secondary: var(--mate-teal);
+    --secondary: var(--mate-main);
     --secondary-foreground: var(--mate-white);
 
     --muted: var(--mate-dark-white);
     --muted-foreground: var(--mate-grey);
 
-    --accent: var(--mate-teal);
+    --accent: var(--mate-main);
     --accent-foreground: var(--mate-white);
 
     --destructive: var(--mate-destructive);
     --destructive-foreground: var(--mate-white);
+    --success: var(--mate-success);
+    --warning: var(--mate-warning);
 
     --border: var(--mate-dark-white);
     --input: var(--mate-dark-white);
@@ -54,6 +56,10 @@
   }
 
   .dark {
+    --mate-destructive: #ef4444;
+    --mate-success: #32d747;
+    --mate-warning: #eec139;
+
     --background: var(--mate-black);
     --foreground: var(--mate-white);
 
@@ -66,17 +72,19 @@
     --primary: var(--mate-white);
     --primary-foreground: var(--mate-light-black);
 
-    --secondary: var(--mate-teal);
+    --secondary: var(--mate-main);
     --secondary-foreground: var(--mate-white);
 
     --muted: var(--mate-lighter-black);
     --muted-foreground: var(--mate-grey);
 
-    --accent: var(--mate-teal);
+    --accent: var(--mate-main);
     --accent-foreground: var(--mate-white);
 
     --destructive: var(--mate-destructive);
     --destructive-foreground: var(--mate-white);
+    --success: var(--mate-success);
+    --warning: var(--mate-warning);
 
     --border: var(--mate-grey);
     --input: var(--mate-grey);
