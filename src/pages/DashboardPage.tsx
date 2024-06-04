@@ -18,20 +18,26 @@ import {
 import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Separator } from "@/components/ui/separator"
+import { getOrders, getPositions, getTradingData } from "@/lib/backend_service"
 
-const initialTradingData = {
-    currency: "USD",
-    portfolio_value: "0",
-    buying_power: "0",
-    cash: "0",
-    long_market_value: "0",
-    short_market_value: "0",
-    last_portfolio_value: "0",
-    last_buying_power: "0",
-    last_cash: "0",
-    last_long_market_value: "0",
-    last_short_market_value: "0",
-    positions: [{
+const DashboardPage = () => {
+    const navigate = useNavigate()
+    const location = useLocation()
+    const { user, isLoggedIn, isAuthRequestEnd } = useContext(UserContext) as UserContextValues
+    const [tradingData, setTradingData] = useState({
+        currency: "USD",
+        portfolio_value: "0",
+        buying_power: "0",
+        cash: "0",
+        long_market_value: "0",
+        short_market_value: "0",
+        last_portfolio_value: "0",
+        last_buying_power: "0",
+        last_cash: "0",
+        last_long_market_value: "0",
+        last_short_market_value: "0",
+    })
+    const [positions, setPositions] = useState([{
         symbol: "",
         exchange: "",
         avg_entry_price: "0",
@@ -45,8 +51,8 @@ const initialTradingData = {
         unrealized_intraday_plpc: "0",
         current_price: "0",
         change_today: "0"
-    }],
-    orders: [{
+    }])
+    const [orders, setOrders] = useState([{
         order_id: "",
         symbol: "",
         filled_at: "",
@@ -59,36 +65,21 @@ const initialTradingData = {
         limit_price: "0",
         stop_price: "0",
         commission: "0",
-    }],
-}
-
-const DashboardPage = () => {
-    const navigate = useNavigate()
-    const location = useLocation()
-    const { user, isLoggedIn, isAuthRequestEnd } = useContext(UserContext) as UserContextValues
-    const [tradingData, setTradingData] = useState<typeof initialTradingData>(initialTradingData)
-
-    /* 
-        api service
-    */
-    const GetTradingData = async () => {
-        const response = await fetch(`http://localhost:5050/trading/${user?.account_number}`, {
-            method: "GET",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-        if (response.status === 200) {
-            const data = await response.json()
-            setTradingData(data)
-        }
-    }
+    }])
 
     useEffect(() => {
         if (!isAuthRequestEnd) return
-        if (isLoggedIn) {
-            GetTradingData()
+        if (isLoggedIn && user) {
+            Promise.all([getTradingData(user.account_number), getPositions(user.account_number), getOrders(user.account_number)]).then((data) => {
+                if (data) {
+                    if (data[0])
+                        setTradingData(data[0])
+                    if (data[1])
+                        setPositions(data[1])
+                    if (data[2])
+                        setOrders(data[2])
+                }
+            })
         }
         else {
             navigate("/")
@@ -190,8 +181,8 @@ const DashboardPage = () => {
                                 </TableHeader>
                                 <TableBody>
                                     {
-                                        tradingData.positions.length > 0 ?
-                                            tradingData.positions.map((item) => {
+                                        positions.length > 0 ?
+                                            positions.map((item) => {
                                                 return (
                                                     <TableRow key={item.symbol}>
                                                         <TableCell className="font-medium">{item.symbol}</TableCell>
@@ -230,8 +221,8 @@ const DashboardPage = () => {
                                 </TableHeader>
                                 <TableBody>
                                     {
-                                        tradingData.orders.length > 0 ?
-                                            tradingData.orders.map((item) => {
+                                        orders.length > 0 ?
+                                            orders.map((item) => {
                                                 return (
                                                     <TableRow key={item.symbol}>
                                                         <TableCell className="font-medium">{item.symbol}</TableCell>

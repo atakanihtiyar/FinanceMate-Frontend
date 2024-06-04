@@ -1,3 +1,4 @@
+import { checkAuth, login, logout } from "@/lib/backend_service";
 import { createContext, useEffect, useState } from "react";
 
 interface IUser {
@@ -41,50 +42,26 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         }
     }
 
-    const CheckLogIn = async () => {
-        const response = await fetch("http://localhost:5050/session/check", {
-            method: "GET",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-        const data = await response.json()
-        saveUser(data.result, data.user)
-    }
-
     useEffect(() => {
-        CheckLogIn()
+        checkAuth().then((data) => {
+            saveUser(data.result, data.user)
+        })
     }, [])
 
-    const TryLogIn = async (email_address: String, password: String) => {
-        const response = await fetch("http://localhost:5050/session/login", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email_address, password })
+    const tryLogin = async (email_address: String, password: String) => {
+        login(email_address, password).then((data) => {
+            saveUser(data.result, data.user)
         })
-        const data = await response.json()
-        saveUser(data.result, data.user)
     }
 
-    const LogOut = async () => {
-        const response = await fetch("http://localhost:5050/session/logout", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            }
-        })
-        const data = await response.json()
-        if (data.result)
+    const tryLogout = async () => {
+        logout().then(() => {
             saveUser(false, null)
+        })
     }
 
     return (
-        <UserContext.Provider value={{ user: user.user, isLoggedIn: user.isLoggedIn, isAuthRequestEnd: user.isAuthRequestEnd, TryLogIn: TryLogIn, LogOut: LogOut, saveUser: saveUser }}>
+        <UserContext.Provider value={{ user: user.user, isLoggedIn: user.isLoggedIn, isAuthRequestEnd: user.isAuthRequestEnd, TryLogIn: tryLogin, LogOut: tryLogout, saveUser: saveUser }}>
             {children}
         </UserContext.Provider>
     )
