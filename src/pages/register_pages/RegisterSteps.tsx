@@ -34,11 +34,11 @@ export const RegisterSteps = () => {
     return (
         <Tabs defaultValue={"1"} value={activeStep.toString()}>
             <TabsList className="w-[400px] h-[40px]">
-                <TabsTrigger value="1" onClick={() => goToStep(1)} disabled={1 > activeStep}>Base</TabsTrigger>
-                <TabsTrigger value="2" onClick={() => goToStep(2)} disabled={2 > activeStep}>Identity</TabsTrigger>
-                <TabsTrigger value="3" onClick={() => goToStep(3)} disabled={3 > activeStep}>Contact</TabsTrigger>
-                <TabsTrigger value="4" onClick={() => goToStep(4)} disabled={4 > activeStep}>Disclosures</TabsTrigger>
-                <TabsTrigger value="5" onClick={() => goToStep(5)} disabled={5 > activeStep}>Overview</TabsTrigger>
+                <TabsTrigger value="1" className="pointer-events-none">Base</TabsTrigger>
+                <TabsTrigger value="2" className="pointer-events-none">Identity</TabsTrigger>
+                <TabsTrigger value="3" className="pointer-events-none">Contact</TabsTrigger>
+                <TabsTrigger value="4" className="pointer-events-none">Disclosures</TabsTrigger>
+                <TabsTrigger value="5" className="pointer-events-none">Overview</TabsTrigger>
             </TabsList>
             <TabsContent value="1">
                 <RegisterStep1 goNextStep={goNextStep} />

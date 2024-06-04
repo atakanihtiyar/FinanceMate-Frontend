@@ -29,7 +29,7 @@
 }
 
 .color-layer {
-    @apply bg-[var(--mate-red)] absolute w-full h-full bottom-0 bg-cover mix-blend-color
+    @apply bg-[var(--mate-planet)] absolute w-full h-full bottom-0 bg-cover mix-blend-color
 }
 
 .light-layer {

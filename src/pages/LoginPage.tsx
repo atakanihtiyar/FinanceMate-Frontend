@@ -86,7 +86,7 @@ const LoginPage = () => {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="mb-4 mt-4 w-32">Login</Button>
+                            <Button type="submit" variant="default" className="mb-4 mt-4 w-32">Login</Button>
                         </form>
                     </Form>
                 </CardContent>

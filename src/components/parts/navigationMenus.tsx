@@ -91,7 +91,7 @@ const Footer = () => {
     return (
         <NavigationMenu>
             <NavigationMenuList>
-                <NavigationMenuItem className="text-muted text-sm">
+                <NavigationMenuItem className="text-muted-foreground text-sm">
                     © finance mate 2024
                 </NavigationMenuItem>
             </NavigationMenuList>

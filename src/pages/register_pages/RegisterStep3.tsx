@@ -288,7 +288,7 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
                             )}
                         />
                         <div className="w-[80%] flex justify-between mb-4 mt-4">
-                            <Button type="button" variant="outline" className="w-20" onClick={handleGoPre}>Back</Button>
+                            <Button type="button" variant="link" className="w-20" onClick={handleGoPre}>Back</Button>
                             <Button type="submit" className="w-20" onClick={form.handleSubmit(handleGoNext)}>Next</Button>
                         </div>
                     </form>
