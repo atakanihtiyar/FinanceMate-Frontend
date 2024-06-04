@@ -99,18 +99,8 @@ const DashboardPage = () => {
     }
 
     return (
-        <div className="min-w-screen min-h-screen flex flex-row space-x-48">
-            <div className="min-h-screen max-w-max flex flex-col justify-start items-start py-8 gap-y-2">
-                <Button variant="ghost" className={`!m-0 rounded-md rounded-l-[0px]
-                ${!location.pathname.includes("/dashboard") && "text-[var(--muted)]"}`} onClick={() => navigate("/dashboard")}>Overview</Button>
-
-                <Button variant="ghost" className={`!m-0 rounded-md rounded-l-[0px]
-                ${!location.pathname.includes("/balances") && "text-[var(--muted)]"}`} onClick={() => navigate("/balances")}>Balances</Button>
-
-                <Button variant="ghost" className={`!m-0 rounded-md rounded-l-[0px]
-                ${!location.pathname.includes("/positions") && "text-[var(--muted)]"}`} onClick={() => navigate("/positions")}>Positions</Button>
-            </div>
-            <div className="w-full grow py-8 flex flex-col justify-start items-start gap-12">
+        <div className="min-w-screen min-h-screen flex flex-col justify-center items-center space-x-48">
+            <div className=" w-7/12 grow py-8 flex flex-col justify-start items-start gap-12">
                 <div className="w-full grid grid-cols-4 justify-center items-start gap-2">
                     <div dir="rtl" className="">
                         <Card className="border-0 mb-8">
@@ -244,9 +234,6 @@ const DashboardPage = () => {
                         </CardContent>
                     </Card>
                 </div>
-            </div>
-            <div className="min-h-screen max-w-max flex flex-col justify-start items-center py-8 gap-y-1">
-                <Button variant="ghost" className="!m-0 rounded-l-[0px]" disabled>        </Button>
             </div>
         </div>
     )

@@ -7,6 +7,7 @@ import { UserProvider } from './context/UserContext';
 import { Footer, Navbar } from './components/parts/navigationMenus';
 import DashboardPage from './pages/DashboardPage';
 import { ThemeProvider } from './components/theme-provider';
+import AssetPage from './pages/AssetPage';
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,16 @@ const router = createBrowserRouter([
       <>
         <Navbar />
         <DashboardPage />
+        <Footer />
+      </>
+    ),
+  },
+  {
+    path: "/assets",
+    element: (
+      <>
+        <Navbar />
+        <AssetPage />
         <Footer />
       </>
     ),

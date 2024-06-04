@@ -133,3 +133,22 @@ export const getOrders = async (account_number: Number) => {
         return false
     }
 }
+
+export const getAssetData = async (symbol_or_asset_id: String) => {
+    const response = await fetch(`http://localhost:5050/assets/${symbol_or_asset_id}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+
+    const data = await response.json()
+    if (response.status === 200) {
+        return data
+    }
+    else {
+        console.log(data)
+        return false
+    }
+}
