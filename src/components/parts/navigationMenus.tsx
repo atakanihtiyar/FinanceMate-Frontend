@@ -18,7 +18,7 @@ const Navbar = () => {
     const { isLoggedIn, LogOut } = useContext(UserContext) as UserContextValues
     const navigate = useNavigate()
     const location = useLocation()
-    const isThisDashboard = location.pathname.includes("/dashboard")
+    const showAssetSearch = location.pathname.includes("/dashboard") || location.pathname.includes("/assets")
 
     const [searchText, setSearchText] = useState("")
 
@@ -37,7 +37,7 @@ const Navbar = () => {
     return (
         <NavigationMenu className="p-2">
             {
-                !isThisDashboard &&
+                !showAssetSearch &&
                 <>{
                     isLoggedIn ?
                         <>
@@ -72,7 +72,7 @@ const Navbar = () => {
                 </NavigationMenuItem>
             </NavigationMenuList>
             {
-                isThisDashboard &&
+                showAssetSearch &&
                 <NavigationMenuList className="p-2 flex justify-center items-center">
                     <NavigationMenuItem>
                         <div className="flex w-full items-center mr-4">

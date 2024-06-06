@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import {
     Card,
     CardContent,
@@ -22,7 +21,6 @@ import { getOrders, getPositions, getTradingData } from "@/lib/backend_service"
 
 const DashboardPage = () => {
     const navigate = useNavigate()
-    const location = useLocation()
     const { user, isLoggedIn, isAuthRequestEnd } = useContext(UserContext) as UserContextValues
     const [tradingData, setTradingData] = useState({
         currency: "USD",
@@ -100,7 +98,7 @@ const DashboardPage = () => {
 
     return (
         <div className="min-w-screen min-h-screen flex flex-col justify-center items-center space-x-48">
-            <div className=" w-7/12 grow py-8 flex flex-col justify-start items-start gap-12">
+            <div className="w-8/12 grow py-8 flex flex-col justify-start items-start gap-12">
                 <div className="w-full grid grid-cols-4 justify-center items-start gap-2">
                     <div dir="rtl" className="">
                         <Card className="border-0 mb-8">
@@ -125,7 +123,7 @@ const DashboardPage = () => {
                         </Card>
                         <Separator />
                     </div>
-                    <div className="h-full w-full col-span-3 border-[1px] border-[var(--muted)] rounded-sm flex justify-center items-center">
+                    <div className="h-[512px] w-full col-span-3 border-[1px] border-[var(--muted)] rounded-sm flex justify-center items-center">
                         <p className="text-center">GRAPH PLACEHOLDER</p>
                     </div>
                 </div>
