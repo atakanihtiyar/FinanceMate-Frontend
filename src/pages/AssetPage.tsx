@@ -12,6 +12,7 @@ import {
     FormControl,
     FormField,
     FormItem,
+    FormLabel,
     FormMessage,
 } from "@/components/ui/form"
 
@@ -26,20 +27,37 @@ import {
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
 
 import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Separator } from "@/components/ui/separator"
 
 const FormSchema = z.object({
-    is_limit: z.boolean().default(false),
-    is_stop: z.boolean().default(false),
-    limit_price: z.number().transform(v => Number(v) || 0),
-    stop_price: z.string().transform(v => Number(v) || 0),
+    is_limit: z.boolean(),
+    is_stop: z.boolean(),
+    limit_price: z.string().transform(v => Number(v) || 0).optional(),
+    stop_price: z.string().transform(v => Number(v) || 0).optional(),
     qty: z.string().transform(v => Number(v) || 0),
-    time_in_force: z.enum(["day"])
+    side: z.enum(["None", "Sell", "Buy"]),
+    time_in_force: z.enum(["day"]),
+}).refine(schema => {
+    if (schema.is_limit && !schema.limit_price)
+        return false
+    else if (!schema.is_limit)
+        schema.limit_price = undefined
+
+    if (schema.is_stop && !schema.stop_price)
+        return false
+    else if (!schema.is_stop)
+        schema.stop_price = undefined
+
+    return true
 })
 
 const AssetPage = () => {
@@ -58,14 +76,27 @@ const AssetPage = () => {
         latest_closing: "00.00",
     }
 
-    const [isLimit, setIsLimit] = useState(false)
-    const [isStop, setIsStop] = useState(false)
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
+
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            time_in_force: "day"
+            is_limit: false,
+            is_stop: false,
+            limit_price: 0,
+            stop_price: 0,
+            qty: 0,
+            side: "None",
+            time_in_force: "day",
         }
     })
+
+    const onDialogOpenChange = (isOpen: boolean) => {
+        setIsDialogOpen(isOpen)
+        if (!isOpen) {
+            form.reset()
+        }
+    }
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
         console.log(data)
@@ -87,185 +118,151 @@ const AssetPage = () => {
                     <div className="col-span-2">
                         <Card className="border-0">
                             <CardHeader>
-                                <CardTitle className="text-xl">Price: ${assetData.latest_closing}</CardTitle>
+                                <CardTitle className="text-xl">Price: ${assetData.latest_closing.toFixed(2)}</CardTitle>
                             </CardHeader>
                             <CardContent className="flex flex-col items-center space-y-4 border-0">
-                                <div className="w-full flex flex-row space-y-0 rounded-md border p-4">
-                                    <div className="w-[50%] flex flex-row items-start space-x-3 space-y-0">
-                                        <Checkbox id="isLimit"
-                                            onCheckedChange={(value) => {
-                                                setIsLimit(value as boolean)
-                                                return !value
-                                            }}
-                                        />
-                                        <div className="grid gap-1.5 leading-none">
-                                            <label htmlFor="isLimit"
-                                                className="text-sm leading-none">
-                                                Limit
-                                            </label>
-                                        </div>
+                                <Dialog open={isDialogOpen} onOpenChange={onDialogOpenChange}>
+                                    <div className="w-full flex flex-row space-x-2 p-2">
+                                        <DialogTrigger asChild>
+                                            <Button variant="destructive" className="w-[90%] bg-[--success]"
+                                                onClick={() => {
+                                                    form.setValue("side", "Buy")
+                                                }}>Buy</Button>
+                                        </DialogTrigger>
+                                        <DialogTrigger asChild>
+                                            <Button variant="destructive" className="w-[90%]"
+                                                onClick={() => {
+                                                    form.setValue("side", "Sell")
+                                                }}>Sell</Button>
+                                        </DialogTrigger>
                                     </div>
-                                    <div className="w-[50%] flex flex-row items-start space-x-3 space-y-0">
-                                        <Checkbox id="isStop"
-                                            onCheckedChange={(value) => {
-                                                setIsStop(value as boolean)
-                                                return !value
-                                            }}
-                                        />
-                                        <div className="grid gap-1.5 leading-none">
-                                            <label htmlFor="isStop"
-                                                className="text-sm leading-none">
-                                                Stop
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex flex-row">
-                                    <Form {...form}>
-                                        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col items-center space-y-4">
-                                            {
-                                                isLimit &&
+                                    <DialogContent className="w-72 flex flex-col items-center">
+                                        <DialogHeader className="w-[90%] mb-2">
+                                            <DialogTitle className="text-xl">Create {form.getValues("side").toLowerCase()} Order</DialogTitle>
+                                            <DialogDescription>
+                                                This action will create an {form.getValues("side").toLowerCase()} order. Do you accept the following order?
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <Separator className="mb-2" />
+                                        <Form {...form}>
+                                            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col items-center space-y-4">
+                                                <div className="w-[90%] flex flex-row justify-center space-y-0 p-2">
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="is_limit"
+                                                        render={({ field }) => (
+                                                            <FormItem className="w-[50%] flex flex-row justify-center items-start space-x-2 space-y-0">
+                                                                <FormControl>
+                                                                    <Checkbox
+                                                                        checked={field.value}
+                                                                        onCheckedChange={field.onChange}
+                                                                    />
+                                                                </FormControl>
+                                                                <div className="space-y-1 leading-none">
+                                                                    <FormLabel>
+                                                                        Limit
+                                                                    </FormLabel>
+                                                                </div>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="is_stop"
+                                                        render={({ field }) => (
+                                                            <FormItem className="w-[50%] flex flex-row justify-center items-start space-x-2 space-y-0">
+                                                                <FormControl>
+                                                                    <Checkbox
+                                                                        checked={field.value}
+                                                                        onCheckedChange={field.onChange}
+                                                                    />
+                                                                </FormControl>
+                                                                <div className="space-y-1 leading-none">
+                                                                    <FormLabel>
+                                                                        Stop
+                                                                    </FormLabel>
+                                                                </div>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                                {
+                                                    form.getValues().is_limit &&
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="limit_price"
+                                                        render={({ field }) => (
+                                                            <FormItem className="w-[90%]">
+                                                                <FormLabel>Limit Price</FormLabel>
+                                                                <FormControl>
+                                                                    <Input type="number" placeholder="Limit Price" {...field} />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                }
+                                                {
+                                                    form.getValues().is_stop &&
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="stop_price"
+                                                        render={({ field }) => (
+                                                            <FormItem className="w-[90%]">
+                                                                <FormLabel>Stop Price</FormLabel>
+                                                                <FormControl>
+                                                                    <Input type="number" placeholder="Stop Price" {...field} />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                }
                                                 <FormField
                                                     control={form.control}
-                                                    name="limit_price"
+                                                    name="qty"
                                                     render={({ field }) => (
                                                         <FormItem className="w-[90%]">
+                                                            <FormLabel>Quantity</FormLabel>
                                                             <FormControl>
-                                                                <Input type="text" placeholder="Limit Price" {...field} />
+                                                                <Input type="number" placeholder="Quantity" {...field} />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
                                                     )}
                                                 />
-                                            }
-                                            {
-                                                isStop &&
                                                 <FormField
                                                     control={form.control}
-                                                    name="stop_price"
+                                                    name="time_in_force"
                                                     render={({ field }) => (
                                                         <FormItem className="w-[90%]">
-                                                            <FormControl>
-                                                                <Input type="text" placeholder="Stop Price" {...field} />
-                                                            </FormControl>
+                                                            <FormLabel>Expire Mode</FormLabel>
+                                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                                <FormControl>
+                                                                    <SelectTrigger>
+                                                                        <SelectValue placeholder="Select Expire Mode" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    <SelectItem value="day">Day</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
                                                             <FormMessage />
                                                         </FormItem>
                                                     )}
                                                 />
-                                            }
-                                            <FormField
-                                                control={form.control}
-                                                name="qty"
-                                                render={({ field }) => (
-                                                    <FormItem className="w-[90%]">
-                                                        <FormControl>
-                                                            <Input type="text" placeholder="Quantity" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="time_in_force"
-                                                render={({ field }) => (
-                                                    <FormItem className="w-[90%]">
-                                                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled>
-                                                            <FormControl>
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Select order timing" />
-                                                                </SelectTrigger>
-                                                            </FormControl>
-                                                            <SelectContent>
-                                                                <SelectItem value="day">Day</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <Dialog>
-                                                <DialogTrigger asChild>
-                                                    <Button variant="destructive" className="w-[90%] bg-[--success]">Buy</Button>
-                                                </DialogTrigger>
-                                                <DialogContent className="w-72">
-                                                </DialogContent>
-                                            </Dialog>
-                                        </form>
-                                    </Form>
-                                    <Form {...form}>
-                                        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-col items-center space-y-4">
-                                            {
-                                                isLimit &&
-                                                <FormField
-                                                    control={form.control}
-                                                    name="limit_price"
-                                                    render={({ field }) => (
-                                                        <FormItem className="w-[90%]">
-                                                            <FormControl>
-                                                                <Input type="text" placeholder="Limit Price" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            }
-                                            {
-                                                isStop &&
-                                                <FormField
-                                                    control={form.control}
-                                                    name="stop_price"
-                                                    render={({ field }) => (
-                                                        <FormItem className="w-[90%]">
-                                                            <FormControl>
-                                                                <Input type="text" placeholder="Stop Price" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            }
-                                            <FormField
-                                                control={form.control}
-                                                name="qty"
-                                                render={({ field }) => (
-                                                    <FormItem className="w-[90%]">
-                                                        <FormControl>
-                                                            <Input type="text" placeholder="Quantity" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="time_in_force"
-                                                render={({ field }) => (
-                                                    <FormItem className="w-[90%]">
-                                                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled>
-                                                            <FormControl>
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Select order timing" />
-                                                                </SelectTrigger>
-                                                            </FormControl>
-                                                            <SelectContent>
-                                                                <SelectItem value="day">Day</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <Dialog>
-                                                <DialogTrigger asChild>
-                                                    <Button variant="destructive" className="w-[90%]">Sell</Button>
-                                                </DialogTrigger>
-                                                <DialogContent className="w-72">
-                                                </DialogContent>
-                                            </Dialog>
-                                        </form>
-                                    </Form>
-                                </div>
+
+                                                <p className="">Estimated Cost: $ {(form.getValues().qty * assetData.latest_closing).toFixed(2)}</p>
+
+                                                <Button variant="destructive"
+                                                    className={`w-[90%] ${form.getValues("side") === "Buy" && "bg-[--success]"}`}
+                                                    disabled={form.getValues("side") === "None"}>
+                                                    <span>{form.getValues("side") !== "None" ? "Set Order" : "Order Side Not Selected"}</span>
+                                                </Button>
+                                            </form>
+                                        </Form>
+                                    </DialogContent>
+                                </Dialog>
                             </CardContent>
                         </Card>
                     </div>
