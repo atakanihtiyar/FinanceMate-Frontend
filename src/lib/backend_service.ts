@@ -1,7 +1,7 @@
-
+const BACKEND_URL = "http://localhost:5050"
 
 export const checkAuth = async () => {
-    const response = await fetch("http://localhost:5050/session/check", {
+    const response = await fetch(`${BACKEND_URL}/session/check`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -20,7 +20,7 @@ export const checkAuth = async () => {
 }
 
 export const login = async (email_address: String, password: String) => {
-    const response = await fetch("http://localhost:5050/session/login", {
+    const response = await fetch(`${BACKEND_URL}/session/login`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -40,7 +40,7 @@ export const login = async (email_address: String, password: String) => {
 }
 
 export const logout = async () => {
-    const response = await fetch("http://localhost:5050/session/logout", {
+    const response = await fetch(`${BACKEND_URL}/session/logout`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -59,7 +59,7 @@ export const logout = async () => {
 }
 
 export const register = async (formData: unknown) => {
-    const response = await fetch("http://localhost:5050/users", {
+    const response = await fetch(`${BACKEND_URL}/users`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -79,7 +79,7 @@ export const register = async (formData: unknown) => {
 }
 
 export const getTradingData = async (account_number: Number) => {
-    const response = await fetch(`http://localhost:5050/trading/${account_number}/account`, {
+    const response = await fetch(`${BACKEND_URL}/trading/${account_number}/account`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -97,7 +97,7 @@ export const getTradingData = async (account_number: Number) => {
 }
 
 export const getPositions = async (account_number: Number) => {
-    const response = await fetch(`http://localhost:5050/trading/${account_number}/positions`, {
+    const response = await fetch(`${BACKEND_URL}/trading/${account_number}/positions`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -116,7 +116,7 @@ export const getPositions = async (account_number: Number) => {
 }
 
 export const getOrders = async (account_number: Number) => {
-    const response = await fetch(`http://localhost:5050/trading/${account_number}/orders`, {
+    const response = await fetch(`${BACKEND_URL}/trading/${account_number}/orders`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -135,12 +135,36 @@ export const getOrders = async (account_number: Number) => {
 }
 
 export const getAssetData = async (symbol_or_asset_id: String) => {
-    const response = await fetch(`http://localhost:5050/assets/${symbol_or_asset_id}`, {
+    const response = await fetch(`${BACKEND_URL}/assets/${symbol_or_asset_id}`, {
         method: "GET",
         credentials: "include",
         headers: {
             "Content-Type": "application/json",
         },
+    })
+
+    const data = await response.json()
+    return { status: response.status, data }
+}
+
+interface Order {
+    symbol: string,
+    qty: string,
+    side: "buy" | "sell",
+    type: "market" | "limit" | "stop" | "stop_limit",
+    time_in_force: "day",
+    limit_price?: string,
+    stop_price?: string,
+}
+
+export const postOrder = async (account_number: Number, order: Order) => {
+    const response = await fetch(`${BACKEND_URL}/trading/${account_number}/orders`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(order)
     })
 
     const data = await response.json()

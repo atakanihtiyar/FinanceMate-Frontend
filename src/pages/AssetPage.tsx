@@ -37,14 +37,15 @@ import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
+import { postOrder } from "@/lib/backend_service"
 
 const FormSchema = z.object({
     is_limit: z.boolean(),
     is_stop: z.boolean(),
-    limit_price: z.string().transform(v => Number(v) || 0).optional(),
-    stop_price: z.string().transform(v => Number(v) || 0).optional(),
-    qty: z.string().transform(v => Number(v) || 0),
-    side: z.enum(["None", "Sell", "Buy"]),
+    limit_price: z.coerce.number().optional(),
+    stop_price: z.coerce.number().optional(),
+    qty: z.coerce.number(),
+    side: z.enum(["none", "sell", "buy"]),
     time_in_force: z.enum(["day"]),
 }).refine(schema => {
     if (schema.is_limit && !schema.limit_price)
@@ -62,7 +63,7 @@ const FormSchema = z.object({
 
 const AssetPage = () => {
     const navigate = useNavigate()
-    const { isLoggedIn, isAuthRequestEnd } = useContext(UserContext) as UserContextValues
+    const { user, isLoggedIn, isAuthRequestEnd } = useContext(UserContext) as UserContextValues
     useEffect(() => {
         if (!isAuthRequestEnd) return
         if (!isLoggedIn) navigate("/")
@@ -86,7 +87,7 @@ const AssetPage = () => {
             limit_price: 0,
             stop_price: 0,
             qty: 0,
-            side: "None",
+            side: "none",
             time_in_force: "day",
         }
     })
@@ -99,7 +100,21 @@ const AssetPage = () => {
     }
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
-        console.log(data)
+        const createOrder = async () => {
+            if (!user || data.side === "none") return
+
+            const response = await postOrder(user.account_number, {
+                symbol: assetData.symbol,
+                qty: data.qty.toString(),
+                side: data.side,
+                type: data.is_limit && data.is_stop ? "stop_limit" : (data.is_limit ? "limit" : (data.is_stop ? "stop" : "market")),
+                time_in_force: data.time_in_force,
+                limit_price: data.limit_price?.toString(),
+                stop_price: data.stop_price?.toString(),
+            })
+            if (response.status === 200) navigate("/dashboard")
+        }
+        createOrder()
     }
 
     return (
@@ -126,21 +141,21 @@ const AssetPage = () => {
                                         <DialogTrigger asChild>
                                             <Button variant="destructive" className="w-[90%] bg-[--success]"
                                                 onClick={() => {
-                                                    form.setValue("side", "Buy")
+                                                    form.setValue("side", "buy")
                                                 }}>Buy</Button>
                                         </DialogTrigger>
                                         <DialogTrigger asChild>
                                             <Button variant="destructive" className="w-[90%]"
                                                 onClick={() => {
-                                                    form.setValue("side", "Sell")
+                                                    form.setValue("side", "sell")
                                                 }}>Sell</Button>
                                         </DialogTrigger>
                                     </div>
                                     <DialogContent className="w-72 flex flex-col items-center">
                                         <DialogHeader className="w-[90%] mb-2">
-                                            <DialogTitle className="text-xl">Create {form.getValues("side").toLowerCase()} Order</DialogTitle>
+                                            <DialogTitle className="text-xl">Create {form.getValues("side")} order</DialogTitle>
                                             <DialogDescription>
-                                                This action will create an {form.getValues("side").toLowerCase()} order. Do you accept the following order?
+                                                This action will create an {form.getValues("side")} order. Do you accept the following order?
                                             </DialogDescription>
                                         </DialogHeader>
                                         <Separator className="mb-2" />
@@ -255,9 +270,9 @@ const AssetPage = () => {
                                                 <p className="">Estimated Cost: $ {(form.getValues().qty * assetData.latest_closing).toFixed(2)}</p>
 
                                                 <Button variant="destructive"
-                                                    className={`w-[90%] ${form.getValues("side") === "Buy" && "bg-[--success]"}`}
-                                                    disabled={form.getValues("side") === "None"}>
-                                                    <span>{form.getValues("side") !== "None" ? "Set Order" : "Order Side Not Selected"}</span>
+                                                    className={`w-[90%] ${form.getValues("side") === "buy" && "bg-[--success]"}`}
+                                                    disabled={form.getValues("side") === "none"}>
+                                                    <span>{form.getValues("side") !== "none" ? "Set Order" : "Order Side Not Selected"}</span>
                                                 </Button>
                                             </form>
                                         </Form>

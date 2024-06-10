@@ -212,13 +212,13 @@ const DashboardPage = () => {
                                         orders.length > 0 ?
                                             orders.map((item) => {
                                                 return (
-                                                    <TableRow key={item.symbol}>
+                                                    <TableRow key={item.order_id}>
                                                         <TableCell className="font-medium">{item.symbol}</TableCell>
                                                         <TableCell>{new Date(item.created_at).toLocaleString()}</TableCell>
-                                                        <TableCell>{new Date(item.filled_at).toLocaleString()}</TableCell>
+                                                        <TableCell>{item.filled_at ? (new Date(item.filled_at).toLocaleString()) : "-"}</TableCell>
                                                         <TableCell>{item.filled_at ? item.filled_qty : item.qty}</TableCell>
-                                                        <TableCell>{item.limit_price}</TableCell>
-                                                        <TableCell>{item.stop_price}</TableCell>
+                                                        <TableCell>{item.limit_price ? item.limit_price : "-"}</TableCell>
+                                                        <TableCell>{item.stop_price ? item.stop_price : "-"}</TableCell>
                                                         <TableCell className="text-right">{item.side}</TableCell>
                                                     </TableRow>)
                                             }) : (
