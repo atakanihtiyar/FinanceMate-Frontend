@@ -37,8 +37,11 @@ const Navbar = () => {
 
     const onSearchSubmit = (values: z.infer<typeof searchFormSchema>) => {
         const getData = async () => {
-            const assetData = await getAssetData(values.searchText.toUpperCase())
-            navigate(`/assets`, { state: { assetData } })
+            const asset = await getAssetData(values.searchText.toUpperCase())
+            if (asset.status === 200)
+                navigate(`/assets`, { state: { assetData: asset.data } })
+            else
+                console.log(asset)
         }
         getData()
     }

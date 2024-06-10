@@ -144,11 +144,5 @@ export const getAssetData = async (symbol_or_asset_id: String) => {
     })
 
     const data = await response.json()
-    if (response.status === 200) {
-        return data
-    }
-    else {
-        console.log(data)
-        return false
-    }
+    return { status: response.status, data }
 }
