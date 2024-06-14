@@ -170,3 +170,16 @@ export const postOrder = async (account_number: Number, order: Order) => {
     const data = await response.json()
     return { status: response.status, data }
 }
+
+export const getHistoricalBars = async (symbol_or_asset_id: String) => {
+    const response = await fetch(`${BACKEND_URL}/data/${symbol_or_asset_id}/bars`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+
+    const data = await response.json()
+    return { status: response.status, data }
+}

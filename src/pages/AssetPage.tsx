@@ -37,7 +37,9 @@ import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
-import { postOrder } from "@/lib/backend_service"
+import { getHistoricalBars, postOrder } from "@/lib/backend_service"
+
+import CandlestickChart, { Bar } from "@/components/parts/CandleStickChart"
 
 const FormSchema = z.object({
     is_limit: z.boolean(),
@@ -63,10 +65,31 @@ const FormSchema = z.object({
 
 const AssetPage = () => {
     const navigate = useNavigate()
+    const [chartData, setChartData] = useState<Bar[]>([])
+
+    const fetchData = async () => {
+        const response = await getHistoricalBars(assetData.symbol)
+        if (response.status === 200) {
+            const newData: Bar[] = response.data.bars.map((bar: { t: string, l: number, o: number, c: number, h: number }) => {
+                return {
+                    date: new Date(bar.t),
+                    low: bar.l,
+                    open: bar.o,
+                    close: bar.c,
+                    high: bar.h,
+                }
+            })
+            setChartData(newData)
+        }
+        else
+            setChartData([])
+    }
+
     const { user, isLoggedIn, isAuthRequestEnd } = useContext(UserContext) as UserContextValues
     useEffect(() => {
         if (!isAuthRequestEnd) return
         if (!isLoggedIn) navigate("/")
+        fetchData()
     }, [isLoggedIn])
 
     const location = useLocation()
@@ -74,7 +97,7 @@ const AssetPage = () => {
         symbol: "---",
         name: "---",
         exchange: "---",
-        latest_closing: "00.00",
+        latest_closing: 0.00,
     }
 
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
@@ -127,8 +150,11 @@ const AssetPage = () => {
                     </CardHeader>
                 </Card>
                 <div className="w-full grid grid-cols-6 justify-center items-start gap-2">
-                    <div className="h-[512px] w-full col-span-4 border-[1px] border-[var(--muted)] rounded-sm flex justify-center items-center">
-                        <p className="text-center">GRAPH PLACEHOLDER</p>
+                    <div className="h-[512px] w-full col-span-4 flex justify-center items-center">
+                        {
+                            chartData.length !== 0 &&
+                            <CandlestickChart data={chartData} />
+                        }
                     </div>
                     <div className="col-span-2">
                         <Card className="border-0">
