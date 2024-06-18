@@ -39,7 +39,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { getHistoricalBars, postOrder } from "@/lib/backend_service"
 
-import CandlestickChart, { Bar } from "@/components/parts/CandleStickChart"
+import CandlestickChart from "@/components/parts/CandlestickChart/CandlestickChart"
+import { Bar } from "@/components/parts/CandlestickChart/Candlesticks"
+import * as d3 from "d3"
 
 const FormSchema = z.object({
     is_limit: z.boolean(),
@@ -67,6 +69,13 @@ const AssetPage = () => {
     const navigate = useNavigate()
     const [chartData, setChartData] = useState<Bar[]>([])
 
+    const { user, isLoggedIn, isAuthRequestEnd } = useContext(UserContext) as UserContextValues
+    useEffect(() => {
+        if (!isAuthRequestEnd) return
+        if (!isLoggedIn) navigate("/")
+    }, [isLoggedIn])
+
+    const location = useLocation()
     const fetchData = async () => {
         const response = await getHistoricalBars(assetData.symbol)
         if (response.status === 200) {
@@ -85,20 +94,11 @@ const AssetPage = () => {
             setChartData([])
     }
 
-    const { user, isLoggedIn, isAuthRequestEnd } = useContext(UserContext) as UserContextValues
+    const assetData = location.state ? location.state.assetData : null
     useEffect(() => {
-        if (!isAuthRequestEnd) return
-        if (!isLoggedIn) navigate("/")
-        fetchData()
-    }, [isLoggedIn])
-
-    const location = useLocation()
-    const assetData = location.state ? location.state.assetData : {
-        symbol: "---",
-        name: "---",
-        exchange: "---",
-        latest_closing: 0.00,
-    }
+        if (assetData)
+            fetchData()
+    }, [assetData])
 
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 
@@ -150,10 +150,11 @@ const AssetPage = () => {
                     </CardHeader>
                 </Card>
                 <div className="w-full grid grid-cols-6 justify-center items-start gap-2">
-                    <div className="h-[512px] w-full col-span-4 flex justify-center items-center">
+                    <div className="h-[512px] w-full col-span-4">
                         {
                             chartData.length !== 0 &&
-                            <CandlestickChart data={chartData} />
+                            <CandlestickChart data={chartData} interval="1H"
+                                tooltipDateFormatter={d3.timeFormat("%d %B %Y %H:%M")} />
                         }
                     </div>
                     <div className="col-span-2">
