@@ -1,3 +1,5 @@
+import { Bar } from "@/components/parts/CandlestickChart/Candlesticks"
+
 const BACKEND_URL = "http://localhost:5050"
 
 export const checkAuth = async () => {
@@ -171,8 +173,8 @@ export const postOrder = async (account_number: Number, order: Order) => {
     return { status: response.status, data }
 }
 
-export const getHistoricalBars = async (symbol_or_asset_id: String) => {
-    const response = await fetch(`${BACKEND_URL}/data/${symbol_or_asset_id}/bars`, {
+export const getHistoricalBars = async (symbol_or_asset_id: String, timeFrame: "1Hour" | "1Day") => {
+    const response = await fetch(`${BACKEND_URL}/data/${symbol_or_asset_id}/bars?` + new URLSearchParams({ timeFrame }), {
         method: "GET",
         credentials: "include",
         headers: {
@@ -180,6 +182,15 @@ export const getHistoricalBars = async (symbol_or_asset_id: String) => {
         },
     })
 
-    const data = await response.json()
+    let data = await response.json()
+    data.bars = data.bars.map((bar: { t: string, l: number, o: number, c: number, h: number }) => {
+        return {
+            date: new Date(bar.t),
+            low: bar.l,
+            open: bar.o,
+            close: bar.c,
+            high: bar.h,
+        }
+    })
     return { status: response.status, data }
 }

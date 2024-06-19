@@ -40,7 +40,6 @@ import { Separator } from "@/components/ui/separator"
 import { getHistoricalBars, postOrder } from "@/lib/backend_service"
 
 import CandlestickChart from "@/components/parts/CandlestickChart/CandlestickChart"
-import { Bar } from "@/components/parts/CandlestickChart/Candlesticks"
 import * as d3 from "d3"
 
 const FormSchema = z.object({
@@ -67,8 +66,6 @@ const FormSchema = z.object({
 
 const AssetPage = () => {
     const navigate = useNavigate()
-    const [chartData, setChartData] = useState<Bar[]>([])
-
     const { user, isLoggedIn, isAuthRequestEnd } = useContext(UserContext) as UserContextValues
     useEffect(() => {
         if (!isAuthRequestEnd) return
@@ -76,29 +73,7 @@ const AssetPage = () => {
     }, [isLoggedIn])
 
     const location = useLocation()
-    const fetchData = async () => {
-        const response = await getHistoricalBars(assetData.symbol)
-        if (response.status === 200) {
-            const newData: Bar[] = response.data.bars.map((bar: { t: string, l: number, o: number, c: number, h: number }) => {
-                return {
-                    date: new Date(bar.t),
-                    low: bar.l,
-                    open: bar.o,
-                    close: bar.c,
-                    high: bar.h,
-                }
-            })
-            setChartData(newData)
-        }
-        else
-            setChartData([])
-    }
-
     const assetData = location.state ? location.state.assetData : null
-    useEffect(() => {
-        if (assetData)
-            fetchData()
-    }, [assetData])
 
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 
@@ -139,7 +114,7 @@ const AssetPage = () => {
         }
         createOrder()
     }
-
+    d3.scaleTime().tickFormat()
     return (
         <div className="min-w-screen min-h-screen flex flex-col justify-center items-center space-x-48">
             <div className="w-8/12 grow py-8 flex flex-col justify-start items-start gap-0">
@@ -151,11 +126,56 @@ const AssetPage = () => {
                 </Card>
                 <div className="w-full grid grid-cols-6 justify-center items-start gap-2">
                     <div className="h-[512px] w-full col-span-4">
-                        {
-                            chartData.length !== 0 &&
-                            <CandlestickChart data={chartData} interval="1H"
-                                tooltipDateFormatter={d3.timeFormat("%d %B %Y %H:%M")} />
-                        }
+                        <CandlestickChart
+                            symbol={assetData.symbol}
+                            getData={(symbol: string, timeFrame: string) => {
+                                return getHistoricalBars(symbol, timeFrame as "1Hour" | "1Day").then(res => {
+                                    return res.data.bars
+                                })
+                            }}
+                            timeFrames={[
+                                {
+                                    title: "1 Hour",
+                                    interval: "1Hour",
+                                    timeOffset: 1000 * 60 * 60 * 2,
+                                    ticks: {
+                                        formatter: d3.utcFormat("%H:%M"),
+                                        filter: (date: Date, _index: number, lastTickDate: Date) => date.getUTCHours() % 8 === 0 || date.getUTCDate() !== lastTickDate.getUTCDate(),
+                                    },
+                                    secondaryTicks: {
+                                        formatter: d3.utcFormat("%a %d"),
+                                        filter: (date: Date) => date.getUTCHours() === 8,
+                                    }
+                                },
+                                {
+                                    title: "1 Day",
+                                    interval: "1Day",
+                                    timeOffset: 1000 * 60 * 60 * 24,
+                                    ticks: {
+                                        formatter: d3.utcFormat("%a %d"),
+                                        filter: (date: Date, index: number, lastTickDate: Date) => index % 6 === 0 && date.getUTCDate() !== lastTickDate.getUTCDate(),
+                                    },
+                                    secondaryTicks: {
+                                        formatter: (date: Date) => date.getMonth() % 12 === 0 ? d3.utcFormat("%b %Y")(date) : d3.utcFormat("%b")(date),
+                                        filter: (date: Date, index: number, lastTickDate: Date) => index % 4 === 0 && date.getUTCMonth() !== lastTickDate.getUTCMonth(),
+                                    }
+                                },
+                                {
+                                    title: "1 Week",
+                                    interval: "1Week",
+                                    timeOffset: 1000 * 60 * 60 * 24 * 7,
+                                    ticks: {
+                                        formatter: d3.utcFormat("%a %d"),
+                                        filter: (date: Date, index: number, lastTickDate: Date) => index % 4 === 0 && date.getUTCMonth() !== lastTickDate.getUTCMonth(),
+                                    },
+                                    secondaryTicks: {
+                                        formatter: (date: Date) => date.getMonth() % 12 === 0 ? d3.utcFormat("%b %Y")(date) : d3.utcFormat("%b")(date),
+                                        filter: () => true,
+                                    }
+                                }
+                            ]}
+                            yAxisFormatter={d3.format("$~f")}
+                            tooltipDateFormatter={d3.utcFormat("%A %d %B %Y %H:%M")} />
                     </div>
                     <div className="col-span-2">
                         <Card className="border-0">
