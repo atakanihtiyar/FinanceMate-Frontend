@@ -1,5 +1,3 @@
-import { Bar } from "@/components/parts/CandlestickChart/Candlesticks"
-
 const BACKEND_URL = "http://localhost:5050"
 
 export const checkAuth = async () => {
@@ -173,7 +171,8 @@ export const postOrder = async (account_number: Number, order: Order) => {
     return { status: response.status, data }
 }
 
-export const getHistoricalBars = async (symbol_or_asset_id: String, timeFrame: "1Hour" | "1Day") => {
+export type TimeFrameType = "1Hour" | "1Day" | "1Week"
+export const getHistoricalBars = async (symbol_or_asset_id: String, timeFrame: TimeFrameType) => {
     const response = await fetch(`${BACKEND_URL}/data/${symbol_or_asset_id}/bars?` + new URLSearchParams({ timeFrame }), {
         method: "GET",
         credentials: "include",

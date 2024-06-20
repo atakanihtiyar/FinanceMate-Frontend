@@ -37,10 +37,11 @@ import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
-import { getHistoricalBars, postOrder } from "@/lib/backend_service"
+import { getHistoricalBars, postOrder, TimeFrameType } from "@/lib/backend_service"
 
 import CandlestickChart from "@/components/parts/CandlestickChart/CandlestickChart"
 import * as d3 from "d3"
+import { Bar } from "@/components/parts/CandlestickChart/Candlesticks"
 
 const FormSchema = z.object({
     is_limit: z.boolean(),
@@ -74,6 +75,22 @@ const AssetPage = () => {
 
     const location = useLocation()
     const assetData = location.state ? location.state.assetData : null
+
+    const [chartData, setChartData] = useState<Bar[]>([])
+    const [timeFrame, setTimeFrame] = useState<TimeFrameType>("1Hour")
+    const fetchData = async () => {
+        const response = await getHistoricalBars(assetData.symbol, timeFrame)
+        if (response.status === 200) {
+            setChartData(response.data.bars)
+        }
+        else
+            setChartData([])
+    }
+
+    useEffect(() => {
+        if (assetData)
+            fetchData()
+    }, [assetData, timeFrame])
 
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
 
@@ -127,53 +144,22 @@ const AssetPage = () => {
                 <div className="w-full grid grid-cols-6 justify-center items-start gap-2">
                     <div className="h-[512px] w-full col-span-4">
                         <CandlestickChart
-                            symbol={assetData.symbol}
-                            getData={(symbol: string, timeFrame: string) => {
-                                return getHistoricalBars(symbol, timeFrame as "1Hour" | "1Day").then(res => {
-                                    return res.data.bars
-                                })
-                            }}
-                            timeFrames={[
+                            data={chartData}
+                            intervals={[
                                 {
                                     title: "1 Hour",
-                                    interval: "1Hour",
-                                    timeOffset: 1000 * 60 * 60 * 2,
-                                    ticks: {
-                                        formatter: d3.utcFormat("%H:%M"),
-                                        filter: (date: Date, _index: number, lastTickDate: Date) => date.getUTCHours() % 8 === 0 || date.getUTCDate() !== lastTickDate.getUTCDate(),
-                                    },
-                                    secondaryTicks: {
-                                        formatter: d3.utcFormat("%a %d"),
-                                        filter: (date: Date) => date.getUTCHours() === 8,
-                                    }
+                                    timeFrame: "1Hour",
                                 },
                                 {
                                     title: "1 Day",
-                                    interval: "1Day",
-                                    timeOffset: 1000 * 60 * 60 * 24,
-                                    ticks: {
-                                        formatter: d3.utcFormat("%a %d"),
-                                        filter: (date: Date, index: number, lastTickDate: Date) => index % 6 === 0 && date.getUTCDate() !== lastTickDate.getUTCDate(),
-                                    },
-                                    secondaryTicks: {
-                                        formatter: (date: Date) => date.getMonth() % 12 === 0 ? d3.utcFormat("%b %Y")(date) : d3.utcFormat("%b")(date),
-                                        filter: (date: Date, index: number, lastTickDate: Date) => index % 4 === 0 && date.getUTCMonth() !== lastTickDate.getUTCMonth(),
-                                    }
+                                    timeFrame: "1Day",
                                 },
                                 {
                                     title: "1 Week",
-                                    interval: "1Week",
-                                    timeOffset: 1000 * 60 * 60 * 24 * 7,
-                                    ticks: {
-                                        formatter: d3.utcFormat("%a %d"),
-                                        filter: (date: Date, index: number, lastTickDate: Date) => index % 4 === 0 && date.getUTCMonth() !== lastTickDate.getUTCMonth(),
-                                    },
-                                    secondaryTicks: {
-                                        formatter: (date: Date) => date.getMonth() % 12 === 0 ? d3.utcFormat("%b %Y")(date) : d3.utcFormat("%b")(date),
-                                        filter: () => true,
-                                    }
+                                    timeFrame: "1Week",
                                 }
                             ]}
+                            onIntervalBtnClicked={(timeFrame: string) => setTimeFrame(timeFrame as TimeFrameType)}
                             yAxisFormatter={d3.format("$~f")}
                             tooltipDateFormatter={d3.utcFormat("%A %d %B %Y %H:%M")} />
                     </div>

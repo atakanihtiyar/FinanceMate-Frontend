@@ -1,38 +1,25 @@
 import React, { useEffect, useRef, useState } from "react"
 import * as d3 from "d3"
-import { XAxis, XTicks, YAxis } from "./CandlestickAxes"
+import { XAxis, YAxis } from "./CandlestickAxes"
 import Candlesticks, { Bar } from "./Candlesticks"
 import { Button } from "@/components/ui/button"
 
-interface TimeFrames {
+interface Interval {
     title: string,
-    interval: string,
-    timeOffset: number,
-    ticks: XTicks,
-    secondaryTicks?: XTicks,
+    timeFrame: string,
 }
 
 interface CandlestickChartProps {
-    symbol: string,
-    timeFrames: TimeFrames[]
-    getData: (symbol: string, timeFrame: string) => Promise<Bar[]>,
+    data: Bar[],
+    intervals: Interval[],
+    onIntervalBtnClicked: (timeFrame: string) => void,
     yAxisFormatter: (value: number | { valueOf(): number }) => string,
     tooltipDateFormatter: (date: Date) => string
-
 }
 
-const CandlestickChart: React.FC<CandlestickChartProps> = ({ symbol, timeFrames, yAxisFormatter, getData, tooltipDateFormatter }) => {
+const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, onIntervalBtnClicked, yAxisFormatter, tooltipDateFormatter }) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
-
-    const [data, setData] = useState<Bar[]>([])
-    const [currTimeFrame, setCurrTimeFrame] = useState<TimeFrames>(timeFrames[0])
-
-    useEffect(() => {
-        getData(symbol, currTimeFrame.interval).then((bars: Bar[]) => {
-            setData(bars)
-        })
-    }, [symbol, currTimeFrame])
 
     const tooltipRef = useRef<HTMLDivElement>(null)
     const [tooltipBar, setTooltipBar] = useState<Bar | null>(null)
@@ -59,8 +46,9 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ symbol, timeFrames,
 
     if (!data || data.length === 0) return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
 
-    const startDay = new Date(data[0].date.getTime() - currTimeFrame.timeOffset)
-    const endDay = new Date(data[data.length - 1].date.getTime() + currTimeFrame.timeOffset)
+    const timeOffset = data[1].date.getTime() - data[0].date.getTime()
+    const startDay = new Date(data[0].date.getTime() - timeOffset)
+    const endDay = new Date(data[data.length - 1].date.getTime() + timeOffset)
     const allDates = [startDay, ...data.map((bar: Bar) => bar.date), endDay]
     const minPrice: number = d3.min(data, (bar: Bar) => bar.low * 0.98) as number
     const maxPrice: number = d3.max(data, (bar: Bar) => bar.high * 1.02) as number
@@ -78,9 +66,9 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ symbol, timeFrames,
         <div ref={containerRef} className="w-full h-full">
             <div className="border-b-2">
                 {
-                    timeFrames.map((btn: TimeFrames) => {
-                        return <Button key={btn.interval} variant="ghost" className="rounded-sm"
-                            onClick={() => setCurrTimeFrame(btn)}>{btn.title}</Button>
+                    intervals.map((btn: Interval) => {
+                        return <Button key={btn.timeFrame} variant="ghost" className="rounded-sm"
+                            onClick={() => onIntervalBtnClicked(btn.timeFrame)}>{btn.title}</Button>
                     })
                 }
             </div>
@@ -90,8 +78,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ symbol, timeFrames,
                         scale={xScale}
                         title="Date"
                         innerHeight={innerHeight}
-                        ticks={currTimeFrame.ticks}
-                        secondaryTicks={currTimeFrame.secondaryTicks}
                     />
                     <YAxis
                         scale={yScale}
