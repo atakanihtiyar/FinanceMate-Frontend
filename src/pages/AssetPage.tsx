@@ -147,6 +147,18 @@ const AssetPage = () => {
                             data={chartData}
                             intervals={[
                                 {
+                                    title: "5 Minutes",
+                                    timeFrame: "5Min",
+                                },
+                                {
+                                    title: "15 Minutes",
+                                    timeFrame: "15Min",
+                                },
+                                {
+                                    title: "30 Minutes",
+                                    timeFrame: "30Min",
+                                },
+                                {
                                     title: "1 Hour",
                                     timeFrame: "1Hour",
                                 },
@@ -157,6 +169,14 @@ const AssetPage = () => {
                                 {
                                     title: "1 Week",
                                     timeFrame: "1Week",
+                                },
+                                {
+                                    title: "1 Month",
+                                    timeFrame: "1Month",
+                                },
+                                {
+                                    title: "1 Year",
+                                    timeFrame: "12Month",
                                 }
                             ]}
                             onIntervalBtnClicked={(timeFrame: string) => setTimeFrame(timeFrame as TimeFrameType)}

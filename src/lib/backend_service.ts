@@ -171,7 +171,7 @@ export const postOrder = async (account_number: Number, order: Order) => {
     return { status: response.status, data }
 }
 
-export type TimeFrameType = "1Hour" | "1Day" | "1Week"
+export type TimeFrameType = "5Min" | "15Min" | "30Min" | "1Hour" | "1Week" | "1Day" | "1Week"
 export const getHistoricalBars = async (symbol_or_asset_id: String, timeFrame: TimeFrameType) => {
     const response = await fetch(`${BACKEND_URL}/data/${symbol_or_asset_id}/bars?` + new URLSearchParams({ timeFrame }), {
         method: "GET",

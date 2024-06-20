@@ -1,16 +1,30 @@
 import * as d3 from "d3"
-import { useRef } from "react";
+import { useRef } from "react"
 
-// Function to determine appropriate time format based on zoom level
-function getTickFormat(allDates: Date[]) {
-    const MS_PER_DAY = 1000 * 60 * 60 * 24;
-    const rangeInDays = (allDates[1].getTime() - allDates[0].getTime()) / MS_PER_DAY;
+const formatMillisecond = d3.utcFormat(".%L"),
+    formatSecond = d3.utcFormat(":%S"),
+    formatMinute = d3.utcFormat("%H:%M"),
+    formatHour = d3.utcFormat("%H:%M"),
+    formatDay = d3.utcFormat("%a %d"),
+    formatWeek = d3.utcFormat("%b %d"),
+    formatMonth = d3.utcFormat("%B"),
+    formatYear = d3.utcFormat("%Y")
 
-    // Helper functions
-    const isNewDay = (date: Date, lastTickDate: Date) => date.getUTCDate() !== lastTickDate.getUTCDate()
-    const isNewWeek = (date: Date, lastTickDate: Date) => Math.ceil(date.getUTCDate() / 7) !== Math.ceil(lastTickDate.getUTCDate() / 7)
-    const isNewMonth = (date: Date, lastTickDate: Date) => date.getUTCMonth() !== lastTickDate.getUTCMonth()
-    const isNewYear = (date: Date, lastTickDate: Date) => date.getUTCFullYear() !== lastTickDate.getUTCFullYear()
+function multiFormat(date: Date, lastTickDate: Date) {
+    return (
+        lastTickDate.getUTCFullYear() !== date.getUTCFullYear() ? formatYear
+            : lastTickDate.getUTCMonth() !== date.getUTCMonth() ? formatMonth
+                : lastTickDate.getUTCDate() - date.getUTCDate() >= 7 ? formatWeek
+                    : lastTickDate.getUTCDate() !== date.getUTCDate() ? formatDay
+                        : lastTickDate.getUTCHours() !== date.getUTCHours() ? formatHour
+                            : lastTickDate.getUTCMinutes() !== date.getUTCMinutes() ? formatMinute
+                                : lastTickDate.getUTCSeconds() !== date.getUTCSeconds() ? formatSecond
+                                    : formatMillisecond)(date)
+}
+
+function getTickFormat(tickCountGap: number, tickTimeGap: number) {
+    const isTimeGapReached = (date: Date, lastTickDate: Date) => (date.getTime() - lastTickDate.getTime()) > tickTimeGap
+    const isCountGapReached = (index: number, lastTickIndex: number) => index - lastTickIndex > tickCountGap
 
     interface FilterProps {
         date: Date,
@@ -19,45 +33,11 @@ function getTickFormat(allDates: Date[]) {
         lastTickIndex: number,
     }
 
-    const createFormatConfig = (
-        formatter: (date: Date) => string,
-        filter: (props: FilterProps) => boolean,
-        secondaryFormatter: (date: Date) => string,
-        secondaryFilter: (props: FilterProps) => boolean) => ({
-            formatter,
-            filter,
-            secondaryFormatter,
-            secondaryFilter
-        });
-
-    if (rangeInDays < 1) {  // hourly candles
-        return createFormatConfig(
-            d3.utcFormat("%a %d"),
-            ({ date, lastTickDate }) => (date.getUTCHours() === 8 && date.getUTCMinutes() === 0) || isNewDay(date, lastTickDate),
-            d3.utcFormat("%H:%M"),
-            ({ date }) => date.getUTCHours() === 16 && date.getUTCMinutes() === 0
-        );
-    } else if (rangeInDays < 7) {  // daily candles
-        return createFormatConfig(
-            d3.utcFormat("%a %d"),
-            ({ date, index, lastTickDate, lastTickIndex }) => date.getUTCDate() < 27 && index - lastTickIndex === 7 && isNewWeek(date, lastTickDate),
-            d3.utcFormat("%b %Y"),
-            ({ date, lastTickDate }) => isNewMonth(date, lastTickDate)
-        );
-    } else if (rangeInDays < 30) {  // weekly candles
-        return createFormatConfig(
-            d3.utcFormat("%b"),
-            ({ date, lastTickDate }) => date.getUTCMonth() !== 0 && isNewMonth(date, lastTickDate),
-            d3.utcFormat("%Y"),
-            ({ date, lastTickDate }) => isNewYear(date, lastTickDate)
-        );
-    } else {  // monthly candles
-        return createFormatConfig(
-            d3.utcFormat("%b %d"),
-            ({ date, lastTickDate }) => isNewYear(date, lastTickDate),
-            (date) => date.getUTCMonth() % 12 === 0 ? d3.utcFormat("%b %Y")(date) : d3.utcFormat("%b")(date),
-            ({ date, index, lastTickDate }) => index % 4 === 0 && isNewMonth(date, lastTickDate)
-        );
+    return {
+        formatter: multiFormat,
+        filter: ({ date, index, lastTickDate, lastTickIndex }: FilterProps) =>
+            isTimeGapReached(date, lastTickDate) &&
+            isCountGapReached(index, lastTickIndex)
     }
 }
 
@@ -66,12 +46,19 @@ const XAxis = ({ scale, title, innerHeight }: { scale: d3.ScaleBand<Date> | d3.S
 
     const [xMin, xMax] = scale.range()
     const _ticks = scale.domain()
-    const { formatter, filter, secondaryFormatter, secondaryFilter } = getTickFormat(scale.domain())
 
-    const lastTick = useRef({ date: _ticks[0], index: 0 })
-    const currTick = useRef({ date: _ticks[0], index: 0 })
-    lastTick.current = { date: _ticks[0], index: 0 }
-    currTick.current = { date: _ticks[0], index: 0 }
+    const tickCount = 10
+    const tickCountGap = Math.ceil(_ticks.length / tickCount)
+    const timeDiff = new Date(_ticks[_ticks.length - 1].getTime() - _ticks[0].getTime())
+    const tickTimeGap = Math.ceil(timeDiff.getTime() / tickCount)
+
+    const { formatter, filter } = getTickFormat(tickCountGap, tickTimeGap)
+
+    const startDate = _ticks[0]
+    const currTick = useRef({ date: startDate, index: 0 })
+    const lastTick = useRef({ date: new Date(startDate.getTime() - tickTimeGap), index: 0 })
+    currTick.current = { date: startDate, index: 0 }
+    lastTick.current = { date: new Date(startDate.getTime() - tickTimeGap), index: 0 }
 
     return (
         <g transform={`translate(${0},${innerHeight})`}>
@@ -106,25 +93,7 @@ const XAxis = ({ scale, title, innerHeight }: { scale: d3.ScaleBand<Date> | d3.S
                                 fill="currentColor"
                                 className="text-sm text-muted-foreground"
                             >
-                                {formatter(date)}
-                            </text>
-                        </g>
-                    }
-                    if (secondaryFilter({ date, index, lastTickDate: lastTick.current.date, lastTickIndex: lastTick.current.index })) {
-                        currTick.current.date = date
-                        currTick.current.index = index
-
-                        return <g key={date.toUTCString()} transform={`translate(${x},0)`}>
-                            <line y1={0} y2={8} stroke="currentColor" ></line>
-                            <line y1={0} y2={-innerHeight} stroke="currentColor" strokeOpacity={0.1}></line>
-                            <text
-                                y={10}
-                                dy="0.8em"
-                                textAnchor="middle"
-                                fill="currentColor"
-                                className="text-sm text-muted-foreground"
-                            >
-                                {secondaryFormatter(date)}
+                                {formatter(date, lastTick.current.date)}
                             </text>
                         </g>
                     }
