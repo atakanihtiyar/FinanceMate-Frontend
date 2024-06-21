@@ -7,27 +7,33 @@ import { Button } from "@/components/ui/button"
 interface Interval {
     title: string,
     timeFrame: string,
+    timeOffset: number
 }
 
 interface CandlestickChartProps {
     data: Bar[],
     intervals: Interval[],
+    defaultIntervalIndex: number,
     onIntervalBtnClicked: (timeFrame: string) => void,
     yAxisFormatter: (value: number | { valueOf(): number }) => string,
     tooltipDateFormatter: (date: Date) => string
 }
 
-const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, onIntervalBtnClicked, yAxisFormatter, tooltipDateFormatter }) => {
+const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultIntervalIndex, intervals, onIntervalBtnClicked, yAxisFormatter, tooltipDateFormatter }) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const svgRef = useRef<SVGSVGElement>(null)
     const tooltipRef = useRef<HTMLDivElement>(null)
 
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
     const [zoomTransform, setZoomTransform] = useState<d3.ZoomTransform>(d3.zoomIdentity)
+    const dataOnRight = useRef<boolean>(false)
+    const dataOnLeft = useRef<boolean>(false)
+
     const [tooltipBar, setTooltipBar] = useState<Bar | null>(null)
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
     const [tooltipTextColor, setTooltipTextColor] = useState<string>("")
 
+    const intervalRef = useRef<Interval>(intervals[defaultIntervalIndex])
     const availableBarsRef = useRef<Bar[]>([])
     const xScaleRef = useRef<d3.ScaleBand<Date>>(d3.scaleBand<Date>())
     const yScaleRef = useRef<d3.ScaleLinear<number, number>>(d3.scaleLinear())
@@ -61,26 +67,43 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
 
     let yScale = d3.scaleLinear()
         .domain([d3.min(data, (bar) => bar.low * 0.98)!, d3.max(data, (bar) => bar.high * 1.02)!])
+        .nice()
         .range([innerHeight, 0])
 
     const availableBars = getAvailableBars(data, xScale, yScale, zoomTransform)
     if (availableBars) {
-        availableBarsRef.current = availableBars
+        const filteredData = availableBars.filteredData
+        availableBarsRef.current = availableBars.filteredData
+        dataOnRight.current = availableBars.dataOnRight
+        dataOnLeft.current = availableBars.dataOnLeft
 
-        const offset = availableBars[1].date.getTime() - availableBars[0].date.getTime()
         xScale = xScale.domain([
-            new Date(availableBars[0].date.getTime() - offset),
-            ...availableBars.map((bar: Bar) => bar.date),
-            new Date(availableBars[availableBars.length - 1].date.getTime() + offset)
+            new Date(filteredData[0].date.getTime() - intervalRef.current.timeOffset),
+            ...filteredData.map((bar: Bar) => bar.date),
+            new Date(filteredData[filteredData.length - 1].date.getTime() + intervalRef.current.timeOffset)
         ])
 
         yScale = yScale.domain([
-            d3.min(availableBars, (bar: Bar) => bar.low * 0.98) as number,
-            d3.max(availableBars, (bar: Bar) => bar.high * 1.02) as number
+            d3.min(filteredData, (bar: Bar) => bar.low * 0.98) as number,
+            d3.max(filteredData, (bar: Bar) => bar.high * 1.02) as number
         ])
+            .nice()
+    }
 
-        xScaleRef.current = xScale
-        yScaleRef.current = yScale
+    xScaleRef.current = xScale
+    yScaleRef.current = yScale
+
+    const handleMouseEnter = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+        event.preventDefault()
+        document.body.classList.add("h-full")
+        document.body.classList.add("overflow-hidden")
+    }
+
+    const handleMouseExit = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+        event.preventDefault()
+        document.body.classList.remove("h-full")
+        document.body.classList.remove("overflow-hidden")
+        setIsDragging(false)
     }
 
     const handleMouseDown = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
@@ -89,15 +112,21 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
         setDragStart({ x: event.clientX, y: event.clientY })
     }
 
-    const handleMouseMove = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    const handleMouseHover = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
         event.preventDefault()
-        if (!isDragging) return
+        if (isDragging) {
+            const offsetX = (event.clientX - dragStart.x) / zoomTransform.k
+            const offsetY = (event.clientY - dragStart.y) / zoomTransform.k
 
-        let offsetX = (event.clientX - dragStart.x) / zoomTransform.k
-        let offsetY = (event.clientY - dragStart.y) / zoomTransform.k
+            const newTransform = zoomTransform.translate(offsetX, offsetY)
 
-        const newTransform = zoomTransform.translate(offsetX, offsetY)
-        setZoomTransform(newTransform)
+            if (!(dataOnLeft.current) && newTransform.x < zoomTransform.x)
+                return
+            if (!(dataOnRight.current) && newTransform.x > zoomTransform.x)
+                return
+
+            setZoomTransform(newTransform)
+        }
         setDragStart({ x: event.clientX, y: event.clientY })
     }
 
@@ -121,27 +150,57 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
 
     const handleWheel = (event: React.WheelEvent<SVGSVGElement>) => {
         event.preventDefault()
-        const scaleFactor = event.deltaY < 0 ? 1.1 : event.deltaY > 0 ? 0.9 : 0
-        if (scaleFactor === 0) return
-        const transform = zoomTransform.scale(scaleFactor)
-        if (transform.k < 1 || transform.k > 30) return
-        setZoomTransform(transform)
+
+        const scaleFactor = event.deltaY < 0 ? 1.1 : event.deltaY > 0 ? 0.9 : 1;
+        const newZoomLevel = zoomTransform.k * scaleFactor
+        const mousePosition = d3.pointer(event);
+
+        const x = (mousePosition[0] - zoomTransform.x) / zoomTransform.k;
+        const y = (mousePosition[1] - zoomTransform.y) / zoomTransform.k;
+
+        const newTransform = d3.zoomIdentity
+            .translate(mousePosition[0] - x * newZoomLevel, mousePosition[1] - y * newZoomLevel)
+            .scale(newZoomLevel);
+
+        if (!(dataOnLeft.current) && availableBarsRef.current.length < 10 && newTransform.x < zoomTransform.x)
+            return
+        if (!(dataOnRight.current) && availableBarsRef.current.length < 10 && newTransform.x > zoomTransform.x)
+            return
+        if (!(dataOnRight.current) && !(dataOnRight.current) && newTransform.k < zoomTransform.k)
+            return
+        if (dataOnRight.current && dataOnRight.current && availableBarsRef.current.length < 10 && newTransform.k > zoomTransform.k)
+            return
+
+        setZoomTransform(newTransform)
     }
 
     return (
         <div ref={containerRef} className="w-full h-full">
             <div className="border-b-2">
-                {intervals.map((btn) => (
-                    <Button key={btn.timeFrame} variant="ghost" className="rounded-sm"
-                        onClick={() => onIntervalBtnClicked(btn.timeFrame)}>{btn.title}</Button>
+                {intervals.map((interval: Interval) => (
+                    <Button key={interval.timeFrame} variant="ghost" className="rounded-sm"
+                        onClick={() => {
+                            availableBarsRef.current = []
+                            dataOnRight.current = false
+                            dataOnLeft.current = false
+
+                            xScaleRef.current = xScale.domain([])
+                            yScaleRef.current = yScale.domain([0, 0])
+
+                            intervalRef.current = interval
+                            setTooltipBar(null)
+                            setZoomTransform(d3.zoomIdentity)
+                            onIntervalBtnClicked(interval.timeFrame)
+                        }}>{interval.title}</Button>
                 ))}
             </div>
             <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="bg-transparent"
                 onWheel={handleWheel}
+                onMouseEnter={handleMouseEnter}
                 onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
+                onMouseMove={handleMouseHover}
                 onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
+                onMouseLeave={handleMouseExit}
             >
                 <g transform={`translate(${margin.left},${margin.top})`}>
                     <XAxis scale={xScaleRef.current} title="Date" innerHeight={innerHeight} />

@@ -14,7 +14,9 @@ export const getAvailableBars = (data: Bar[],
     zoomTransform: d3.ZoomTransform) => {
     const [xMin, xMax] = xScale.range()
     const [yMax, yMin] = yScale.range()
-    const filteredData = data.filter((bar: Bar) => {
+    let dataOnRight = true
+    let dataOnLeft = true
+    const filteredData = data.filter((bar: Bar, index: number) => {
         const bandWidth = xScale.bandwidth() * zoomTransform.k
 
         const x = zoomTransform.applyX(xScale(bar.date)!) + bandWidth / 2
@@ -29,11 +31,18 @@ export const getAvailableBars = (data: Bar[],
             yClose > yMin || yClose < yMax ||
             yHigh > yMin || yHigh < yMax)) return false
 
+        if (index === 0)
+            dataOnRight = false
+        if (index === data.length - 1)
+            dataOnLeft = false
+
         return true
     })
+
     if (filteredData.length > 5)
-        return filteredData
-    else return false
+        return { filteredData, dataOnRight, dataOnLeft }
+    else
+        return false
 }
 
 interface CandlesticksProps {

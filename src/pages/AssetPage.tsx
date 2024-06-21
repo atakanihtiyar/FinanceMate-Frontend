@@ -149,36 +149,45 @@ const AssetPage = () => {
                                 {
                                     title: "5 Minutes",
                                     timeFrame: "5Min",
+                                    timeOffset: 1000 * 60 * 5,
                                 },
                                 {
                                     title: "15 Minutes",
                                     timeFrame: "15Min",
+                                    timeOffset: 1000 * 60 * 15,
                                 },
                                 {
                                     title: "30 Minutes",
                                     timeFrame: "30Min",
+                                    timeOffset: 1000 * 60 * 30,
                                 },
                                 {
                                     title: "1 Hour",
                                     timeFrame: "1Hour",
+                                    timeOffset: 1000 * 60 * 60,
                                 },
                                 {
                                     title: "1 Day",
                                     timeFrame: "1Day",
+                                    timeOffset: 1000 * 60 * 60 * 24,
                                 },
                                 {
                                     title: "1 Week",
                                     timeFrame: "1Week",
+                                    timeOffset: 1000 * 60 * 60 * 24 * 7,
                                 },
                                 {
                                     title: "1 Month",
                                     timeFrame: "1Month",
+                                    timeOffset: 1000 * 60 * 60 * 24 * 30,
                                 },
                                 {
                                     title: "1 Year",
                                     timeFrame: "12Month",
+                                    timeOffset: 1000 * 60 * 60 * 24 * 365,
                                 }
                             ]}
+                            defaultIntervalIndex={4}
                             onIntervalBtnClicked={(timeFrame: string) => setTimeFrame(timeFrame as TimeFrameType)}
                             yAxisFormatter={d3.format("$~f")}
                             tooltipDateFormatter={d3.utcFormat("%A %d %B %Y %H:%M")} />
