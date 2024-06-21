@@ -8,6 +8,34 @@ export interface Bar {
     high: number
 }
 
+export const getAvailableBars = (data: Bar[],
+    xScale: d3.ScaleBand<Date>,
+    yScale: d3.ScaleLinear<number, number, never>,
+    zoomTransform: d3.ZoomTransform) => {
+    const [xMin, xMax] = xScale.range()
+    const [yMax, yMin] = yScale.range()
+    const filteredData = data.filter((bar: Bar) => {
+        const bandWidth = xScale.bandwidth() * zoomTransform.k
+
+        const x = zoomTransform.applyX(xScale(bar.date)!) + bandWidth / 2
+        if (x < xMin || x > xMax) return false
+
+        const yLow = zoomTransform.applyY(yScale(bar.low))
+        const yOpen = zoomTransform.applyY(yScale(bar.open))
+        const yClose = zoomTransform.applyY(yScale(bar.close))
+        const yHigh = zoomTransform.applyY(yScale(bar.high))
+        if (!(yLow > yMin || yLow < yMax ||
+            yOpen > yMin || yOpen < yMax ||
+            yClose > yMin || yClose < yMax ||
+            yHigh > yMin || yHigh < yMax)) return false
+
+        return true
+    })
+    if (filteredData.length > 5)
+        return filteredData
+    else return false
+}
+
 interface CandlesticksProps {
     data: Bar[],
     xScale: d3.ScaleBand<Date>,
@@ -18,11 +46,28 @@ interface CandlesticksProps {
 }
 
 const Candlesticks = ({ data, xScale, yScale, onMouseEnterCandle, onMouseExitCandle, onMouseHoverCandle }: CandlesticksProps) => {
+
+    const [xMin, xMax] = xScale.range()
+    const [yMax, yMin] = yScale.range()
+
     return (
         <g>
             {
                 data.map((bar: Bar) => {
-                    return <g key={bar.date.toString() + bar.close} transform={`translate(${xScale(bar.date)!}, 0)`}
+
+                    const x = xScale(bar.date)!
+                    if (x < xMin || x > xMax) return false
+
+                    const yLow = yScale(bar.low)
+                    const yOpen = yScale(bar.open)
+                    const yClose = yScale(bar.close)
+                    const yHigh = yScale(bar.high)
+                    if (!(yLow > yMin || yLow < yMax ||
+                        yOpen > yMin || yOpen < yMax ||
+                        yClose > yMin || yClose < yMax ||
+                        yHigh > yMin || yHigh < yMax)) return false
+
+                    return <g key={bar.date.toString() + bar.close} transform={`translate(${x}, 0)`}
                         onMouseEnter={() => onMouseEnterCandle(bar)}
                         onMouseLeave={onMouseExitCandle}
                         onMouseMove={(e: React.MouseEvent<SVGGElement, MouseEvent>) => onMouseHoverCandle({ x: e.pageX, y: e.pageY })}

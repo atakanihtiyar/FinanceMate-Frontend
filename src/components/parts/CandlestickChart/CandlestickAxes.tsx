@@ -42,7 +42,8 @@ function getTickFormat(tickCountGap: number, tickTimeGap: number) {
 }
 
 
-const XAxis = ({ scale, title, innerHeight }: { scale: d3.ScaleBand<Date> | d3.ScaleTime<number, number, never>, title: string, innerHeight: number }) => {
+const XAxis = ({ scale, title, innerHeight }:
+    { scale: d3.ScaleBand<Date> | d3.ScaleTime<number, number, never>, title: string, innerHeight: number }) => {
 
     const [xMin, xMax] = scale.range()
     const _ticks = scale.domain()
@@ -61,7 +62,7 @@ const XAxis = ({ scale, title, innerHeight }: { scale: d3.ScaleBand<Date> | d3.S
     lastTick.current = { date: new Date(startDate.getTime() - tickTimeGap), index: 0 }
 
     return (
-        <g transform={`translate(${0},${innerHeight})`}>
+        <g transform={`translate(${0},${innerHeight})`} >
             <text
                 x={xMax}
                 textAnchor="end"
@@ -74,15 +75,16 @@ const XAxis = ({ scale, title, innerHeight }: { scale: d3.ScaleBand<Date> | d3.S
             <line x1={xMin} x2={xMax} y1={0} y2={0} stroke="white" />
             {
                 _ticks?.map((date: Date, index: number) => {
-                    const x = scale(date)
                     if (currTick.current.index !== lastTick.current.index) {
                         lastTick.current.date = currTick.current.date
                         lastTick.current.index = currTick.current.index
                     }
+
                     if (filter({ date, index, lastTickDate: lastTick.current.date, lastTickIndex: lastTick.current.index })) {
                         currTick.current.date = date
                         currTick.current.index = index
 
+                        const x = scale(date)!
                         return <g key={date.toUTCString()} transform={`translate(${x},0)`}>
                             <line y1={0} y2={8} stroke="currentColor" ></line>
                             <line y1={0} y2={-innerHeight} stroke="currentColor" strokeOpacity={0.1}></line>
@@ -99,7 +101,7 @@ const XAxis = ({ scale, title, innerHeight }: { scale: d3.ScaleBand<Date> | d3.S
                     }
                 })
             }
-        </g>
+        </g >
     )
 }
 
@@ -109,7 +111,7 @@ const YAxis = ({ scale, title, innerWidth, innerHeight, formatter }:
         formatter: (value: number | { valueOf(): number }) => string
     }) => {
 
-    const [yMin, yMax] = scale.range()
+    const [yMax, yMin] = scale.range()
     const ticks = scale.ticks(innerHeight / 40)
 
     return (
@@ -126,6 +128,7 @@ const YAxis = ({ scale, title, innerWidth, innerHeight, formatter }:
             {
                 ticks.map((value: number) => {
                     const y = scale(value)
+
                     return <g key={value} transform={`translate(0,${y})`}>
                         <line x1={0} x2={-8} stroke="currentColor" ></line>
                         <line x1={0} x2={innerWidth} stroke="currentColor" strokeOpacity={0.1}></line>
