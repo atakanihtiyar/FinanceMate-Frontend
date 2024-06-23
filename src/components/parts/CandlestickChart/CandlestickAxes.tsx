@@ -1,5 +1,4 @@
 import * as d3 from "d3"
-import { useRef } from "react"
 
 const formatMillisecond = d3.utcFormat(".%L"),
     formatSecond = d3.utcFormat(":%S"),
@@ -42,24 +41,30 @@ function getTickFormat(tickCountGap: number, tickTimeGap: number) {
 }
 
 
-const XAxis = ({ scale, title, innerHeight }:
-    { scale: d3.ScaleBand<Date> | d3.ScaleTime<number, number, never>, title: string, innerHeight: number }) => {
+const XAxis = ({ dates, intervalTimeOffset, xMin, xMax, title, innerHeight }:
+    {
+        dates: Date[], intervalTimeOffset: number,
+        xMin: number, xMax: number, xPaddingInner: number,
+        title: string, innerWidth: number, innerHeight: number
+    }) => {
 
-    const [xMin, xMax] = scale.range()
-    const _ticks = scale.domain()
+    if (!dates || dates.length === 0) return
+    const xMinDateTime = dates[0].getTime() - intervalTimeOffset
+    const xMaxDateTime = dates[dates.length - 1].getTime() + intervalTimeOffset
+    const scale = d3.scaleBand<Date>()
+        .domain(dates)
+        .range([xMin, xMax])
 
-    const tickCount = 10
-    const tickCountGap = Math.ceil(_ticks.length / tickCount)
-    const timeDiff = new Date(_ticks[_ticks.length - 1].getTime() - _ticks[0].getTime())
-    const tickTimeGap = Math.ceil(timeDiff.getTime() / tickCount)
+    const tickDensity = 100
+    const tickCount = (xMax - xMin) / tickDensity
+    const countGap = Math.ceil(dates.length / tickCount)
+    const timeDiff = xMinDateTime - xMaxDateTime
+    const timeGap = Math.ceil(timeDiff / tickCount)
 
-    const { formatter, filter } = getTickFormat(tickCountGap, tickTimeGap)
+    const { formatter, filter } = getTickFormat(countGap, timeGap)
 
-    const startDate = _ticks[0]
-    const currTick = useRef({ date: startDate, index: 0 })
-    const lastTick = useRef({ date: new Date(startDate.getTime() - tickTimeGap), index: 0 })
-    currTick.current = { date: startDate, index: 0 }
-    lastTick.current = { date: new Date(startDate.getTime() - tickTimeGap), index: 0 }
+    let currTick = { date: new Date(xMinDateTime), index: 0 }
+    let lastTick = { date: new Date(xMinDateTime), index: 0 }
 
     return (
         <g transform={`translate(${0},${innerHeight})`} >
@@ -74,18 +79,15 @@ const XAxis = ({ scale, title, innerHeight }:
             </text>
             <line x1={xMin} x2={xMax} y1={0} y2={0} stroke="white" />
             {
-                _ticks?.map((date: Date, index: number) => {
-                    if (currTick.current.index !== lastTick.current.index) {
-                        lastTick.current.date = currTick.current.date
-                        lastTick.current.index = currTick.current.index
+                dates.map((date: Date, index: number) => {
+                    if (currTick.index !== lastTick.index) {
+                        lastTick = currTick
                     }
 
-                    if (filter({ date, index, lastTickDate: lastTick.current.date, lastTickIndex: lastTick.current.index })) {
-                        currTick.current.date = date
-                        currTick.current.index = index
+                    if (filter({ date, index, lastTickDate: lastTick.date, lastTickIndex: lastTick.index }) || index === 0) {
+                        currTick = { date, index }
 
-                        const x = scale(date)!
-                        return <g key={date.toUTCString()} transform={`translate(${x},0)`}>
+                        return <g key={date.toUTCString()} transform={`translate(${scale(date)! + scale.bandwidth() / 2},0)`}>
                             <line y1={0} y2={8} stroke="currentColor" ></line>
                             <line y1={0} y2={-innerHeight} stroke="currentColor" strokeOpacity={0.1}></line>
                             <text
@@ -95,7 +97,7 @@ const XAxis = ({ scale, title, innerHeight }:
                                 fill="currentColor"
                                 className="text-sm text-muted-foreground"
                             >
-                                {formatter(date, lastTick.current.date)}
+                                {formatter(date, lastTick.date)}
                             </text>
                         </g>
                     }

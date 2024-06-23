@@ -9,27 +9,20 @@ export interface Bar {
 }
 
 export const getAvailableBars = (data: Bar[],
-    xScale: d3.ScaleBand<Date>,
-    yScale: d3.ScaleLinear<number, number, never>,
+    xMin: number,
+    xMax: number,
+    xPaddingInner: number,
     zoomTransform: d3.ZoomTransform) => {
-    const [xMin, xMax] = xScale.range()
-    const [yMax, yMin] = yScale.range()
+    const candleCount = data.length / zoomTransform.k
+    const bandWidth = (xMax - xMin) / candleCount
     let dataOnRight = true
     let dataOnLeft = true
-    const filteredData = data.filter((bar: Bar, index: number) => {
-        const bandWidth = xScale.bandwidth() * zoomTransform.k
 
-        const x = zoomTransform.applyX(xScale(bar.date)!) + bandWidth / 2
+    const filteredData = data.filter((_bar: Bar, index: number) => {
+
+        const xOffset = (index + xPaddingInner) * bandWidth
+        const x = zoomTransform.applyX((xOffset + zoomTransform.x - bandWidth / 2))
         if (x < xMin || x > xMax) return false
-
-        const yLow = zoomTransform.applyY(yScale(bar.low))
-        const yOpen = zoomTransform.applyY(yScale(bar.open))
-        const yClose = zoomTransform.applyY(yScale(bar.close))
-        const yHigh = zoomTransform.applyY(yScale(bar.high))
-        if (!(yLow > yMin || yLow < yMax ||
-            yOpen > yMin || yOpen < yMax ||
-            yClose > yMin || yClose < yMax ||
-            yHigh > yMin || yHigh < yMax)) return false
 
         if (index === 0)
             dataOnRight = false
@@ -39,7 +32,7 @@ export const getAvailableBars = (data: Bar[],
         return true
     })
 
-    if (filteredData.length > 5)
+    if (filteredData)
         return { filteredData, dataOnRight, dataOnLeft }
     else
         return false
@@ -47,25 +40,33 @@ export const getAvailableBars = (data: Bar[],
 
 interface CandlesticksProps {
     data: Bar[],
-    xScale: d3.ScaleBand<Date>,
+    xMin: number,
+    xMax: number,
+    barPadding: number,
     yScale: d3.ScaleLinear<number, number, never>,
     onMouseEnterCandle: (bar: Bar) => void
     onMouseExitCandle: () => void
     onMouseHoverCandle: (mousePosition: { x: number, y: number }) => void
 }
 
-const Candlesticks = ({ data, xScale, yScale, onMouseEnterCandle, onMouseExitCandle, onMouseHoverCandle }: CandlesticksProps) => {
+const Candlesticks = (
+    {
+        data, xMin, xMax, barPadding, yScale,
+        onMouseEnterCandle, onMouseExitCandle, onMouseHoverCandle
+    }: CandlesticksProps) => {
 
-    const [xMin, xMax] = xScale.range()
+    const width = xMax - xMin
+    const candleCount = data.length
+    const bandWidth = width / candleCount
+    const padding = (bandWidth * barPadding)
     const [yMax, yMin] = yScale.range()
 
     return (
         <g>
             {
-                data.map((bar: Bar) => {
+                data.map((bar: Bar, index: number) => {
 
-                    const x = xScale(bar.date)!
-                    if (x < xMin || x > xMax) return false
+                    const x = index * bandWidth + bandWidth / 2
 
                     const yLow = yScale(bar.low)
                     const yOpen = yScale(bar.open)
@@ -82,7 +83,7 @@ const Candlesticks = ({ data, xScale, yScale, onMouseEnterCandle, onMouseExitCan
                         onMouseMove={(e: React.MouseEvent<SVGGElement, MouseEvent>) => onMouseHoverCandle({ x: e.pageX, y: e.pageY })}
                     >
                         <line y1={yScale(bar.low)} y2={yScale(bar.high)} stroke="white" />
-                        <line y1={yScale(bar.close)} y2={yScale(bar.open)} strokeWidth={xScale.bandwidth()}
+                        <line y1={yScale(bar.close)} y2={yScale(bar.open)} strokeWidth={bandWidth - padding}
                             stroke={bar.open > bar.close ? d3.schemeSet1[0]
                                 : bar.close > bar.open ? d3.schemeSet1[2]
                                     : d3.schemeSet1[8]} />
