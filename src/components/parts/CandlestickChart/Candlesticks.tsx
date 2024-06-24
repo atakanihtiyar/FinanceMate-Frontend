@@ -25,9 +25,9 @@ export const getAvailableBars = (data: Bar[],
         if (x < xMin || x > xMax) return false
 
         if (index === 0)
-            dataOnRight = false
-        if (index === data.length - 1)
             dataOnLeft = false
+        if (index === data.length - 1)
+            dataOnRight = false
 
         return true
     })
@@ -44,6 +44,7 @@ interface CandlesticksProps {
     xMax: number,
     barPadding: number,
     yScale: d3.ScaleLinear<number, number, never>,
+    onWheel: (event: React.WheelEvent<SVGSVGElement>) => void,
     onMouseEnterCandle: (bar: Bar) => void
     onMouseExitCandle: () => void
     onMouseHoverCandle: (mousePosition: { x: number, y: number }) => void
@@ -51,7 +52,7 @@ interface CandlesticksProps {
 
 const Candlesticks = (
     {
-        data, xMin, xMax, barPadding, yScale,
+        data, xMin, xMax, barPadding, yScale, onWheel,
         onMouseEnterCandle, onMouseExitCandle, onMouseHoverCandle
     }: CandlesticksProps) => {
 
@@ -62,7 +63,9 @@ const Candlesticks = (
     const [yMax, yMin] = yScale.range()
 
     return (
-        <g>
+        <g onWheel={onWheel}>
+            <line x1={width / 2} x2={width / 2} y1={yMin} y2={yMax} stroke="transparent" strokeWidth={width} />
+
             {
                 data.map((bar: Bar, index: number) => {
 

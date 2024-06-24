@@ -104,17 +104,19 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
     const handleMouseHover = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
         event.preventDefault()
         if (isDragging) {
-            const offsetX = (zoomTransform.invertX(event.clientX) - zoomTransform.invertX(dragMousePos.x)) / (zoomTransform.k + 1)
-            const newTransform = zoomTransform.translate(offsetX, 0)
+            const relativeOffsetX = (event.clientX - dragMousePos.x) / (zoomTransform.k)
+            const newX = relativeOffsetX / (zoomTransform.k + 1)
+            const newTransform = zoomTransform.translate(newX, 0)
 
-            if (!(dataOnLeft.current) && newTransform.x < zoomTransform.x)
-                return
-            if (!(dataOnRight.current) && newTransform.x > zoomTransform.x)
-                return
+            const tringToGoLeft = newTransform.x > zoomTransform.x
+            const tringToGoRight = newTransform.x < zoomTransform.x
+
+            if (!(dataOnRight.current) && tringToGoRight) return
+            if (!(dataOnLeft.current) && tringToGoLeft) return
 
             setZoomTransform(newTransform)
+            setDragMousePos({ x: event.clientX, y: event.clientY })
         }
-        setDragMousePos({ x: event.clientX, y: event.clientY })
     }
 
     const handleMouseUp = () => {
@@ -138,25 +140,31 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
     const handleWheel = (event: React.WheelEvent<SVGSVGElement>) => {
         event.preventDefault()
 
-        const scaleFactor = event.deltaY < 0 ? 1.05 : event.deltaY > 0 ? 0.95 : 1;
+        const scaleFactor = event.deltaY < 0 ? 1.05 : event.deltaY > 0 ? 0.95 : 1
         const newZoomLevel = zoomTransform.k * scaleFactor
-        const mousePosition = d3.pointer(event);
 
-        const xOffset = (mousePosition[0] - zoomTransform.x) / zoomTransform.k;
-        const yOffset = (mousePosition[1] - zoomTransform.y) / zoomTransform.k;
+        const mouseElementX = d3.pointer(event)[0]
+        const offsetX = (mouseElementX - zoomTransform.x) / zoomTransform.k
+        let newX = mouseElementX - offsetX * newZoomLevel
+
+        // check boundaries
+        const tooFewBars = availableBarsRef.current.length < 10
+        const isZoomingIn = newZoomLevel > zoomTransform.k
+        const isZoomingOut = newZoomLevel < zoomTransform.k
+        if (!dataOnLeft.current && !dataOnRight.current && isZoomingOut) return
+        if (tooFewBars && isZoomingIn) return
+
+        // fix position by boundaries
+        const xMinZoom = (xMin - xMax) * newZoomLevel + (xMin - xMax)
+        const xMaxZoom = xMin
+        const lowerFromPositionRange = newX < xMinZoom
+        const upperFromPositionRange = newX > xMaxZoom
+        if (!dataOnRight.current && isZoomingOut && lowerFromPositionRange) newX = xMinZoom
+        if (!dataOnLeft.current && isZoomingOut && upperFromPositionRange) newX = xMaxZoom
 
         const newTransform = d3.zoomIdentity
-            .translate(mousePosition[0] - xOffset * newZoomLevel, mousePosition[1] - yOffset * newZoomLevel)
-            .scale(newZoomLevel);
-
-        if (!(dataOnLeft.current) && availableBarsRef.current.length < 10 && newTransform.x < zoomTransform.x)
-            return
-        if (!(dataOnRight.current) && availableBarsRef.current.length < 10 && newTransform.x > zoomTransform.x)
-            return
-        if (!(dataOnRight.current) && !(dataOnRight.current) && newTransform.k < zoomTransform.k)
-            return
-        if (dataOnRight.current && dataOnRight.current && availableBarsRef.current.length < 10 && newTransform.k > zoomTransform.k)
-            return
+            .translate(newX, 0)
+            .scale(newZoomLevel)
 
         setZoomTransform(newTransform)
     }
@@ -181,7 +189,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
                 ))}
             </div>
             <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="bg-transparent"
-                onWheel={handleWheel}
                 onMouseEnter={handleMouseEnter}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseHover}
@@ -200,6 +207,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
                         xMax={xMax}
                         barPadding={0.35}
                         yScale={yScaleRef.current}
+                        onWheel={handleWheel}
                         onMouseEnterCandle={handleMouseEnterCandle}
                         onMouseExitCandle={handleMouseExitCandle}
                         onMouseHoverCandle={handleMouseHoverCandle}
