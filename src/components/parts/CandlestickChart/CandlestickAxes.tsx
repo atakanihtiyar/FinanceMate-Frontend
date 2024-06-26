@@ -26,6 +26,7 @@ function getTickFormat(tickCountGap: number, tickTimeGap: number) {
     const isCountGapReached = (index: number, lastTickIndex: number) => index - lastTickIndex > tickCountGap
 
     interface FilterProps {
+        allDateCount: number,
         date: Date,
         index: number,
         lastTickDate: Date,
@@ -34,26 +35,23 @@ function getTickFormat(tickCountGap: number, tickTimeGap: number) {
 
     return {
         formatter: multiFormat,
-        filter: ({ date, index, lastTickDate, lastTickIndex }: FilterProps) =>
+        filter: ({ allDateCount, date, index, lastTickDate, lastTickIndex }: FilterProps) =>
             isTimeGapReached(date, lastTickDate) &&
-            isCountGapReached(index, lastTickIndex)
+            (isCountGapReached(index, lastTickIndex) && allDateCount - index > 4) || index === 0 || (index === allDateCount - 1)
     }
 }
 
 
-const XAxis = ({ dates, intervalTimeOffset, xMin, xMax, title, innerHeight }:
+const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
     {
-        dates: Date[], intervalTimeOffset: number,
-        xMin: number, xMax: number, xPaddingInner: number,
-        title: string, innerWidth: number, innerHeight: number
+        scale: d3.ScaleBand<Date>, intervalTimeOffset: number,
+        title: string, innerHeight: number
     }) => {
 
-    if (!dates || dates.length === 0) return
+    const [xMin, xMax] = scale.range()
+    const dates = scale.domain()
     const xMinDateTime = dates[0].getTime() - intervalTimeOffset
-    const xMaxDateTime = dates[dates.length - 1].getTime() + intervalTimeOffset
-    const scale = d3.scaleBand<Date>()
-        .domain(dates)
-        .range([xMin, xMax])
+    const xMaxDateTime = dates[dates.length - 1].getTime()
 
     const tickDensity = 100
     const tickCount = (xMax - xMin) / tickDensity
@@ -63,8 +61,8 @@ const XAxis = ({ dates, intervalTimeOffset, xMin, xMax, title, innerHeight }:
 
     const { formatter, filter } = getTickFormat(countGap, timeGap)
 
-    let currTick = { date: new Date(xMinDateTime), index: 0 }
-    let lastTick = { date: new Date(xMinDateTime), index: 0 }
+    let currTick = { date: new Date(xMinDateTime), index: -999 }
+    let lastTick = { date: new Date(xMinDateTime), index: -999 }
 
     return (
         <g transform={`translate(${0},${innerHeight})`} >
@@ -84,14 +82,20 @@ const XAxis = ({ dates, intervalTimeOffset, xMin, xMax, title, innerHeight }:
                         lastTick = currTick
                     }
 
-                    if (filter({ date, index, lastTickDate: lastTick.date, lastTickIndex: lastTick.index }) || index === 0) {
+                    if (filter({ allDateCount: dates.length, date, index, lastTickDate: lastTick.date, lastTickIndex: lastTick.index })) {
                         currTick = { date, index }
 
-                        return <g key={date.toUTCString()} transform={`translate(${scale(date)! + scale.bandwidth() / 2},0)`}>
+                        let x = scale(date)! + scale.bandwidth() / 2
+                        if (index === 0)
+                            x = scale(date)!
+                        else if (index === dates.length - 1)
+                            x = scale(date)!
+
+                        return <g key={date.toUTCString()} transform={`translate(${x},0)`}>
                             <line y1={0} y2={8} stroke="currentColor" ></line>
                             <line y1={0} y2={-innerHeight} stroke="currentColor" strokeOpacity={0.1}></line>
                             <text
-                                y={10}
+                                y={16}
                                 dy="0.8em"
                                 textAnchor="middle"
                                 fill="currentColor"
@@ -107,10 +111,9 @@ const XAxis = ({ dates, intervalTimeOffset, xMin, xMax, title, innerHeight }:
     )
 }
 
-const YAxis = ({ scale, title, innerWidth, innerHeight, formatter }:
+const YAxis = ({ scale, title, innerWidth, innerHeight }:
     {
         scale: d3.ScaleLinear<number, number, never>, title: string, innerWidth: number, innerHeight: number
-        formatter: (value: number | { valueOf(): number }) => string
     }) => {
 
     const [yMax, yMin] = scale.range()
@@ -135,13 +138,13 @@ const YAxis = ({ scale, title, innerWidth, innerHeight, formatter }:
                         <line x1={0} x2={-8} stroke="currentColor" ></line>
                         <line x1={0} x2={innerWidth} stroke="currentColor" strokeOpacity={0.1}></line>
                         <text
-                            dx={-12}
+                            dx={-16}
                             dy="0.34em"
                             textAnchor="end"
                             fill="currentColor"
                             className="text-sm text-muted-foreground"
                         >
-                            {formatter(value)}
+                            {d3.format("$~f")(value)}
                         </text>
                     </g>
                 })

@@ -15,11 +15,10 @@ interface CandlestickChartProps {
     intervals: Interval[],
     defaultIntervalIndex: number,
     onIntervalBtnClicked: (timeFrame: string) => void,
-    yAxisFormatter: (value: number | { valueOf(): number }) => string,
     tooltipDateFormatter: (date: Date) => string
 }
 
-const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultIntervalIndex, intervals, onIntervalBtnClicked, yAxisFormatter, tooltipDateFormatter }) => {
+const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultIntervalIndex, intervals, onIntervalBtnClicked, tooltipDateFormatter }) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const svgRef = useRef<SVGSVGElement>(null)
     const tooltipRef = useRef<HTMLDivElement>(null)
@@ -35,6 +34,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
 
     const intervalRef = useRef<Interval>(intervals[defaultIntervalIndex])
     const availableBarsRef = useRef<Bar[]>([])
+    const xScaleRef = useRef<d3.ScaleBand<Date>>(d3.scaleBand<Date>())
     const yScaleRef = useRef<d3.ScaleLinear<number, number>>(d3.scaleLinear())
 
     const [isDragging, setIsDragging] = useState(false)
@@ -55,31 +55,43 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
     if (data.length === 0) return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
 
     const { width, height } = dimensions
-    const margin = { top: 50, right: 30, bottom: 30, left: 50 }
+    const margin = { top: 50, right: 30, bottom: 30, left: 65 }
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom
 
     const xMin = 0
     const xMax = innerWidth
 
+    let xScale = d3.scaleBand<Date>()
+        .domain(data.map((bar) => bar.date))
+        .range([0, innerWidth])
+        .paddingInner(0.35)
+
     let yScale = d3.scaleLinear()
         .domain([d3.min(data, (bar) => bar.low * 0.98)!, d3.max(data, (bar) => bar.high * 1.02)!])
         .nice()
         .range([innerHeight, 0])
 
-    const availableBars = getAvailableBars(data, xMin, xMax, 0.35, zoomTransform)
+    const availableBars = getAvailableBars(data, xScale, zoomTransform)
     if (availableBars) {
         const filteredData = availableBars.filteredData
         availableBarsRef.current = availableBars.filteredData
         dataOnRight.current = availableBars.dataOnRight
         dataOnLeft.current = availableBars.dataOnLeft
 
+        xScale = xScale.domain([
+            new Date(filteredData[0].date.getTime() - intervalRef.current.timeOffset),
+            ...filteredData.map((bar: Bar) => bar.date),
+            new Date(filteredData[filteredData.length - 1].date.getTime() + intervalRef.current.timeOffset)
+        ])
+
         yScale = yScale.domain([
-            d3.min(filteredData, (bar: Bar) => bar.low * 0.98) as number,
-            d3.max(filteredData, (bar: Bar) => bar.high * 1.02) as number
+            d3.min(filteredData, (bar: Bar) => bar.low * 0.99) as number,
+            d3.max(filteredData, (bar: Bar) => bar.high * 1.01) as number
         ])
             .nice()
     }
+    xScaleRef.current = xScale
     yScaleRef.current = yScale
 
     const handleMouseEnter = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
@@ -105,7 +117,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
         event.preventDefault()
         if (isDragging) {
             const relativeOffsetX = (event.clientX - dragMousePos.x) / (zoomTransform.k)
-            const newX = relativeOffsetX / (zoomTransform.k + 1)
+            const newX = relativeOffsetX
             const newTransform = zoomTransform.translate(newX, 0)
 
             const tringToGoLeft = newTransform.x > zoomTransform.x
@@ -148,14 +160,14 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
         let newX = mouseElementX - offsetX * newZoomLevel
 
         // check boundaries
-        const tooFewBars = availableBarsRef.current.length < 10
+        const tooFewBars = availableBarsRef.current.length < 12
         const isZoomingIn = newZoomLevel > zoomTransform.k
         const isZoomingOut = newZoomLevel < zoomTransform.k
         if (!dataOnLeft.current && !dataOnRight.current && isZoomingOut) return
         if (tooFewBars && isZoomingIn) return
 
         // fix position by boundaries
-        const xMinZoom = (xMin - xMax) * newZoomLevel + (xMin - xMax)
+        const xMinZoom = (xMin - xMax) * newZoomLevel - (xMin - xMax)
         const xMaxZoom = xMin
         const lowerFromPositionRange = newX < xMinZoom
         const upperFromPositionRange = newX > xMaxZoom
@@ -196,16 +208,13 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
                 onMouseLeave={handleMouseExit}
             >
                 <g transform={`translate(${margin.left},${margin.top})`}>
-                    <XAxis dates={availableBarsRef.current.map((bar: Bar) => bar.date)}
+                    <XAxis scale={xScaleRef.current}
                         intervalTimeOffset={intervalRef.current.timeOffset}
-                        xMin={xMin} xMax={xMax} xPaddingInner={0.35}
-                        title="Date" innerWidth={innerWidth} innerHeight={innerHeight} />
+                        title="Date" innerHeight={innerHeight} />
                     <YAxis scale={yScaleRef.current} title="Dollars" innerWidth={innerWidth}
-                        innerHeight={innerHeight} formatter={yAxisFormatter} />
+                        innerHeight={innerHeight} />
                     <Candlesticks data={availableBarsRef.current}
-                        xMin={xMin}
-                        xMax={xMax}
-                        barPadding={0.35}
+                        xScale={xScaleRef.current}
                         yScale={yScaleRef.current}
                         onWheel={handleWheel}
                         onMouseEnterCandle={handleMouseEnterCandle}

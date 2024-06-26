@@ -189,7 +189,6 @@ const AssetPage = () => {
                             ]}
                             defaultIntervalIndex={4}
                             onIntervalBtnClicked={(timeFrame: string) => setTimeFrame(timeFrame as TimeFrameType)}
-                            yAxisFormatter={d3.format("$~f")}
                             tooltipDateFormatter={d3.utcFormat("%A %d %B %Y %H:%M")} />
                     </div>
                     <div className="col-span-2">
