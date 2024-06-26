@@ -77,7 +77,7 @@ const AssetPage = () => {
     const assetData = location.state ? location.state.assetData : null
 
     const [chartData, setChartData] = useState<Bar[]>([])
-    const [timeFrame, setTimeFrame] = useState<TimeFrameType>("1Hour")
+    const [timeFrame, setTimeFrame] = useState<TimeFrameType>("1Day")
     const fetchData = async () => {
         const response = await getHistoricalBars(assetData.symbol, timeFrame)
         if (response.status === 200) {
@@ -170,6 +170,7 @@ const AssetPage = () => {
                                     title: "1 Day",
                                     timeFrame: "1Day",
                                     timeOffset: 1000 * 60 * 60 * 24,
+                                    isDefault: true
                                 },
                                 {
                                     title: "1 Week",
@@ -187,9 +188,7 @@ const AssetPage = () => {
                                     timeOffset: 1000 * 60 * 60 * 24 * 365,
                                 }
                             ]}
-                            defaultIntervalIndex={4}
-                            onIntervalBtnClicked={(timeFrame: string) => setTimeFrame(timeFrame as TimeFrameType)}
-                            tooltipDateFormatter={d3.utcFormat("%A %d %B %Y %H:%M")} />
+                            onIntervalBtnClicked={(timeFrame: string) => setTimeFrame(timeFrame as TimeFrameType)} />
                     </div>
                     <div className="col-span-2">
                         <Card className="border-0">

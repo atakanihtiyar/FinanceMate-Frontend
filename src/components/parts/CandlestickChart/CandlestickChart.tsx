@@ -2,26 +2,18 @@ import React, { useEffect, useRef, useState } from "react"
 import * as d3 from "d3"
 import { XAxis, YAxis } from "./CandlestickAxes"
 import Candlesticks, { Bar, getAvailableBars } from "./Candlesticks"
-import { Button } from "@/components/ui/button"
-
-interface Interval {
-    title: string,
-    timeFrame: string,
-    timeOffset: number
-}
+import IntervalButtons, { Interval } from "./IntervalButtons"
+import Tooltip from "./Tooltip"
 
 interface CandlestickChartProps {
     data: Bar[],
     intervals: Interval[],
-    defaultIntervalIndex: number,
     onIntervalBtnClicked: (timeFrame: string) => void,
-    tooltipDateFormatter: (date: Date) => string
 }
 
-const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultIntervalIndex, intervals, onIntervalBtnClicked, tooltipDateFormatter }) => {
+const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, onIntervalBtnClicked }) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const svgRef = useRef<SVGSVGElement>(null)
-    const tooltipRef = useRef<HTMLDivElement>(null)
 
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
     const [zoomTransform, setZoomTransform] = useState<d3.ZoomTransform>(d3.zoomIdentity)
@@ -30,9 +22,8 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
 
     const [tooltipBar, setTooltipBar] = useState<Bar | null>(null)
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
-    const [tooltipTextColor, setTooltipTextColor] = useState<string>("")
 
-    const intervalRef = useRef<Interval>(intervals[defaultIntervalIndex])
+    const intervalIndexRef = useRef<number>(intervals.findIndex((interval) => interval.isDefault)!)
     const availableBarsRef = useRef<Bar[]>([])
     const xScaleRef = useRef<d3.ScaleBand<Date>>(d3.scaleBand<Date>())
     const yScaleRef = useRef<d3.ScaleLinear<number, number>>(d3.scaleLinear())
@@ -135,8 +126,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
 
     const handleMouseEnterCandle = (bar: Bar) => {
         setTooltipBar(bar)
-        const diff = bar.close - bar.open
-        setTooltipTextColor(diff > 0 ? "text-[--success]" : diff < 0 ? "text-destructive" : "text-foreground")
     }
 
     const handleMouseExitCandle = () => {
@@ -181,23 +170,19 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
 
     return (
         <div ref={containerRef} className="w-full h-full">
-            <div className="border-b-2">
-                {intervals.map((interval: Interval) => (
-                    <Button key={interval.timeFrame} variant="ghost" className="rounded-sm"
-                        onClick={() => {
-                            availableBarsRef.current = []
-                            dataOnRight.current = false
-                            dataOnLeft.current = false
+            <IntervalButtons intervals={intervals} pickedAt={intervalIndexRef.current} onIntervalClick={(timeFrame) => {
+                availableBarsRef.current = [];
+                dataOnRight.current = false;
+                dataOnLeft.current = false;
 
-                            yScaleRef.current = yScale.domain([0, 0])
+                xScaleRef.current = xScale.domain([]);
+                yScaleRef.current = yScale.domain([0, 0]);
 
-                            intervalRef.current = interval
-                            setTooltipBar(null)
-                            setZoomTransform(d3.zoomIdentity)
-                            onIntervalBtnClicked(interval.timeFrame)
-                        }}>{interval.title}</Button>
-                ))}
-            </div>
+                intervalIndexRef.current = intervals.findIndex(interval => interval.timeFrame === timeFrame)!
+                setTooltipBar(null);
+                setZoomTransform(d3.zoomIdentity);
+                onIntervalBtnClicked(timeFrame);
+            }} />
             <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="bg-transparent"
                 onMouseEnter={handleMouseEnter}
                 onMouseDown={handleMouseDown}
@@ -207,7 +192,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
             >
                 <g transform={`translate(${margin.left},${margin.top})`}>
                     <XAxis scale={xScaleRef.current}
-                        intervalTimeOffset={intervalRef.current.timeOffset}
+                        intervalTimeOffset={intervals[intervalIndexRef.current].timeOffset}
                         title="Date" innerHeight={innerHeight} />
 
                     <YAxis scale={yScaleRef.current} title="Dollars" innerWidth={innerWidth}
@@ -223,15 +208,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
                     />
                 </g>
             </svg>
-            {tooltipBar && !isDragging && (
-                <div ref={tooltipRef} style={{ top: tooltipPosition.y, left: tooltipPosition.x }} className="absolute bg-background border border-foreground p-2 m-5">
-                    <div><span className="text-muted-foreground">Date: </span><span>{tooltipDateFormatter(tooltipBar.date)}</span></div>
-                    <div><span className="text-muted-foreground">Open: </span><span className={tooltipTextColor}>{d3.format("$~f")(tooltipBar.open)}</span></div>
-                    <div><span className="text-muted-foreground">High: </span><span className={tooltipTextColor}>{d3.format("$~f")(tooltipBar.high)}</span></div>
-                    <div><span className="text-muted-foreground">Low: </span><span className={tooltipTextColor}>{d3.format("$~f")(tooltipBar.low)}</span></div>
-                    <div><span className="text-muted-foreground">Close: </span><span className={tooltipTextColor}>{d3.format("$~f")(tooltipBar.close)}</span></div>
-                </div>
-            )}
+            <Tooltip bar={tooltipBar} relativePosition={tooltipPosition} />
         </div>
     )
 }
