@@ -21,23 +21,21 @@ function multiFormat(date: Date, lastTickDate: Date) {
                                     : formatMillisecond)(date)
 }
 
-function getTickFormat(tickCountGap: number, tickTimeGap: number) {
-    const isTimeGapReached = (date: Date, lastTickDate: Date) => (date.getTime() - lastTickDate.getTime()) > tickTimeGap
-    const isCountGapReached = (index: number, lastTickIndex: number) => index - lastTickIndex > tickCountGap
+function getTickFormat(tickCountGap: number) {
+    const isCountGapReached = (index: number, previousIndex: number) => index - previousIndex > tickCountGap
 
     interface FilterProps {
-        allDateCount: number,
-        date: Date,
+        dataLength: number,
         index: number,
-        lastTickDate: Date,
-        lastTickIndex: number,
+        previousIndex: number,
     }
 
     return {
         formatter: multiFormat,
-        filter: ({ allDateCount, date, index, lastTickDate, lastTickIndex }: FilterProps) =>
-            isTimeGapReached(date, lastTickDate) &&
-            (isCountGapReached(index, lastTickIndex) && allDateCount - index > 4) || index === 0 || (index === allDateCount - 1)
+        filter: ({ dataLength, index, previousIndex }: FilterProps) =>
+            (isCountGapReached(index, previousIndex) && (dataLength - index) * 1.25 > tickCountGap) || // all ticks but last
+            index === 0 || // first tick
+            index === dataLength - 1 // last tikc
     }
 }
 
@@ -51,18 +49,15 @@ const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
     const [xMin, xMax] = scale.range()
     const dates = scale.domain()
     const xMinDateTime = dates[0].getTime() - intervalTimeOffset
-    const xMaxDateTime = dates[dates.length - 1].getTime()
 
-    const tickDensity = 100
-    const tickCount = (xMax - xMin) / tickDensity
-    const countGap = Math.ceil(dates.length / tickCount)
-    const timeDiff = xMinDateTime - xMaxDateTime
-    const timeGap = Math.ceil(timeDiff / tickCount)
+    const tickFrequency = 100
+    const tickCount = (xMax - xMin) / tickFrequency
+    const countGap = dates.length / tickCount
 
-    const { formatter, filter } = getTickFormat(countGap, timeGap)
+    const { formatter, filter } = getTickFormat(countGap)
 
-    let currTick = { date: new Date(xMinDateTime), index: -999 }
-    let lastTick = { date: new Date(xMinDateTime), index: -999 }
+    let currentTick = { date: new Date(xMinDateTime), index: -1 }
+    let previousTick = { date: new Date(xMinDateTime), index: -1 }
 
     return (
         <g transform={`translate(${0},${innerHeight})`} >
@@ -78,19 +73,14 @@ const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
             <line x1={xMin} x2={xMax} y1={0} y2={0} stroke="white" />
             {
                 dates.map((date: Date, index: number) => {
-                    if (currTick.index !== lastTick.index) {
-                        lastTick = currTick
+                    if (currentTick.index !== previousTick.index) {
+                        previousTick = currentTick
                     }
 
-                    if (filter({ allDateCount: dates.length, date, index, lastTickDate: lastTick.date, lastTickIndex: lastTick.index })) {
-                        currTick = { date, index }
+                    if (filter({ dataLength: dates.length, index, previousIndex: previousTick.index })) {
+                        currentTick = { date, index }
 
-                        let x = scale(date)! + scale.bandwidth() / 2
-                        if (index === 0)
-                            x = scale(date)!
-                        else if (index === dates.length - 1)
-                            x = scale(date)!
-
+                        let x = scale(date)!
                         return <g key={date.toUTCString()} transform={`translate(${x},0)`}>
                             <line y1={0} y2={8} stroke="currentColor" ></line>
                             <line y1={0} y2={-innerHeight} stroke="currentColor" strokeOpacity={0.1}></line>
@@ -101,7 +91,7 @@ const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
                                 fill="currentColor"
                                 className="text-sm text-muted-foreground"
                             >
-                                {formatter(date, lastTick.date)}
+                                {formatter(date, previousTick.date)}
                             </text>
                         </g>
                     }

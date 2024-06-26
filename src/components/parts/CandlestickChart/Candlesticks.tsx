@@ -17,9 +17,7 @@ export const getAvailableBars = (data: Bar[],
     let dataOnLeft = true
 
     const filteredData = data.filter((bar: Bar, index: number) => {
-
-        const bandWidth = xScale.bandwidth() * zoomTransform.k
-        const x = zoomTransform.applyX(xScale(bar.date)!) + bandWidth / 2
+        const x = zoomTransform.applyX(xScale(bar.date)!)
 
         if (x < xMin || x > xMax) return false
 
@@ -63,18 +61,7 @@ const Candlesticks = (
 
             {
                 data.map((bar: Bar) => {
-
-                    const x = xScale(bar.date)! + xScale.bandwidth() / 2
-                    if (x < xMin || x > xMax) return false
-
-                    const yLow = yScale(bar.low)
-                    const yOpen = yScale(bar.open)
-                    const yClose = yScale(bar.close)
-                    const yHigh = yScale(bar.high)
-                    if (!(yLow > yMin || yLow < yMax ||
-                        yOpen > yMin || yOpen < yMax ||
-                        yClose > yMin || yClose < yMax ||
-                        yHigh > yMin || yHigh < yMax)) return false
+                    const x = xScale(bar.date)!
 
                     return <g key={bar.date.toString() + bar.close} transform={`translate(${x}, 0)`}
                         onMouseEnter={() => onMouseEnterCandle(bar)}

@@ -66,6 +66,8 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
         .domain(data.map((bar) => bar.date))
         .range([0, innerWidth])
         .paddingInner(0.35)
+        .paddingOuter(0.5)
+        .align(0.75)
 
     let yScale = d3.scaleLinear()
         .domain([d3.min(data, (bar) => bar.low * 0.98)!, d3.max(data, (bar) => bar.high * 1.02)!])
@@ -79,11 +81,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
         dataOnRight.current = availableBars.dataOnRight
         dataOnLeft.current = availableBars.dataOnLeft
 
-        xScale = xScale.domain([
-            new Date(filteredData[0].date.getTime() - intervalRef.current.timeOffset),
-            ...filteredData.map((bar: Bar) => bar.date),
-            new Date(filteredData[filteredData.length - 1].date.getTime() + intervalRef.current.timeOffset)
-        ])
+        xScale = xScale.domain(filteredData.map((bar: Bar) => bar.date))
 
         yScale = yScale.domain([
             d3.min(filteredData, (bar: Bar) => bar.low * 0.99) as number,
@@ -211,8 +209,10 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, defaultInterv
                     <XAxis scale={xScaleRef.current}
                         intervalTimeOffset={intervalRef.current.timeOffset}
                         title="Date" innerHeight={innerHeight} />
+
                     <YAxis scale={yScaleRef.current} title="Dollars" innerWidth={innerWidth}
                         innerHeight={innerHeight} />
+
                     <Candlesticks data={availableBarsRef.current}
                         xScale={xScaleRef.current}
                         yScale={yScaleRef.current}
