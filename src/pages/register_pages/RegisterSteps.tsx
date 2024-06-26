@@ -22,11 +22,6 @@ export const RegisterSteps = () => {
         setActiveStep(oldStep => oldStep === maxStep ? oldStep : ++oldStep)
     }
 
-    const goToStep = (step: number) => {
-        if (minStep <= step && step <= maxStep)
-            setActiveStep(step)
-    }
-
     const onSubmit = () => {
         register()
     }

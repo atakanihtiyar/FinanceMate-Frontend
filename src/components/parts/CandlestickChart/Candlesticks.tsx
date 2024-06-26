@@ -71,31 +71,50 @@ const Candlesticks = (
             }}
             onMouseLeave={() => setIsHovering(false)}
         >
-            <line x1={width / 2} x2={width / 2} y1={yMin} y2={yMax} stroke="transparent" strokeWidth={width} />
-
-            {
-                isHovering && data[hoveredIndex.current] &&
-                <>
-                    <line x1={hoverMousePos.x} x2={hoverMousePos.x} y1={yMin} y2={yMax} stroke="white" />
-                    <line x1={xMin} x2={xMax} y1={hoverMousePos.y} y2={hoverMousePos.y} stroke="white" />
-                </>
-            }
+            <g>
+                <line
+                    x1={width / 2} x2={width / 2} y1={yMin} y2={yMax}
+                    strokeWidth={width}
+                    className="stroke-transparent"
+                />
+            </g>
             {
                 data.map((bar: Bar) => {
                     const x = xScale(bar.date)!
+                    const barColor = bar.open > bar.close ? "stroke-destructive" : bar.close > bar.open ? "stroke-[--success]" : "stroke-foreground"
 
                     return <g key={bar.date.toString() + bar.close} transform={`translate(${x}, 0)`}
                         onMouseEnter={() => onMouseEnterCandle(bar)}
                         onMouseLeave={onMouseExitCandle}
                         onMouseMove={(e: React.MouseEvent<SVGGElement, MouseEvent>) => onMouseHoverCandle({ x: e.pageX, y: e.pageY })}
                     >
-                        <line y1={yScale(bar.low)} y2={yScale(bar.high)} stroke="white" />
-                        <line y1={yScale(bar.close)} y2={yScale(bar.open)} strokeWidth={xScale.bandwidth()}
-                            stroke={bar.open > bar.close ? d3.schemeSet1[0]
-                                : bar.close > bar.open ? d3.schemeSet1[2]
-                                    : d3.schemeSet1[8]} />
+                        <line
+                            y1={yScale(bar.low)} y2={yScale(bar.high)}
+                            className="stroke-foreground"
+                            strokeLinecap="round"
+                            strokeWidth={xScale.bandwidth() / 10}
+                        />
+                        <line
+                            y1={yScale(bar.close)} y2={yScale(bar.open)}
+                            className={barColor}
+                            strokeLinecap="butt"
+                            strokeWidth={xScale.bandwidth()}
+                        />
                     </g>
                 })
+            }
+            {
+                isHovering && data[hoveredIndex.current] &&
+                <>
+                    <line
+                        x1={hoverMousePos.x} x2={hoverMousePos.x} y1={yMin} y2={yMax}
+                        className="stroke-foreground pointer-events-none"
+                    />
+                    <line
+                        x1={xMin} x2={xMax} y1={hoverMousePos.y} y2={hoverMousePos.y}
+                        className="stroke-foreground pointer-events-none"
+                    />
+                </>
             }
         </g>
     )

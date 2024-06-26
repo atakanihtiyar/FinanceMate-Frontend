@@ -36,8 +36,12 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
         const updateDimensions = () => {
             if (containerRef.current) {
                 const { clientWidth: clientWidth, clientHeight: clientHeight } = containerRef.current
-                const { clientHeight: intervalsClientHeight } = intervalBtnContainerRef.current!
-                setDimensions({ width: clientWidth, height: clientHeight - intervalsClientHeight })
+                if (intervalBtnContainerRef.current) {
+                    const { clientHeight: intervalsClientHeight } = intervalBtnContainerRef.current
+                    setDimensions({ width: clientWidth, height: clientHeight - intervalsClientHeight })
+                }
+                else
+                    setDimensions({ width: clientWidth, height: clientHeight })
             }
         }
         updateDimensions()
@@ -48,7 +52,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
     if (data.length === 0) return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
 
     const { width, height } = dimensions
-    const margin = { top: 25, right: 15, bottom: 30, left: 50 }
+    const margin = { top: 25, right: 25, bottom: 30, left: 50 }
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom
 
@@ -171,7 +175,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
     }
 
     return (
-        <div className="w-full h-full">
+        <div ref={containerRef} className="w-full h-full">
             <IntervalButtons
                 ref={intervalBtnContainerRef}
                 intervals={intervals}
@@ -199,14 +203,20 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
                 onMouseLeave={handleMouseExit}
             >
                 <g transform={`translate(${margin.left},${margin.top})`}>
-                    <XAxis scale={xScaleRef.current}
+                    <XAxis
+                        scale={xScaleRef.current}
                         intervalTimeOffset={intervals[currIntervalIndexRef.current].timeOffset}
-                        title="Date" innerHeight={innerHeight} />
-
-                    <YAxis scale={yScaleRef.current} title="Dollars" innerWidth={innerWidth}
+                        title="Date"
                         innerHeight={innerHeight} />
 
-                    <Candlesticks data={availableBarsRef.current}
+                    <YAxis
+                        scale={yScaleRef.current}
+                        title="Dollars"
+                        innerWidth={innerWidth}
+                        innerHeight={innerHeight} />
+
+                    <Candlesticks
+                        data={availableBarsRef.current}
                         xScale={xScaleRef.current}
                         yScale={yScaleRef.current}
                         onWheel={handleWheel}

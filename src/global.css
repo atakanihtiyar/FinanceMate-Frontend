@@ -27,11 +27,11 @@
     --accent: hsl(240 4.8% 95.9%);
     --accent-foreground: hsl(240 5.9% 10%);
 
-    --destructive: #f50000;
+    --destructive: hsl(0 84.2% 60.2%);
     --destructive-foreground: hsl(0 0% 98%);
 
-    --success: #009963;
-    --warning: #cc7a00;
+    --success: hsl(133, 80%, 40%);
+    --warning: hsl(40, 75%, 45%);
 
     --border: hsl(240 5.9% 90%);
     --input: hsl(240 5.9% 90%);
@@ -61,12 +61,6 @@
 
     --accent: hsl(240 3.7% 15.9%);
     --accent-foreground: hsl(0 0% 98%);
-
-    --destructive: #8b0000;
-    --destructive-foreground: hsl(0 0% 98%);
-
-    --success: #006642;
-    --warning: #995c00;
 
     --border: hsl(240 3.7% 15.9%);
     --input: hsl(240 3.7% 15.9%);

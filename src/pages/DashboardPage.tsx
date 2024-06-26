@@ -111,7 +111,7 @@ const DashboardPage = () => {
 
         const pnl = _old === 0 && _new === 0 ? 0 : (_new * 100 / _old) - 100
         return (
-            <span className={`${pnl > 0 ? "text-[var(--success)]" : (pnl < 0 && "text-[var(--destructive)]")}`}>
+            <span className={`${pnl > 0 ? "text-[--success-txt]" : (pnl < 0 ? "text-[--destructive-txt]" : "text-foreground")}`}>
                 {pnl.toFixed(2)}%
             </span>
         )

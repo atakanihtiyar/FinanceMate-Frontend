@@ -62,15 +62,15 @@ const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
     return (
         <g transform={`translate(${0},${innerHeight})`} >
             <text
-                x={xMax}
+                x={xMax} dy={-5}
                 textAnchor="end"
-                dy={-5}
-                fill="currentColor"
-                className="font-semibold text-sm"
+                className="font-semibold text-sm fill-foreground"
             >
                 {title}
             </text>
-            <line x1={xMin} x2={xMax} y1={0} y2={0} stroke="white" />
+            <line
+                x1={xMin} x2={xMax} y1={0} y2={0}
+                className="stroke-muted-foreground" />
             {
                 dates.map((date: Date, index: number) => {
                     if (currentTick.index !== previousTick.index) {
@@ -82,14 +82,19 @@ const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
 
                         let x = scale(date)!
                         return <g key={date.toUTCString()} transform={`translate(${x},0)`}>
-                            <line y1={0} y2={8} stroke="currentColor" ></line>
-                            <line y1={0} y2={-innerHeight} stroke="currentColor" strokeOpacity={0.1}></line>
+                            <line
+                                y1={0} y2={8}
+                                className="stroke-muted-foreground"
+                            />
+                            <line
+                                y1={0} y2={-innerHeight}
+                                className="stroke-muted-foreground opacity-20"
+                            />
                             <text
                                 y={16}
                                 dy="0.8em"
                                 textAnchor="middle"
-                                fill="currentColor"
-                                className="text-sm text-muted-foreground"
+                                className="text-sm fill-muted-foreground"
                             >
                                 {formatter(date, previousTick.date)}
                             </text>
@@ -114,25 +119,31 @@ const YAxis = ({ scale, title, innerWidth, innerHeight }:
             <text
                 dx={4}
                 dy="0.8em"
-                fill="currentColor"
-                className="font-semibold text-sm"
+                className="font-semibold text-sm fill-foreground"
             >
                 {title}
             </text>
-            <line x1={0} x2={0} y1={yMin} y2={yMax} stroke="white" />
+            <line
+                x1={0} x2={0} y1={yMin} y2={yMax}
+                className="stroke-muted-foreground" />
             {
                 ticks.map((value: number) => {
                     const y = scale(value)
 
                     return <g key={value} transform={`translate(0,${y})`}>
-                        <line x1={0} x2={-8} stroke="currentColor" ></line>
-                        <line x1={0} x2={innerWidth} stroke="currentColor" strokeOpacity={0.1}></line>
+                        <line
+                            x1={0} x2={-8}
+                            className="stroke-muted-foreground"
+                        />
+                        <line
+                            x1={0} x2={innerWidth}
+                            className="stroke-muted-foreground opacity-20"
+                        />
                         <text
                             dx={-16}
                             dy="0.34em"
                             textAnchor="end"
-                            fill="currentColor"
-                            className="text-sm text-muted-foreground"
+                            className="text-sm fill-muted-foreground"
                         >
                             {d3.format("$~f")(value)}
                         </text>
