@@ -13,6 +13,7 @@ interface CandlestickChartProps {
 
 const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, onIntervalBtnClicked }) => {
     const containerRef = useRef<HTMLDivElement>(null)
+    const intervalBtnContainerRef = useRef<HTMLDivElement>(null)
     const svgRef = useRef<SVGSVGElement>(null)
 
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
@@ -23,7 +24,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
     const [tooltipBar, setTooltipBar] = useState<Bar | null>(null)
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
 
-    const intervalIndexRef = useRef<number>(intervals.findIndex((interval) => interval.isDefault)!)
+    const currIntervalIndexRef = useRef<number>(intervals.findIndex((interval) => interval.isDefault)!)
     const availableBarsRef = useRef<Bar[]>([])
     const xScaleRef = useRef<d3.ScaleBand<Date>>(d3.scaleBand<Date>())
     const yScaleRef = useRef<d3.ScaleLinear<number, number>>(d3.scaleLinear())
@@ -34,8 +35,9 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
     useEffect(() => {
         const updateDimensions = () => {
             if (containerRef.current) {
-                const { clientWidth, clientHeight } = containerRef.current
-                setDimensions({ width: clientWidth, height: clientHeight })
+                const { clientWidth: clientWidth, clientHeight: clientHeight } = containerRef.current
+                const { clientHeight: intervalsClientHeight } = intervalBtnContainerRef.current!
+                setDimensions({ width: clientWidth, height: clientHeight - intervalsClientHeight })
             }
         }
         updateDimensions()
@@ -46,7 +48,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
     if (data.length === 0) return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
 
     const { width, height } = dimensions
-    const margin = { top: 50, right: 30, bottom: 30, left: 65 }
+    const margin = { top: 25, right: 15, bottom: 30, left: 50 }
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom
 
@@ -169,20 +171,26 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
     }
 
     return (
-        <div ref={containerRef} className="w-full h-full">
-            <IntervalButtons intervals={intervals} pickedAt={intervalIndexRef.current} onIntervalClick={(timeFrame) => {
-                availableBarsRef.current = [];
-                dataOnRight.current = false;
-                dataOnLeft.current = false;
+        <div className="w-full h-full">
+            <IntervalButtons
+                ref={intervalBtnContainerRef}
+                intervals={intervals}
+                pickedAt={currIntervalIndexRef.current}
+                onIntervalClick={(timeFrame) => {
+                    availableBarsRef.current = []
+                    dataOnRight.current = false
+                    dataOnLeft.current = false
 
-                xScaleRef.current = xScale.domain([]);
-                yScaleRef.current = yScale.domain([0, 0]);
+                    xScaleRef.current = xScale.domain([])
+                    yScaleRef.current = yScale.domain([0, 0])
 
-                intervalIndexRef.current = intervals.findIndex(interval => interval.timeFrame === timeFrame)!
-                setTooltipBar(null);
-                setZoomTransform(d3.zoomIdentity);
-                onIntervalBtnClicked(timeFrame);
-            }} />
+                    currIntervalIndexRef.current = intervals.findIndex(interval => interval.timeFrame === timeFrame)!
+                    setTooltipBar(null)
+                    setZoomTransform(d3.zoomIdentity)
+
+                    onIntervalBtnClicked(timeFrame)
+                }}
+            />
             <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="bg-transparent"
                 onMouseEnter={handleMouseEnter}
                 onMouseDown={handleMouseDown}
@@ -192,7 +200,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
             >
                 <g transform={`translate(${margin.left},${margin.top})`}>
                     <XAxis scale={xScaleRef.current}
-                        intervalTimeOffset={intervals[intervalIndexRef.current].timeOffset}
+                        intervalTimeOffset={intervals[currIntervalIndexRef.current].timeOffset}
                         title="Date" innerHeight={innerHeight} />
 
                     <YAxis scale={yScaleRef.current} title="Dollars" innerWidth={innerWidth}
