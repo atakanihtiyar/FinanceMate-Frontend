@@ -1,4 +1,5 @@
 import * as d3 from "d3"
+import { useRef, useState } from "react"
 
 export interface Bar {
     date: Date
@@ -51,14 +52,34 @@ const Candlesticks = (
         onMouseEnterCandle, onMouseExitCandle, onMouseHoverCandle
     }: CandlesticksProps) => {
 
+    const [isHovering, setIsHovering] = useState(false)
+    const hoveredIndex = useRef(-1)
+    const [hoverMousePos, setHoverMousePos] = useState<{ x: number, y: number }>({ x: 0, y: 0 })
+
     const [xMin, xMax] = xScale.range()
     const [yMax, yMin] = yScale.range()
     const width = xMax - xMin
 
     return (
-        <g onWheel={onWheel}>
+        <g
+            onWheel={onWheel}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseMove={(e: React.MouseEvent<SVGGElement, MouseEvent>) => {
+                const mousePos = d3.pointer(e)
+                setHoverMousePos({ x: mousePos[0], y: mousePos[1] })
+                hoveredIndex.current = Math.floor((hoverMousePos.x - xScale.paddingOuter()) / xScale.step())
+            }}
+            onMouseLeave={() => setIsHovering(false)}
+        >
             <line x1={width / 2} x2={width / 2} y1={yMin} y2={yMax} stroke="transparent" strokeWidth={width} />
 
+            {
+                isHovering && data[hoveredIndex.current] &&
+                <>
+                    <line x1={hoverMousePos.x} x2={hoverMousePos.x} y1={yMin} y2={yMax} stroke="white" />
+                    <line x1={xMin} x2={xMax} y1={hoverMousePos.y} y2={hoverMousePos.y} stroke="white" />
+                </>
+            }
             {
                 data.map((bar: Bar) => {
                     const x = xScale(bar.date)!
