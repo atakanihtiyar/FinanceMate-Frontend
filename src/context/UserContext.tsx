@@ -1,4 +1,4 @@
-import { checkAuth, login, logout } from "@/lib/backend_service";
+import { checkAuth, login, logout } from "@/lib/server_service";
 import { createContext, useEffect, useState } from "react";
 
 interface IUser {

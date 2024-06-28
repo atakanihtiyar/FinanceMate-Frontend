@@ -27,7 +27,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Separator } from "@/components/ui/separator"
-import { getOrders, getPositions, getTradingData } from "@/lib/backend_service"
+import { getOrders, getPositions, getTradingData } from "@/lib/server_service"
 
 const DashboardPage = () => {
     const navigate = useNavigate()

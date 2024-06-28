@@ -11,7 +11,7 @@ import { ModeToggle } from "../mode-toggle"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { Search } from "lucide-react"
-import { getAssetData } from "@/lib/backend_service"
+import { getAssetData } from "@/lib/server_service"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem } from "../ui/form"
 

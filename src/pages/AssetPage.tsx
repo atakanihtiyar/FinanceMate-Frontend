@@ -37,7 +37,7 @@ import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
-import { getHistoricalBars, postOrder, TimeFrameType } from "@/lib/backend_service"
+import { getHistoricalBars, postOrder, TimeFrameType } from "@/lib/server_service"
 
 import CandlestickChart from "@/components/parts/CandlestickChart/CandlestickChart"
 import * as d3 from "d3"

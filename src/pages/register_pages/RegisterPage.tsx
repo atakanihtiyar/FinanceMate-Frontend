@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom"
 import { RegisterSteps } from "./RegisterSteps"
 import { createContext, useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
-import { register } from "@/lib/backend_service"
+import { register } from "@/lib/server_service"
 
 interface FormDataType {
     password: string,

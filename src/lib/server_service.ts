@@ -1,7 +1,11 @@
-const BACKEND_URL = "http://localhost:5050"
+console.log("ENV MODE -> ", process.env.NODE_ENV)
+
+const SERVER_URL = import.meta.env.VITE_SERVER_ON === "local" ? import.meta.env.VITE_SERVER_LOCAL_URL : import.meta.env.VITE_SERVER_REMOTE_URL
+console.log("SERVER URL -> ", SERVER_URL)
 
 export const checkAuth = async () => {
-    const response = await fetch(`${BACKEND_URL}/session/check`, {
+
+    const response = await fetch(`${SERVER_URL}/session/check`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -20,7 +24,7 @@ export const checkAuth = async () => {
 }
 
 export const login = async (email_address: String, password: String) => {
-    const response = await fetch(`${BACKEND_URL}/session/login`, {
+    const response = await fetch(`${SERVER_URL}/session/login`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -40,7 +44,7 @@ export const login = async (email_address: String, password: String) => {
 }
 
 export const logout = async () => {
-    const response = await fetch(`${BACKEND_URL}/session/logout`, {
+    const response = await fetch(`${SERVER_URL}/session/logout`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -59,7 +63,7 @@ export const logout = async () => {
 }
 
 export const register = async (formData: unknown) => {
-    const response = await fetch(`${BACKEND_URL}/users`, {
+    const response = await fetch(`${SERVER_URL}/users`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -79,7 +83,7 @@ export const register = async (formData: unknown) => {
 }
 
 export const getTradingData = async (account_number: Number) => {
-    const response = await fetch(`${BACKEND_URL}/trading/${account_number}/account`, {
+    const response = await fetch(`${SERVER_URL}/trading/${account_number}/account`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -97,7 +101,7 @@ export const getTradingData = async (account_number: Number) => {
 }
 
 export const getPositions = async (account_number: Number) => {
-    const response = await fetch(`${BACKEND_URL}/trading/${account_number}/positions`, {
+    const response = await fetch(`${SERVER_URL}/trading/${account_number}/positions`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -116,7 +120,7 @@ export const getPositions = async (account_number: Number) => {
 }
 
 export const getOrders = async (account_number: Number) => {
-    const response = await fetch(`${BACKEND_URL}/trading/${account_number}/orders`, {
+    const response = await fetch(`${SERVER_URL}/trading/${account_number}/orders`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -135,7 +139,7 @@ export const getOrders = async (account_number: Number) => {
 }
 
 export const getAssetData = async (symbol_or_asset_id: String) => {
-    const response = await fetch(`${BACKEND_URL}/assets/${symbol_or_asset_id}`, {
+    const response = await fetch(`${SERVER_URL}/assets/${symbol_or_asset_id}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -158,7 +162,7 @@ interface Order {
 }
 
 export const postOrder = async (account_number: Number, order: Order) => {
-    const response = await fetch(`${BACKEND_URL}/trading/${account_number}/orders`, {
+    const response = await fetch(`${SERVER_URL}/trading/${account_number}/orders`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -173,7 +177,7 @@ export const postOrder = async (account_number: Number, order: Order) => {
 
 export type TimeFrameType = "5Min" | "15Min" | "30Min" | "1Hour" | "1Week" | "1Day" | "1Week"
 export const getHistoricalBars = async (symbol_or_asset_id: String, timeFrame: TimeFrameType) => {
-    const response = await fetch(`${BACKEND_URL}/data/${symbol_or_asset_id}/bars?` + new URLSearchParams({ timeFrame }), {
+    const response = await fetch(`${SERVER_URL}/data/${symbol_or_asset_id}/bars?` + new URLSearchParams({ timeFrame }), {
         method: "GET",
         credentials: "include",
         headers: {
