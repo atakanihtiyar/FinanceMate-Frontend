@@ -28,6 +28,9 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
     const [isDragging, setIsDragging] = useState(false)
     const [dragMousePos, setDragMousePos] = useState<{ x: number, y: number }>({ x: 0, y: 0 })
 
+    const [tooltipPoint, setTooltipBar] = useState<Point | null>(null)
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
+
     useEffect(() => {
         const updateDimensions = () => {
             if (containerRef.current) {
@@ -130,6 +133,18 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
         setIsDragging(false)
     }
 
+    const handleMouseEnterLine = (bar: Point) => {
+        setTooltipBar(bar)
+    }
+
+    const handleMouseExitLine = () => {
+        setTooltipBar(null)
+    }
+
+    const handleMouseHoverLine = (mousePosition: { x: number, y: number }) => {
+        setTooltipPosition(mousePosition)
+    }
+
     const handleWheel = (event: React.WheelEvent<SVGSVGElement>) => {
         event.preventDefault()
 
@@ -211,9 +226,31 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
                         xScale={xScaleRef.current}
                         yScale={yScaleRef.current}
                         onWheel={handleWheel}
+                        onMouseEnterLine={handleMouseEnterLine}
+                        onMouseExitLine={handleMouseExitLine}
+                        onMouseHoverLine={handleMouseHoverLine}
                     />
                 </g>
             </svg>
+            {
+                (() => {
+                    if (!tooltipPoint) return
+                    const textColor = tooltipPoint.value > 0 ? "text-[--success]" : tooltipPoint.value < 0 ? "text-destructive" : "text-foreground"
+
+                    return <div style={{ top: tooltipPosition.y, left: tooltipPosition.x }}
+                        className="absolute bg-background border border-foreground p-2 m-5 shadow-xl"
+                    >
+                        <div>
+                            <span className="text-muted-foreground font-mono">Date : </span>
+                            <span className="text-foreground">{d3.utcFormat("%a %d %b %Y %H:%M")(tooltipPoint.date)}</span>
+                        </div>
+                        <div>
+                            <span className="text-muted-foreground font-mono">value : </span>
+                            <span className={textColor}>{yAxisFormat(tooltipPoint.value)}</span>
+                        </div>
+                    </div>
+                })()
+            }
         </div>
     )
 }

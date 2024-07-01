@@ -3,7 +3,6 @@ import * as d3 from "d3"
 import { XAxis, YAxis } from "../Axes"
 import Candlesticks, { Bar, getAvailableBars } from "./Candlesticks"
 import IntervalButtons, { Interval } from "../IntervalButtons"
-import Tooltip from "../Tooltip"
 
 interface CandlestickChartProps {
     data: Bar[],
@@ -227,7 +226,39 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
                     />
                 </g>
             </svg>
-            <Tooltip bar={tooltipBar} relativePosition={tooltipPosition} />
+            {
+                (() => {
+                    if (!tooltipBar) return
+
+                    const diff = tooltipBar.close - tooltipBar.open
+                    const textColor = diff > 0 ? "text-[--success]" : diff < 0 ? "text-destructive" : "text-foreground"
+
+                    return <div style={{ top: tooltipPosition.y, left: tooltipPosition.x }}
+                        className="absolute bg-background border border-foreground p-2 m-5 shadow-xl"
+                    >
+                        <div>
+                            <span className="text-muted-foreground font-mono">Date : </span>
+                            <span className="text-foreground">{d3.utcFormat("%a %d %b %Y %H:%M")(tooltipBar.date)}</span>
+                        </div>
+                        <div>
+                            <span className="text-muted-foreground font-mono">Open : </span>
+                            <span className={textColor}>{d3.format("$~f")(tooltipBar.open)}</span>
+                        </div>
+                        <div>
+                            <span className="text-muted-foreground font-mono">High : </span>
+                            <span className={textColor}>{d3.format("$~f")(tooltipBar.high)}</span>
+                        </div>
+                        <div>
+                            <span className="text-muted-foreground font-mono">Low &nbsp;: </span>
+                            <span className={textColor}>{d3.format("$~f")(tooltipBar.low)}</span>
+                        </div>
+                        <div>
+                            <span className="text-muted-foreground font-mono">Close: </span>
+                            <span className={textColor}>{d3.format("$~f")(tooltipBar.close)}</span>
+                        </div>
+                    </div>
+                })()
+            }
         </div>
     )
 }
