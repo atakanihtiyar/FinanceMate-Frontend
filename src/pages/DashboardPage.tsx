@@ -28,8 +28,8 @@ import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Separator } from "@/components/ui/separator"
 import { getAccountPortfolioHistory, getOrders, getPositions, getTradingData, PortfolioHistoryTimeFrameType } from "@/lib/server_service"
-import LinePctChangeChart from "@/components/parts/Charts/LineChangeChart/LinePctChangeChart"
-import { Point } from "@/components/parts/Charts/LineChangeChart/LinePctChange"
+import LineChart from "@/components/parts/Charts/LineCharts/LineChart"
+import { Point } from "@/components/parts/Charts/LineCharts/Lines"
 
 const DashboardPage = () => {
     const navigate = useNavigate()
@@ -167,7 +167,7 @@ const DashboardPage = () => {
                         <Separator />
                     </div>
                     <div className="h-[512px] w-full col-span-3 border-[1px] border-[var(--muted)] rounded-sm flex justify-center items-center">
-                        <LinePctChangeChart data={portfolioHistory} intervals={[
+                        <LineChart data={portfolioHistory} intervals={[
                             {
                                 title: "5 Minutes",
                                 timeFrame: "5Min",

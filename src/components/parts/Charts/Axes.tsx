@@ -39,7 +39,6 @@ function getTickFormat(tickCountGap: number) {
     }
 }
 
-
 export const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
     {
         scale: d3.ScaleBand<Date>, intervalTimeOffset: number,

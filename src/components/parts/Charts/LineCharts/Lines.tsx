@@ -33,17 +33,17 @@ export const getAvailablePoints = (data: Point[],
         return false
 }
 
-interface CandlesticksProps {
+interface LinesProps {
     data: Point[],
     xScale: d3.ScaleBand<Date>,
     yScale: d3.ScaleLinear<number, number, never>,
     onWheel: (event: React.WheelEvent<SVGSVGElement>) => void,
 }
 
-const LinePctChange = (
+const Lines = (
     {
         data, xScale, yScale, onWheel,
-    }: CandlesticksProps) => {
+    }: LinesProps) => {
 
     const [isHovering, setIsHovering] = useState(false)
     const hoveredIndex = useRef(-1)
@@ -71,7 +71,6 @@ const LinePctChange = (
             }}
             onMouseLeave={() => setIsHovering(false)}
         >
-            <path d=""></path>
             <g>
                 <line
                     x1={width / 2} x2={width / 2} y1={yMin} y2={yMax}
@@ -134,4 +133,4 @@ const LinePctChange = (
     )
 }
 
-export default LinePctChange
+export default Lines

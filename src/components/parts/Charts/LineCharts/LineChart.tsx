@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import * as d3 from "d3"
 import { XAxis, YAxis } from "../Axes"
-import Candlesticks, { Point, getAvailablePoints } from "./LinePctChange"
+import Lines, { Point, getAvailablePoints } from "./Lines"
 import IntervalButtons, { Interval } from "../IntervalButtons"
 
 interface LinePctChangeChartProps {
@@ -60,9 +60,6 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
     let xScale = d3.scaleBand<Date>()
         .domain(data.map((point) => point.date))
         .range([0, innerWidth])
-        .paddingInner(0.35)
-        .paddingOuter(0.5)
-        .align(0.75)
 
     let yScale = d3.scaleLinear()
         .domain([d3.min(data, (point) => point.value / baseVal * 0.9999) as number, d3.max(data, (point) => point.value / baseVal * 1.0001) as number])
@@ -209,7 +206,7 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
                         format={yAxisFormat}
                     />
 
-                    <Candlesticks
+                    <Lines
                         data={availablePointsRef.current}
                         xScale={xScaleRef.current}
                         yScale={yScaleRef.current}
