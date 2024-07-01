@@ -197,3 +197,17 @@ export const getHistoricalBars = async (symbol_or_asset_id: String, timeFrame: T
     })
     return { status: response.status, data }
 }
+
+export const getAccountPortfolioHistory = async (account_number: Number) => {
+    console.log(`${SERVER_URL}/trading/${account_number}/portfolio_history`)
+    const response = await fetch(`${SERVER_URL}/trading/${account_number}/portfolio_history`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    })
+
+    const data = await response.json()
+    return data
+}

@@ -27,7 +27,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Separator } from "@/components/ui/separator"
-import { getOrders, getPositions, getTradingData } from "@/lib/server_service"
+import { getAccountPortfolioHistory, getOrders, getPositions, getTradingData, TimeFrameType } from "@/lib/server_service"
 
 const DashboardPage = () => {
     const navigate = useNavigate()
@@ -89,7 +89,12 @@ const DashboardPage = () => {
     useEffect(() => {
         if (!isAuthRequestEnd) return
         if (isLoggedIn && user) {
-            Promise.all([getTradingData(user.account_number), getPositions(user.account_number), getOrders(user.account_number)]).then((data) => {
+            Promise.all([
+                getTradingData(user.account_number),
+                getPositions(user.account_number),
+                getOrders(user.account_number),
+                getAccountPortfolioHistory(user.account_number)
+            ]).then((data) => {
                 if (data) {
                     if (data[0])
                         setTradingData(data[0])
@@ -103,6 +108,30 @@ const DashboardPage = () => {
         else {
             navigate("/")
         }
+    }, [isAuthRequestEnd])
+
+    const [portfolioHistory, setPortfolioHistory] = useState<{
+        timestamp: number[],
+        equity: number[],
+        profit_loss: number[],
+        profit_loss_pct: number[],
+        base_value: number,
+        base_value_asof: string,
+        timeframe: TimeFrameType,
+    }>({ timestamp: [], equity: [], profit_loss: [], profit_loss_pct: [], base_value: 0, base_value_asof: "", timeframe: "1Day" })
+
+    useEffect(() => {
+        if (!isAuthRequestEnd) return
+        if (!isLoggedIn || !user) return
+
+        const fetchPortfolioHistory = async () => {
+            await getAccountPortfolioHistory(user.account_number)
+                .then((data) => {
+                    setPortfolioHistory(data)
+                    console.log(data)
+                })
+        }
+        fetchPortfolioHistory()
     }, [isAuthRequestEnd])
 
     const calculatePNL = (oldValue: string, newValue: string) => {
