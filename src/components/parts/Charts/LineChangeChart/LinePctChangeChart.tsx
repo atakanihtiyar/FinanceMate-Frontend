@@ -1,17 +1,16 @@
 import React, { useEffect, useRef, useState } from "react"
 import * as d3 from "d3"
-import { XAxis, YAxis } from "./CandlestickAxes"
-import Candlesticks, { Bar, getAvailableBars } from "./Candlesticks"
-import IntervalButtons, { Interval } from "./IntervalButtons"
-import Tooltip from "./Tooltip"
+import { XAxis, YAxis } from "../Axes"
+import Candlesticks, { Point, getAvailablePoints } from "./LinePctChange"
+import IntervalButtons, { Interval } from "../IntervalButtons"
 
-interface CandlestickChartProps {
-    data: Bar[],
+interface LinePctChangeChartProps {
+    data: Point[],
     intervals: Interval[],
     onIntervalBtnClicked: (timeFrame: string) => void,
 }
 
-const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, onIntervalBtnClicked }) => {
+const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals, onIntervalBtnClicked }) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const intervalBtnContainerRef = useRef<HTMLDivElement>(null)
     const svgRef = useRef<SVGSVGElement>(null)
@@ -21,13 +20,10 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
     const dataOnRight = useRef<boolean>(false)
     const dataOnLeft = useRef<boolean>(false)
 
-    const [tooltipBar, setTooltipBar] = useState<Bar | null>(null)
-    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
-
     const currIntervalIndexRef = useRef<number>(intervals.findIndex((interval) => interval.isDefault)!)
-    const availableBarsRef = useRef<Bar[]>([])
+    const availablePointsRef = useRef<Point[]>([])
     const xScaleRef = useRef<d3.ScaleBand<Date>>(d3.scaleBand<Date>())
-    const yScaleRef = useRef<d3.ScaleLinear<number, number>>(d3.scaleLinear())
+    const yScaleRef = useRef<d3.ScaleLinear<number, number, never>>(d3.scaleLinear())
 
     const [isDragging, setIsDragging] = useState(false)
     const [dragMousePos, setDragMousePos] = useState<{ x: number, y: number }>({ x: 0, y: 0 })
@@ -52,39 +48,46 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
     if (data.length === 0) return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
 
     const { width, height } = dimensions
-    const margin = { top: 25, right: 25, bottom: 30, left: 50 }
+    const margin = { top: 25, right: 25, bottom: 45, left: 75 }
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom
 
     const xMin = 0
     const xMax = innerWidth
 
+    let baseVal = data[0].value
+
     let xScale = d3.scaleBand<Date>()
-        .domain(data.map((bar) => bar.date))
+        .domain(data.map((point) => point.date))
         .range([0, innerWidth])
         .paddingInner(0.35)
         .paddingOuter(0.5)
         .align(0.75)
 
     let yScale = d3.scaleLinear()
-        .domain([d3.min(data, (bar) => bar.low * 0.98)!, d3.max(data, (bar) => bar.high * 1.02)!])
-        .nice()
+        .domain([d3.min(data, (point) => point.value / baseVal * 0.9999) as number, d3.max(data, (point) => point.value / baseVal * 1.0001) as number])
         .range([innerHeight, 0])
+        .nice()
 
-    const availableBars = getAvailableBars(data, xScale, zoomTransform)
-    if (availableBars) {
-        const filteredData = availableBars.filteredData
-        availableBarsRef.current = availableBars.filteredData
-        dataOnRight.current = availableBars.dataOnRight
-        dataOnLeft.current = availableBars.dataOnLeft
+    const availablePoints = getAvailablePoints(data, xScale, zoomTransform)
+    if (availablePoints) {
+        dataOnRight.current = availablePoints.dataOnRight
+        dataOnLeft.current = availablePoints.dataOnLeft
 
-        xScale = xScale.domain(filteredData.map((bar: Bar) => bar.date))
+        baseVal = availablePoints.filteredData[0].value
+
+        xScale = xScale.domain(availablePoints.filteredData.map((point: Point) => point.date))
 
         yScale = yScale.domain([
-            d3.min(filteredData, (bar: Bar) => bar.low * 0.99) as number,
-            d3.max(filteredData, (bar: Bar) => bar.high * 1.01) as number
+            d3.min(availablePoints.filteredData, (point: Point) => point.value / baseVal * 0.9999) as number,
+            d3.max(availablePoints.filteredData, (point: Point) => point.value / baseVal * 1.0001) as number
         ])
             .nice()
+
+        const filteredData = availablePoints.filteredData.map((point => {
+            return { ...point, value: point.value / baseVal }
+        }))
+        availablePointsRef.current = filteredData
     }
     xScaleRef.current = xScale
     yScaleRef.current = yScale
@@ -130,18 +133,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
         setIsDragging(false)
     }
 
-    const handleMouseEnterCandle = (bar: Bar) => {
-        setTooltipBar(bar)
-    }
-
-    const handleMouseExitCandle = () => {
-        setTooltipBar(null)
-    }
-
-    const handleMouseHoverCandle = (mousePosition: { x: number, y: number }) => {
-        setTooltipPosition(mousePosition)
-    }
-
     const handleWheel = (event: React.WheelEvent<SVGSVGElement>) => {
         event.preventDefault()
 
@@ -153,11 +144,11 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
         let newX = mouseElementX - offsetX * newZoomLevel
 
         // check boundaries
-        const tooFewBars = availableBarsRef.current.length < 12
+        const tooFewPoints = availablePointsRef.current.length < 12
         const isZoomingIn = newZoomLevel > zoomTransform.k
         const isZoomingOut = newZoomLevel < zoomTransform.k
         if (!dataOnLeft.current && !dataOnRight.current && isZoomingOut) return
-        if (tooFewBars && isZoomingIn) return
+        if (tooFewPoints && isZoomingIn) return
 
         // fix position by boundaries
         const xMinZoom = (xMin - xMax) * newZoomLevel - (xMin - xMax)
@@ -174,6 +165,8 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
         setZoomTransform(newTransform)
     }
 
+    const yAxisFormat = (value: number) => value === 1 ? "0%" : d3.format("+.2%")(value - 1)
+
     return (
         <div ref={containerRef} className="w-full h-full">
             <IntervalButtons
@@ -181,7 +174,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
                 intervals={intervals}
                 pickedAt={currIntervalIndexRef.current}
                 onIntervalClick={(timeFrame) => {
-                    availableBarsRef.current = []
+                    availablePointsRef.current = []
                     dataOnRight.current = false
                     dataOnLeft.current = false
 
@@ -189,7 +182,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
                     yScaleRef.current = yScale.domain([0, 0])
 
                     currIntervalIndexRef.current = intervals.findIndex(interval => interval.timeFrame === timeFrame)!
-                    setTooltipBar(null)
                     setZoomTransform(d3.zoomIdentity)
 
                     onIntervalBtnClicked(timeFrame)
@@ -207,28 +199,26 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
                         scale={xScaleRef.current}
                         intervalTimeOffset={intervals[currIntervalIndexRef.current].timeOffset}
                         title="Date"
-                        innerHeight={innerHeight} />
+                        innerHeight={innerHeight}
+                    />
 
                     <YAxis
                         scale={yScaleRef.current}
                         title="Dollars"
                         innerWidth={innerWidth}
-                        innerHeight={innerHeight} />
+                        format={yAxisFormat}
+                    />
 
                     <Candlesticks
-                        data={availableBarsRef.current}
+                        data={availablePointsRef.current}
                         xScale={xScaleRef.current}
                         yScale={yScaleRef.current}
                         onWheel={handleWheel}
-                        onMouseEnterCandle={handleMouseEnterCandle}
-                        onMouseExitCandle={handleMouseExitCandle}
-                        onMouseHoverCandle={handleMouseHoverCandle}
                     />
                 </g>
             </svg>
-            <Tooltip bar={tooltipBar} relativePosition={tooltipPosition} />
         </div>
     )
 }
 
-export default CandlestickChart
+export default LinePctChangeChart

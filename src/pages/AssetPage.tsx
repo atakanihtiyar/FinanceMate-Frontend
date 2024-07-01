@@ -39,9 +39,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { getHistoricalBars, postOrder, HistoricalBarsTimeFrameType } from "@/lib/server_service"
 
-import CandlestickChart from "@/components/parts/CandlestickChart/CandlestickChart"
+import CandlestickChart from "@/components/parts/Charts/CandlestickChart/CandlestickChart"
 import * as d3 from "d3"
-import { Bar } from "@/components/parts/CandlestickChart/Candlesticks"
+import { Bar } from "@/components/parts/Charts/CandlestickChart/Candlesticks"
 
 const FormSchema = z.object({
     is_limit: z.boolean(),

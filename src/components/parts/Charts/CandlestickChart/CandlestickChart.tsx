@@ -1,16 +1,17 @@
 import React, { useEffect, useRef, useState } from "react"
 import * as d3 from "d3"
-import { XAxis, YAxis } from "./LinePctChangeAxes"
-import Candlesticks, { Point, getAvailablePoints } from "./LinePctChange"
-import IntervalButtons, { Interval } from "../CandlestickChart/IntervalButtons"
+import { XAxis, YAxis } from "../Axes"
+import Candlesticks, { Bar, getAvailableBars } from "./Candlesticks"
+import IntervalButtons, { Interval } from "../IntervalButtons"
+import Tooltip from "../Tooltip"
 
-interface LinePctChangeChartProps {
-    data: Point[],
+interface CandlestickChartProps {
+    data: Bar[],
     intervals: Interval[],
     onIntervalBtnClicked: (timeFrame: string) => void,
 }
 
-const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals, onIntervalBtnClicked }) => {
+const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, onIntervalBtnClicked }) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const intervalBtnContainerRef = useRef<HTMLDivElement>(null)
     const svgRef = useRef<SVGSVGElement>(null)
@@ -20,10 +21,13 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
     const dataOnRight = useRef<boolean>(false)
     const dataOnLeft = useRef<boolean>(false)
 
+    const [tooltipBar, setTooltipBar] = useState<Bar | null>(null)
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
+
     const currIntervalIndexRef = useRef<number>(intervals.findIndex((interval) => interval.isDefault)!)
-    const availablePointsRef = useRef<Point[]>([])
+    const availableBarsRef = useRef<Bar[]>([])
     const xScaleRef = useRef<d3.ScaleBand<Date>>(d3.scaleBand<Date>())
-    const yScaleRef = useRef<d3.ScaleLinear<number, number, never>>(d3.scaleLinear())
+    const yScaleRef = useRef<d3.ScaleLinear<number, number>>(d3.scaleLinear())
 
     const [isDragging, setIsDragging] = useState(false)
     const [dragMousePos, setDragMousePos] = useState<{ x: number, y: number }>({ x: 0, y: 0 })
@@ -48,46 +52,39 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
     if (data.length === 0) return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
 
     const { width, height } = dimensions
-    const margin = { top: 25, right: 25, bottom: 45, left: 75 }
+    const margin = { top: 25, right: 25, bottom: 30, left: 50 }
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom
 
     const xMin = 0
     const xMax = innerWidth
 
-    let baseVal = data[0].value
-
     let xScale = d3.scaleBand<Date>()
-        .domain(data.map((point) => point.date))
+        .domain(data.map((bar) => bar.date))
         .range([0, innerWidth])
         .paddingInner(0.35)
         .paddingOuter(0.5)
         .align(0.75)
 
     let yScale = d3.scaleLinear()
-        .domain([d3.min(data, (point) => point.value / baseVal * 0.9999) as number, d3.max(data, (point) => point.value / baseVal * 1.0001) as number])
-        .range([innerHeight, 0])
+        .domain([d3.min(data, (bar) => bar.low * 0.98)!, d3.max(data, (bar) => bar.high * 1.02)!])
         .nice()
+        .range([innerHeight, 0])
 
-    const availablePoints = getAvailablePoints(data, xScale, zoomTransform)
-    if (availablePoints) {
-        dataOnRight.current = availablePoints.dataOnRight
-        dataOnLeft.current = availablePoints.dataOnLeft
+    const availableBars = getAvailableBars(data, xScale, zoomTransform)
+    if (availableBars) {
+        const filteredData = availableBars.filteredData
+        availableBarsRef.current = availableBars.filteredData
+        dataOnRight.current = availableBars.dataOnRight
+        dataOnLeft.current = availableBars.dataOnLeft
 
-        baseVal = availablePoints.filteredData[0].value
-
-        xScale = xScale.domain(availablePoints.filteredData.map((point: Point) => point.date))
+        xScale = xScale.domain(filteredData.map((bar: Bar) => bar.date))
 
         yScale = yScale.domain([
-            d3.min(availablePoints.filteredData, (point: Point) => point.value / baseVal * 0.9999) as number,
-            d3.max(availablePoints.filteredData, (point: Point) => point.value / baseVal * 1.0001) as number
+            d3.min(filteredData, (bar: Bar) => bar.low * 0.99) as number,
+            d3.max(filteredData, (bar: Bar) => bar.high * 1.01) as number
         ])
             .nice()
-
-        const filteredData = availablePoints.filteredData.map((point => {
-            return { ...point, value: point.value / baseVal }
-        }))
-        availablePointsRef.current = filteredData
     }
     xScaleRef.current = xScale
     yScaleRef.current = yScale
@@ -133,6 +130,18 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
         setIsDragging(false)
     }
 
+    const handleMouseEnterCandle = (bar: Bar) => {
+        setTooltipBar(bar)
+    }
+
+    const handleMouseExitCandle = () => {
+        setTooltipBar(null)
+    }
+
+    const handleMouseHoverCandle = (mousePosition: { x: number, y: number }) => {
+        setTooltipPosition(mousePosition)
+    }
+
     const handleWheel = (event: React.WheelEvent<SVGSVGElement>) => {
         event.preventDefault()
 
@@ -144,11 +153,11 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
         let newX = mouseElementX - offsetX * newZoomLevel
 
         // check boundaries
-        const tooFewPoints = availablePointsRef.current.length < 12
+        const tooFewBars = availableBarsRef.current.length < 12
         const isZoomingIn = newZoomLevel > zoomTransform.k
         const isZoomingOut = newZoomLevel < zoomTransform.k
         if (!dataOnLeft.current && !dataOnRight.current && isZoomingOut) return
-        if (tooFewPoints && isZoomingIn) return
+        if (tooFewBars && isZoomingIn) return
 
         // fix position by boundaries
         const xMinZoom = (xMin - xMax) * newZoomLevel - (xMin - xMax)
@@ -172,7 +181,7 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
                 intervals={intervals}
                 pickedAt={currIntervalIndexRef.current}
                 onIntervalClick={(timeFrame) => {
-                    availablePointsRef.current = []
+                    availableBarsRef.current = []
                     dataOnRight.current = false
                     dataOnLeft.current = false
 
@@ -180,6 +189,7 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
                     yScaleRef.current = yScale.domain([0, 0])
 
                     currIntervalIndexRef.current = intervals.findIndex(interval => interval.timeFrame === timeFrame)!
+                    setTooltipBar(null)
                     setZoomTransform(d3.zoomIdentity)
 
                     onIntervalBtnClicked(timeFrame)
@@ -197,25 +207,29 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
                         scale={xScaleRef.current}
                         intervalTimeOffset={intervals[currIntervalIndexRef.current].timeOffset}
                         title="Date"
-                        innerHeight={innerHeight}
-                    />
+                        innerHeight={innerHeight} />
 
                     <YAxis
                         scale={yScaleRef.current}
                         title="Dollars"
                         innerWidth={innerWidth}
+                        format={d3.format("$~f")}
                     />
 
                     <Candlesticks
-                        data={availablePointsRef.current}
+                        data={availableBarsRef.current}
                         xScale={xScaleRef.current}
                         yScale={yScaleRef.current}
                         onWheel={handleWheel}
+                        onMouseEnterCandle={handleMouseEnterCandle}
+                        onMouseExitCandle={handleMouseExitCandle}
+                        onMouseHoverCandle={handleMouseHoverCandle}
                     />
                 </g>
             </svg>
+            <Tooltip bar={tooltipBar} relativePosition={tooltipPosition} />
         </div>
     )
 }
 
-export default LinePctChangeChart
+export default CandlestickChart

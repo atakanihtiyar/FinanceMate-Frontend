@@ -35,12 +35,12 @@ function getTickFormat(tickCountGap: number) {
         filter: ({ dataLength, index, previousIndex }: FilterProps) =>
             (isCountGapReached(index, previousIndex) && (dataLength - index) * 1.25 > tickCountGap) || // all ticks but last
             index === 0 || // first tick
-            index === dataLength - 1 // last tikc
+            index === dataLength - 1 // last tick
     }
 }
 
 
-const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
+export const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
     {
         scale: d3.ScaleBand<Date>, intervalTimeOffset: number,
         title: string, innerHeight: number
@@ -106,13 +106,15 @@ const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
     )
 }
 
-const YAxis = ({ scale, title, innerWidth, innerHeight }:
+export const YAxis = ({ scale, title, innerWidth, format }:
     {
-        scale: d3.ScaleLinear<number, number, never>, title: string, innerWidth: number, innerHeight: number
+        scale: d3.ScaleLinear<number, number, never>,
+        title: string, innerWidth: number,
+        format: (value: number) => string
     }) => {
 
     const [yMax, yMin] = scale.range()
-    const ticks = scale.ticks(innerHeight / 40)
+    const ticks = scale.ticks()
 
     return (
         <g transform={`translate(${0},${0})`}>
@@ -145,7 +147,7 @@ const YAxis = ({ scale, title, innerWidth, innerHeight }:
                             textAnchor="end"
                             className="text-sm fill-muted-foreground"
                         >
-                            {d3.format("$~f")(value)}
+                            {format(value)}
                         </text>
                     </g>
                 })
@@ -153,5 +155,3 @@ const YAxis = ({ scale, title, innerWidth, innerHeight }:
         </g>
     )
 }
-
-export { XAxis, YAxis }

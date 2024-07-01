@@ -28,8 +28,8 @@ import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Separator } from "@/components/ui/separator"
 import { getAccountPortfolioHistory, getOrders, getPositions, getTradingData, PortfolioHistoryTimeFrameType } from "@/lib/server_service"
-import LinePctChangeChart from "@/components/parts/LineChangeChart/LinePctChangeChart"
-import { Point } from "@/components/parts/LineChangeChart/LinePctChange"
+import LinePctChangeChart from "@/components/parts/Charts/LineChangeChart/LinePctChangeChart"
+import { Point } from "@/components/parts/Charts/LineChangeChart/LinePctChange"
 
 const DashboardPage = () => {
     const navigate = useNavigate()
