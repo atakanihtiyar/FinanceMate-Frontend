@@ -27,7 +27,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Separator } from "@/components/ui/separator"
-import { getAccountPortfolioHistory, getOrders, getPositions, getTradingData, TimeFrameType } from "@/lib/server_service"
+import { getAccountPortfolioHistory, getOrders, getPositions, getTradingData, PortfolioHistoryTimeFrameType } from "@/lib/server_service"
+import LinePctChangeChart from "@/components/parts/LineChangeChart/LinePctChangeChart"
+import { Point } from "@/components/parts/LineChangeChart/LinePctChange"
 
 const DashboardPage = () => {
     const navigate = useNavigate()
@@ -93,7 +95,6 @@ const DashboardPage = () => {
                 getTradingData(user.account_number),
                 getPositions(user.account_number),
                 getOrders(user.account_number),
-                getAccountPortfolioHistory(user.account_number)
             ]).then((data) => {
                 if (data) {
                     if (data[0])
@@ -110,29 +111,21 @@ const DashboardPage = () => {
         }
     }, [isAuthRequestEnd])
 
-    const [portfolioHistory, setPortfolioHistory] = useState<{
-        timestamp: number[],
-        equity: number[],
-        profit_loss: number[],
-        profit_loss_pct: number[],
-        base_value: number,
-        base_value_asof: string,
-        timeframe: TimeFrameType,
-    }>({ timestamp: [], equity: [], profit_loss: [], profit_loss_pct: [], base_value: 0, base_value_asof: "", timeframe: "1Day" })
+    const [portfolioHistory, setPortfolioHistory] = useState<Point[]>([])
+    const [timeFrame, setTimeFrame] = useState<PortfolioHistoryTimeFrameType>("1D")
 
     useEffect(() => {
         if (!isAuthRequestEnd) return
         if (!isLoggedIn || !user) return
 
         const fetchPortfolioHistory = async () => {
-            await getAccountPortfolioHistory(user.account_number)
+            await getAccountPortfolioHistory(user.account_number, timeFrame)
                 .then((data) => {
                     setPortfolioHistory(data)
-                    console.log(data)
                 })
         }
         fetchPortfolioHistory()
-    }, [isAuthRequestEnd])
+    }, [isAuthRequestEnd, timeFrame])
 
     const calculatePNL = (oldValue: string, newValue: string) => {
         const _old = parseFloat(oldValue)
@@ -174,7 +167,31 @@ const DashboardPage = () => {
                         <Separator />
                     </div>
                     <div className="h-[512px] w-full col-span-3 border-[1px] border-[var(--muted)] rounded-sm flex justify-center items-center">
-                        <p className="text-center">GRAPH PLACEHOLDER</p>
+                        <LinePctChangeChart data={portfolioHistory} intervals={[
+                            {
+                                title: "5 Minutes",
+                                timeFrame: "5Min",
+                                timeOffset: 1000 * 60 * 5,
+                            },
+                            {
+                                title: "15 Minutes",
+                                timeFrame: "15Min",
+                                timeOffset: 1000 * 60 * 15,
+                            },
+                            {
+                                title: "1 Hour",
+                                timeFrame: "1H",
+                                timeOffset: 1000 * 60 * 60,
+                            },
+                            {
+                                title: "1 Day",
+                                timeFrame: "1D",
+                                timeOffset: 1000 * 60 * 60 * 24,
+                                isDefault: true
+                            },
+                        ]}
+                            onIntervalBtnClicked={(timeFrame: string) => setTimeFrame(timeFrame as PortfolioHistoryTimeFrameType)}
+                        />
                     </div>
                 </div>
                 <div className="w-full grid grid-cols-3 justify-center items-start gap-2">

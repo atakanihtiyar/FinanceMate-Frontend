@@ -37,7 +37,7 @@ import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
-import { getHistoricalBars, postOrder, TimeFrameType } from "@/lib/server_service"
+import { getHistoricalBars, postOrder, HistoricalBarsTimeFrameType } from "@/lib/server_service"
 
 import CandlestickChart from "@/components/parts/CandlestickChart/CandlestickChart"
 import * as d3 from "d3"
@@ -77,7 +77,7 @@ const AssetPage = () => {
     const assetData = location.state ? location.state.assetData : null
 
     const [chartData, setChartData] = useState<Bar[]>([])
-    const [timeFrame, setTimeFrame] = useState<TimeFrameType>("1Day")
+    const [timeFrame, setTimeFrame] = useState<HistoricalBarsTimeFrameType>("1Day")
     const fetchData = async () => {
         const response = await getHistoricalBars(assetData.symbol, timeFrame)
         if (response.status === 200) {
@@ -188,7 +188,7 @@ const AssetPage = () => {
                                     timeOffset: 1000 * 60 * 60 * 24 * 365,
                                 }
                             ]}
-                            onIntervalBtnClicked={(timeFrame: string) => setTimeFrame(timeFrame as TimeFrameType)} />
+                            onIntervalBtnClicked={(timeFrame: string) => setTimeFrame(timeFrame as HistoricalBarsTimeFrameType)} />
                     </div>
                     <Card className="border-0 w-full basis-6/12">
                         <CardHeader>

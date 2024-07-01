@@ -175,8 +175,8 @@ export const postOrder = async (account_number: Number, order: Order) => {
     return { status: response.status, data }
 }
 
-export type TimeFrameType = "5Min" | "15Min" | "30Min" | "1Hour" | "1Week" | "1Day" | "1Week"
-export const getHistoricalBars = async (symbol_or_asset_id: String, timeFrame: TimeFrameType) => {
+export type HistoricalBarsTimeFrameType = "5Min" | "15Min" | "30Min" | "1Hour" | "1Week" | "1Day" | "1Week"
+export const getHistoricalBars = async (symbol_or_asset_id: String, timeFrame: HistoricalBarsTimeFrameType) => {
     const response = await fetch(`${SERVER_URL}/data/${symbol_or_asset_id}/bars?` + new URLSearchParams({ timeFrame }), {
         method: "GET",
         credentials: "include",
@@ -198,9 +198,9 @@ export const getHistoricalBars = async (symbol_or_asset_id: String, timeFrame: T
     return { status: response.status, data }
 }
 
-export const getAccountPortfolioHistory = async (account_number: Number) => {
-    console.log(`${SERVER_URL}/trading/${account_number}/portfolio_history`)
-    const response = await fetch(`${SERVER_URL}/trading/${account_number}/portfolio_history`, {
+export type PortfolioHistoryTimeFrameType = "5Min" | "15Min" | "1H" | "1D"
+export const getAccountPortfolioHistory = async (account_number: Number, timeframe: PortfolioHistoryTimeFrameType) => {
+    const response = await fetch(`${SERVER_URL}/trading/${account_number}/portfolio_history?` + new URLSearchParams({ timeframe }), {
         method: "GET",
         credentials: "include",
         headers: {
@@ -208,6 +208,17 @@ export const getAccountPortfolioHistory = async (account_number: Number) => {
         }
     })
 
-    const data = await response.json()
-    return data
+    let data = await response.json()
+
+    if (response.status === 200) {
+        return data.timestamp.map((time: number, index: number) => {
+            const date = new Date(time * 1000)
+            const value = data.equity[index]
+            return { date, value }
+        })
+    }
+    else {
+        console.log(data)
+        return false
+    }
 }
