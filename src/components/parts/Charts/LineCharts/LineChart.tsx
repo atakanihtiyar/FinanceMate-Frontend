@@ -70,6 +70,8 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
     let xScale = d3.scaleBand<Date>()
         .domain(data.map((point) => point.date))
         .range([0, innerWidth])
+        .paddingOuter(-0.5)
+        .align(-0.5)
 
     let yScale = d3.scaleLinear()
         .domain([d3.min(data, (point) => point.value / baseVal * 0.9999) as number, d3.max(data, (point) => point.value / baseVal * 1.0001) as number])
