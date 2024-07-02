@@ -15,7 +15,7 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
     const intervalBtnContainerRef = useRef<HTMLDivElement>(null)
     const svgRef = useRef<SVGSVGElement>(null)
 
-    const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+    const [dimensions, setDimensions] = useState({ width: 300, height: 300 })
     const [zoomTransform, setZoomTransform] = useState<d3.ZoomTransform>(d3.zoomIdentity)
     const dataOnRight = useRef<boolean>(false)
     const dataOnLeft = useRef<boolean>(false)
@@ -28,21 +28,28 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
     const [isDragging, setIsDragging] = useState(false)
     const [dragMousePos, setDragMousePos] = useState<{ x: number, y: number }>({ x: 0, y: 0 })
 
-    const [tooltipPoint, setTooltipBar] = useState<Point | null>(null)
+    const [tooltipPoint, setTooltipPoint] = useState<Point | null>(null)
+    const [tooltipPrevPoint, setTooltipPrevPoint] = useState<Point | null>(null)
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
 
-    useEffect(() => {
-        const updateDimensions = () => {
-            if (containerRef.current) {
-                const { clientWidth: clientWidth, clientHeight: clientHeight } = containerRef.current
-                if (intervalBtnContainerRef.current) {
-                    const { clientHeight: intervalsClientHeight } = intervalBtnContainerRef.current
-                    setDimensions({ width: clientWidth, height: clientHeight - intervalsClientHeight })
-                }
-                else
-                    setDimensions({ width: clientWidth, height: clientHeight })
+    const updateDimensions = () => {
+        if (containerRef.current) {
+            const { clientWidth: clientWidth, clientHeight: clientHeight } = containerRef.current
+            if (intervalBtnContainerRef.current) {
+                const { clientHeight: intervalsClientHeight } = intervalBtnContainerRef.current
+                setDimensions({ width: clientWidth, height: clientHeight - intervalsClientHeight })
+            }
+            else {
+                setDimensions({ width: clientWidth, height: clientHeight })
             }
         }
+    }
+
+    useEffect(() => {
+        updateDimensions()
+    }, [data])
+
+    useEffect(() => {
         updateDimensions()
         window.addEventListener("resize", updateDimensions)
         return () => window.removeEventListener("resize", updateDimensions)
@@ -133,12 +140,14 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
         setIsDragging(false)
     }
 
-    const handleMouseEnterLine = (bar: Point) => {
-        setTooltipBar(bar)
+    const handleMouseEnterLine = (point: Point, prevPoint: Point) => {
+        setTooltipPoint(point)
+        setTooltipPrevPoint(prevPoint)
     }
 
     const handleMouseExitLine = () => {
-        setTooltipBar(null)
+        setTooltipPoint(null)
+        setTooltipPrevPoint(null)
     }
 
     const handleMouseHoverLine = (mousePosition: { x: number, y: number }) => {
@@ -180,7 +189,7 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
     const yAxisFormat = (value: number) => value === 1 ? "0%" : d3.format("+.2%")(value - 1)
 
     return (
-        <div ref={containerRef} className="w-full h-full">
+        <div ref={containerRef} className="w-full h-full flex flex-col border-[1px] border-[var(--muted)] rounded-sm justify-center items-center">
             <IntervalButtons
                 ref={intervalBtnContainerRef}
                 intervals={intervals}
@@ -234,19 +243,23 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
             </svg>
             {
                 (() => {
-                    if (!tooltipPoint) return
+                    if (!tooltipPoint || !tooltipPrevPoint) return
                     const textColor = tooltipPoint.value > 0 ? "text-[--success]" : tooltipPoint.value < 0 ? "text-destructive" : "text-foreground"
 
                     return <div style={{ top: tooltipPosition.y, left: tooltipPosition.x }}
                         className="absolute bg-background border border-foreground p-2 m-5 shadow-xl"
                     >
                         <div>
-                            <span className="text-muted-foreground font-mono">Date : </span>
+                            <span className="text-muted-foreground font-mono">Date   : </span>
                             <span className="text-foreground">{d3.utcFormat("%a %d %b %Y %H:%M")(tooltipPoint.date)}</span>
                         </div>
                         <div>
-                            <span className="text-muted-foreground font-mono">value : </span>
+                            <span className="text-muted-foreground font-mono">All Change : </span>
                             <span className={textColor}>{yAxisFormat(tooltipPoint.value)}</span>
+                        </div>
+                        <div>
+                            <span className="text-muted-foreground font-mono">Line Change : </span>
+                            <span className={textColor}>{yAxisFormat(tooltipPoint.value / tooltipPrevPoint.value)}</span>
                         </div>
                     </div>
                 })()

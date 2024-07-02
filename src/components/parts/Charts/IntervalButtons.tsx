@@ -15,7 +15,7 @@ interface IntervalButtonsProps extends React.RefAttributes<HTMLDivElement> {
 }
 
 const IntervalButtons = React.forwardRef<HTMLDivElement, IntervalButtonsProps>(({ intervals, pickedAt, onIntervalClick, ...props }, ref) => (
-    <div className="border-b-2" ref={ref} {...props}>
+    <div className="w-full min-h-min border-b-2" ref={ref} {...props}>
         {intervals.map((interval, index) => (
             <Button
                 key={interval.timeFrame}

@@ -166,7 +166,7 @@ const DashboardPage = () => {
                         </Card>
                         <Separator />
                     </div>
-                    <div className="h-[512px] w-full col-span-3 border-[1px] border-[var(--muted)] rounded-sm flex justify-center items-center">
+                    <div className="h-[512px] w-full col-span-3">
                         <LineChart data={portfolioHistory} intervals={[
                             {
                                 title: "5 Minutes",

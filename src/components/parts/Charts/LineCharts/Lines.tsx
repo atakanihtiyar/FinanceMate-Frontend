@@ -35,7 +35,7 @@ interface LinesProps {
     xScale: d3.ScaleBand<Date>,
     yScale: d3.ScaleLinear<number, number, never>,
     onWheel: (event: React.WheelEvent<SVGSVGElement>) => void,
-    onMouseEnterLine: (bar: Point) => void
+    onMouseEnterLine: (point: Point, prevPoint: Point) => void
     onMouseExitLine: () => void
     onMouseHoverLine: (mousePosition: { x: number, y: number }) => void
 }
@@ -55,7 +55,6 @@ const Lines = (
     const width = xMax - xMin
 
     let startPointValue = data[0].value
-    let startPointY = yScale(data[0].value)!
 
     return (
         <g
@@ -76,37 +75,43 @@ const Lines = (
                 />
             </g>
             {data.slice(1).map((point, index) => {
-                const prevPoint = data[index];
-                const x1 = xScale(prevPoint.date)!;
-                const y1 = yScale(prevPoint.value)!;
-                const x2 = xScale(point.date)!;
-                const y2 = yScale(point.value)!;
+                const prevPoint = data[index]
+                const x1 = xScale(prevPoint.date)!
+                const y1 = yScale(prevPoint.value)!
+                const x2 = xScale(point.date)!
+                const y2 = yScale(point.value)!
 
-                const halfX = x1 + (x2 - x1) / 2;
-                const isStartPointAbove = prevPoint.value > startPointValue;
-                const strokeColor = point.value > startPointValue ? "stroke-[--success]" : "stroke-destructive";
+                // Mesafe oranlarını hesapla
+                const distanceRatioX = (startPointValue - prevPoint.value) / (point.value - prevPoint.value)
+                const distanceRatioY = (startPointValue - prevPoint.value) / (point.value - prevPoint.value)
+
+                // Yeni yarı noktaları hesapla
+                const middleX = x1 + (x2 - x1) * distanceRatioX
+                const middleY = y1 + (y2 - y1) * distanceRatioY
+                const isStartPointAbove = prevPoint.value > startPointValue
+                const strokeColor = point.value > startPointValue ? "stroke-[--success]" : "stroke-destructive"
 
                 return (
                     <g key={x2 + y2 + point.value}
-                        onMouseEnter={() => onMouseEnterLine(point)}
+                        onMouseEnter={() => onMouseEnterLine(point, prevPoint)}
                         onMouseLeave={onMouseExitLine}
                         onMouseMove={(e) => onMouseHoverLine({ x: e.pageX, y: e.pageY })}
                     >
                         {isStartPointAbove && point.value < startPointValue ? (
                             <>
-                                <line x1={x1} x2={halfX} y1={y1} y2={startPointY} className="stroke-[--success] stroke-[2px] hover:stroke-[5px]" strokeLinecap="round" />
-                                <line x1={halfX} x2={x2} y1={startPointY} y2={y2} className="stroke-destructive stroke-[2px] hover:stroke-[5px]" strokeLinecap="round" />
+                                <line x1={x1} x2={middleX} y1={y1} y2={middleY} className="stroke-[--success] stroke-[2px] hover:stroke-[5px]" strokeLinecap="round" />
+                                <line x1={middleX} x2={x2} y1={middleY} y2={y2} className="stroke-destructive stroke-[2px] hover:stroke-[5px]" strokeLinecap="round" />
                             </>
                         ) : !isStartPointAbove && point.value > startPointValue ? (
                             <>
-                                <line x1={x1} x2={halfX} y1={y1} y2={startPointY} className="stroke-destructive stroke-[2px] hover:stroke-[5px]" strokeLinecap="round" />
-                                <line x1={halfX} x2={x2} y1={startPointY} y2={y2} className="stroke-[--success] stroke-[2px] hover:stroke-[5px]" strokeLinecap="round" />
+                                <line x1={x1} x2={middleX} y1={y1} y2={middleY} className="stroke-destructive stroke-[2px] hover:stroke-[5px]" strokeLinecap="round" />
+                                <line x1={middleX} x2={x2} y1={middleY} y2={y2} className="stroke-[--success] stroke-[2px] hover:stroke-[5px]" strokeLinecap="round" />
                             </>
                         ) : (
                             <line x1={x1} x2={x2} y1={y1} y2={y2} className={`${strokeColor} stroke-[2px] hover:stroke-[5px]`} strokeLinecap="round" />
                         )}
                     </g>
-                );
+                )
             })}
             {
                 isHovering && data[hoveredIndex] &&

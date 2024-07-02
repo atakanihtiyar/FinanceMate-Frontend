@@ -31,18 +31,24 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
     const [isDragging, setIsDragging] = useState(false)
     const [dragMousePos, setDragMousePos] = useState<{ x: number, y: number }>({ x: 0, y: 0 })
 
-    useEffect(() => {
-        const updateDimensions = () => {
-            if (containerRef.current) {
-                const { clientWidth: clientWidth, clientHeight: clientHeight } = containerRef.current
-                if (intervalBtnContainerRef.current) {
-                    const { clientHeight: intervalsClientHeight } = intervalBtnContainerRef.current
-                    setDimensions({ width: clientWidth, height: clientHeight - intervalsClientHeight })
-                }
-                else
-                    setDimensions({ width: clientWidth, height: clientHeight })
+    const updateDimensions = () => {
+        if (containerRef.current) {
+            const { clientWidth: clientWidth, clientHeight: clientHeight } = containerRef.current
+            if (intervalBtnContainerRef.current) {
+                const { clientHeight: intervalsClientHeight } = intervalBtnContainerRef.current
+                setDimensions({ width: clientWidth, height: clientHeight - intervalsClientHeight })
+            }
+            else {
+                setDimensions({ width: clientWidth, height: clientHeight })
             }
         }
+    }
+
+    useEffect(() => {
+        updateDimensions()
+    }, [data])
+
+    useEffect(() => {
         updateDimensions()
         window.addEventListener("resize", updateDimensions)
         return () => window.removeEventListener("resize", updateDimensions)
@@ -51,7 +57,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
     if (data.length === 0) return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
 
     const { width, height } = dimensions
-    const margin = { top: 25, right: 25, bottom: 30, left: 50 }
+    const margin = { top: 25, right: 30, bottom: 45, left: 65 }
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom
 
@@ -174,7 +180,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
     }
 
     return (
-        <div ref={containerRef} className="w-full h-full">
+        <div ref={containerRef} className="w-full h-full flex flex-col border-[1px] border-[var(--muted)] rounded-sm justify-center items-center">
             <IntervalButtons
                 ref={intervalBtnContainerRef}
                 intervals={intervals}

@@ -69,7 +69,8 @@ export const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
             </text>
             <line
                 x1={xMin} x2={xMax} y1={0} y2={0}
-                className="stroke-muted-foreground" />
+                className="stroke-muted-foreground"
+            />
             {
                 dates.map((date: Date, index: number) => {
                     if (currentTick.index !== previousTick.index) {
