@@ -40,7 +40,6 @@ import { Separator } from "@/components/ui/separator"
 import { getHistoricalBars, postOrder, HistoricalBarsTimeFrameType } from "@/lib/server_service"
 
 import CandlestickChart from "@/components/parts/Charts/CandlestickChart/CandlestickChart"
-import * as d3 from "d3"
 import { Bar } from "@/components/parts/Charts/CandlestickChart/Candlesticks"
 
 const FormSchema = z.object({
@@ -131,7 +130,7 @@ const AssetPage = () => {
         }
         createOrder()
     }
-    d3.scaleTime().tickFormat()
+
     return (
         <div className="min-w-screen min-h-screen flex flex-col justify-center items-center space-x-48">
             <div className="w-8/12 grow py-8 flex flex-col justify-start items-start gap-0">

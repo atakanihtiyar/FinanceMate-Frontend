@@ -19,8 +19,8 @@ const IntervalButtons = React.forwardRef<HTMLDivElement, IntervalButtonsProps>((
         {intervals.map((interval, index) => (
             <Button
                 key={interval.timeFrame}
-                variant={index === pickedAt ? "outline" : "ghost"}
-                className="rounded-sm"
+                variant={index === pickedAt ? "secondary" : "ghost"}
+                className={"rounded-sm" + (index === pickedAt && " pointer-events-none")}
                 onClick={() => onIntervalClick(interval.timeFrame)}
             >
                 {interval.title}
