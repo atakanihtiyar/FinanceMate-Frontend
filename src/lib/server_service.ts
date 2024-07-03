@@ -242,6 +242,14 @@ export const getNews = async (symbol_or_asset_id: String) => {
     }
 }
 
+interface AchData {
+    account_owner_name: string,
+    bank_account_type: "CHECKING" | "SAVINGS",
+    bank_account_number: string,
+    bank_routing_number: string,
+    nickname?: string,
+}
+
 export const getAchRelationships = async (account_number: Number) => {
     const response = await fetch(`${SERVER_URL}/users/${account_number}/ach`, {
         method: "GET",
@@ -254,6 +262,39 @@ export const getAchRelationships = async (account_number: Number) => {
     let data = await response.json()
     if (response.status === 200) {
         return data
+    }
+    else {
+        return false
+    }
+}
+
+export const createAchRelationship = async (account_number: Number, achData: AchData) => {
+    const response = await fetch(`${SERVER_URL}/users/${account_number}/ach`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(achData)
+    })
+
+    let data = await response.json()
+    if (response.status === 200) {
+        return data
+    }
+    else {
+        return false
+    }
+}
+
+export const deleteAchRelationship = async (account_number: Number, ach_relationship_id: string) => {
+    const response = await fetch(`${SERVER_URL}/users/${account_number}/ach/${ach_relationship_id}`, {
+        method: "DELETE",
+        credentials: "include",
+    })
+
+    if (response.status === 204) {
+        return true
     }
     else {
         return false

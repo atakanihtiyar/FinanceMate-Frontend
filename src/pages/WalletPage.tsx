@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -9,7 +10,7 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { UserContext, UserContextValues } from "@/context/UserContext"
-import { getAchRelationships } from "@/lib/server_service"
+import { createAchRelationship, deleteAchRelationship, getAchRelationships } from "@/lib/server_service"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useContext, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -66,7 +67,34 @@ const WalletPage = () => {
     })
 
     function onSubmit(data: z.infer<typeof AchFormSchema>) {
-        console.log(data)
+        const sendData = async () => {
+            const resData = await createAchRelationship(user?.account_number!, data)
+            if (resData) {
+                setAchData(oldAchData => {
+                    return [
+                        ...oldAchData,
+                        resData
+                    ]
+                })
+            }
+        }
+        sendData()
+    }
+
+    function onDelete(achId: string) {
+        const deleteAch = async () => {
+            const resData = await deleteAchRelationship(user?.account_number!, achId)
+
+            if (resData) {
+                setAchData(oldAchData => {
+                    return oldAchData.filter(ach => {
+                        if (ach.relation_id !== achId)
+                            return ach
+                    })
+                })
+            }
+        }
+        deleteAch()
     }
 
     return (
@@ -96,6 +124,9 @@ const WalletPage = () => {
                                     <p>Type: {ach.bank_account_type}</p>
                                     <p>Bank number: {ach.bank_account_number}</p>
                                 </CardContent>
+                                <CardFooter>
+                                    <Button variant="destructive" onClick={() => onDelete(ach.relation_id)}>Delete</Button>
+                                </CardFooter>
                             </Card>
                         )
                     }))}
