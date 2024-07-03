@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useLocation, useNavigate } from "react-router-dom"
 
@@ -153,11 +153,10 @@ const AssetPage = () => {
                 <Card className="border-0">
                     <CardHeader>
                         <CardTitle className="text-xl">{assetData.symbol} - {assetData.name}</CardTitle>
-                        <CardDescription className="text-sm">{assetData.exchange}</CardDescription>
                     </CardHeader>
                 </Card>
-                <div className="w-full flex flex-col justify-center items-start lg:flex-row">
-                    <div className="h-[512px] w-full flex-grow">
+                <div className="w-full h-[512px] flex flex-col justify-center items-start lg:flex-row">
+                    <div className="w-full h-full flex-grow">
                         <CandlestickChart
                             data={chartData}
                             intervals={[
@@ -205,21 +204,28 @@ const AssetPage = () => {
                             ]}
                             onIntervalBtnClicked={(timeFrame: string) => setTimeFrame(timeFrame as HistoricalBarsTimeFrameType)} />
                     </div>
-                    <Card className="border-0 w-full basis-6/12">
+                    <Card className="border-0 w-full h-full flex flex-col justify-around basis-6/12">
                         <CardHeader>
                             <CardTitle className="text-xl">Price: ${assetData.latest_closing.toFixed(2)}</CardTitle>
                         </CardHeader>
+                        <CardContent className="flex flex-col justify-end gap-2">
+                            <div className="text-sm text-muted-foreground">Class: <span className="text-foreground px-1">{assetData.class.split("_").join(" ").toUpperCase()}</span></div>
+                            <div className="text-sm text-muted-foreground">Exchange: <span className="text-foreground px-1">{assetData.exchange}</span></div>
+                            <div className="text-sm text-muted-foreground">Status: <span className="rounded-sm text-[--success] px-1">{assetData.status}</span></div>
+                        </CardContent>
                         <CardContent className="flex flex-col items-center space-y-4 border-0">
                             <Dialog open={isDialogOpen} onOpenChange={onDialogOpenChange}>
                                 <div className="w-full flex flex-row space-x-2 p-0">
                                     <DialogTrigger asChild>
-                                        <Button variant="destructive" className="w-[90%] bg-[--success]"
+                                        <Button variant="destructive" className={"w-[90%] bg-[--success]"}
+                                            disabled={assetData.status !== "active"}
                                             onClick={() => {
                                                 form.setValue("side", "buy")
                                             }}>Buy</Button>
                                     </DialogTrigger>
                                     <DialogTrigger asChild>
                                         <Button variant="destructive" className="w-[90%]"
+                                            disabled={assetData.status !== "active"}
                                             onClick={() => {
                                                 form.setValue("side", "sell")
                                             }}>Sell</Button>
