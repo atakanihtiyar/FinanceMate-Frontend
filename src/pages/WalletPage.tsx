@@ -9,6 +9,7 @@ import {
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { createAchRelationship, deleteAchRelationship, getAchRelationships } from "@/lib/server_service"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -70,6 +71,7 @@ const WalletPage = () => {
         const sendData = async () => {
             const resData = await createAchRelationship(user?.account_number!, data)
             if (resData) {
+                setIsNewAch(false)
                 setAchData(oldAchData => {
                     return [
                         ...oldAchData,
@@ -102,29 +104,57 @@ const WalletPage = () => {
             <div className="w-8/12 grow py-8 flex flex-col justify-start items-start gap-12">
                 <Card className="border-0">
                     <CardHeader>
-                        <CardTitle className="text-xl">Cards</CardTitle>
+                        <CardTitle className="text-xl">ACH Relationships</CardTitle>
                     </CardHeader>
                 </Card>
-                <div className="w-full grid grid-cols-3 gap-4">
+                <div className="w-full flex flex-row flex-wrap gap-4 justify-center">
                     {achData && achData.map((ach => {
                         return (
-                            <Card key={ach.relation_id} className="min-w-[248px] min-h-[436px]">
+                            <Card key={ach.relation_id} className="min-w-[360px] h-[436px] flex flex-col">
                                 <CardHeader>
-                                    <CardTitle>{ach.nickname}</CardTitle>
+                                    <CardTitle className="w-full text-center">{ach.nickname}</CardTitle>
                                 </CardHeader>
-                                <CardContent>
-                                    <p>Status:&nbsp;
-                                        <span className={ach.status === "APPROVED" ? "text-[--success]" :
-                                            ach.status === "CANCEL_REQUESTED" ? "text-destructive" :
-                                                "text-[--warning]"}>
-                                            {ach.status}
-                                        </span>
-                                    </p>
-                                    <p>Owner: {ach.account_owner_name}</p>
-                                    <p>Type: {ach.bank_account_type}</p>
-                                    <p>Bank number: {ach.bank_account_number}</p>
+                                <CardContent className="flex flex-col grow justify-center">
+                                    <Table>
+                                        <TableBody>
+                                            <TableRow className="cursor-pointer hover:bg-accent">
+                                                <TableCell>
+                                                    <p className="text-muted-foreground">Status</p>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <p className={ach.status === "APPROVED" ? "text-[--success]" :
+                                                        ach.status === "CANCEL_REQUESTED" ? "text-destructive" :
+                                                            "text-[--warning]"}>{ach.status}</p>
+                                                </TableCell>
+                                            </TableRow>
+                                            <TableRow className="cursor-pointer hover:bg-accent">
+                                                <TableCell>
+                                                    <p className="text-muted-foreground">Owner</p>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <p>{ach.account_owner_name}</p>
+                                                </TableCell>
+                                            </TableRow>
+                                            <TableRow className="cursor-pointer hover:bg-accent">
+                                                <TableCell>
+                                                    <p className="text-muted-foreground">Account Type</p>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <p>{ach.bank_account_type}</p>
+                                                </TableCell>
+                                            </TableRow>
+                                            <TableRow className="cursor-pointer hover:bg-accent">
+                                                <TableCell>
+                                                    <p className="text-muted-foreground">Account Number</p>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <p>{ach.bank_account_number}</p>
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
                                 </CardContent>
-                                <CardFooter>
+                                <CardFooter className="w-full flex flex-row justify-center">
                                     <Button variant="destructive" onClick={() => onDelete(ach.relation_id)}>Delete</Button>
                                 </CardFooter>
                             </Card>
@@ -132,23 +162,13 @@ const WalletPage = () => {
                     }))}
                     {
                         isNewAch ?
-                            <Card className="min-w-[248px] min-h-[436px]">
-                                <CardHeader className="relative">
-                                    <CardTitle>Add ACH</CardTitle>
-                                    <Button
-                                        variant="ghost"
-                                        className="absolute top-3 right-4"
-                                        onClick={() => {
-                                            achForm.reset()
-                                            setIsNewAch(false)
-                                        }}
-                                    >
-                                        X
-                                    </Button>
+                            <Card className="min-w-[360px] h-[436px] flex flex-col">
+                                <CardHeader>
+                                    <CardTitle className="w-full text-center">Create New ACH</CardTitle>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className="flex flex-col grow justify-center">
                                     <Form {...achForm}>
-                                        <form onSubmit={achForm.handleSubmit(onSubmit)} className="w-full h-full flex flex-col justify-center items-center space-y-4">
+                                        <form onSubmit={achForm.handleSubmit(onSubmit)} className="w-full h-full flex flex-col justify-end items-center gap-4">
                                             <FormField
                                                 control={achForm.control}
                                                 name="nickname"
@@ -213,20 +233,30 @@ const WalletPage = () => {
                                                 )}
                                             />
 
-                                            <Button variant="default" type="submit" className="w-full">Create</Button>
+                                            <div className="w-full flex flex-row justify-evenly mt-2">
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        achForm.reset()
+                                                        setIsNewAch(false)
+                                                    }}
+                                                >
+                                                    Cancel
+                                                </Button>
+                                                <Button variant="default" type="submit">Create</Button>
+                                            </div>
                                         </form>
                                     </Form>
                                 </CardContent>
                             </Card> :
                             <Button
                                 variant="outline"
-                                className="min-w-[248px] min-h-[436px] flex justify-center items-center"
+                                className="min-w-[360px] h-[436px] flex justify-center items-center text-xl"
                                 onClick={() => setIsNewAch(true)}
                             >
-                                Add New Ach
+                                Create New Ach
                             </Button>
                     }
-
                 </div>
             </div>
         </div >

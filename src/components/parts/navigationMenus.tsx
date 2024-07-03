@@ -52,9 +52,14 @@ const Navbar = () => {
             <div className="flex justify-start basis-1/4">
                 {
                     isLoggedIn ?
-                        <NavigationMenuLink href="/dashboard" className={navigationMenuTriggerStyle()}>
-                            dashboard
-                        </NavigationMenuLink> :
+                        <>
+                            <NavigationMenuLink href="/dashboard" className={navigationMenuTriggerStyle()}>
+                                dashboard
+                            </NavigationMenuLink>
+                            <NavigationMenuLink href="/wallet" className={navigationMenuTriggerStyle()}>
+                                wallet
+                            </NavigationMenuLink>
+                        </> :
                         <>
                             <NavigationMenuLink href="/about" className={navigationMenuTriggerStyle()}>
                                 about
