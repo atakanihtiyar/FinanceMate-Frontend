@@ -1,6 +1,7 @@
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/register_pages/RegisterPage';
+import WalletPage from './pages/WalletPage';
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { UserProvider } from './context/UserContext';
@@ -50,6 +51,16 @@ const router = createBrowserRouter([
       <>
         <Navbar />
         <AssetPage />
+        <Footer />
+      </>
+    ),
+  },
+  {
+    path: "/wallet",
+    element: (
+      <>
+        <Navbar />
+        <WalletPage />
         <Footer />
       </>
     ),
