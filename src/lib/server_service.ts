@@ -222,3 +222,22 @@ export const getAccountPortfolioHistory = async (account_number: Number, timefra
         return false
     }
 }
+
+export const getNews = async (symbol_or_asset_id: String) => {
+    const response = await fetch(`${SERVER_URL}/data/${symbol_or_asset_id}/news`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    })
+
+    let data = await response.json()
+
+    if (response.status === 200) {
+        return data
+    }
+    else {
+        return false
+    }
+}

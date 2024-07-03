@@ -37,10 +37,11 @@ import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
-import { getHistoricalBars, postOrder, HistoricalBarsTimeFrameType } from "@/lib/server_service"
+import { getHistoricalBars, postOrder, HistoricalBarsTimeFrameType, getNews } from "@/lib/server_service"
 
 import CandlestickChart from "@/components/parts/Charts/CandlestickChart/CandlestickChart"
 import { Bar } from "@/components/parts/Charts/CandlestickChart/Candlesticks"
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
 
 const FormSchema = z.object({
     is_limit: z.boolean(),
@@ -76,16 +77,31 @@ const AssetPage = () => {
     const assetData = location.state ? location.state.assetData : null
 
     const [chartData, setChartData] = useState<Bar[]>([])
+    const [newsData, setNewsData] = useState<{
+        id: number,
+        headline: string,
+        author: string,
+        created_at: string,
+        updated_at: string,
+        summary: string,
+        content: string,
+        url: string,
+        images: [{ size: string, url: string }],
+        symbols: [string],
+        source: string,
+    }[]>([])
     const [timeFrame, setTimeFrame] = useState<HistoricalBarsTimeFrameType>("1Day")
     const fetchData = async () => {
-        const response = await getHistoricalBars(assetData.symbol, timeFrame)
-        if (response.status === 200) {
-            setChartData(response.data.bars)
+        const barResponse = await getHistoricalBars(assetData.symbol, timeFrame)
+        if (barResponse.status === 200) {
+            setChartData(barResponse.data.bars)
         }
         else
             setChartData([])
-    }
 
+        const newsResponse = await getNews(assetData.symbol)
+        setNewsData(newsResponse.news)
+    }
     useEffect(() => {
         if (assetData)
             fetchData()
@@ -337,6 +353,44 @@ const AssetPage = () => {
                                 </DialogContent>
                             </Dialog>
                         </CardContent>
+                    </Card>
+                </div>
+                <div className="w-full p-4">
+                    <CardHeader>
+                        <CardTitle>
+                            NEWS
+                        </CardTitle>
+                    </CardHeader>
+                    <Card className="w-full">
+                        <CardHeader className="w-full p-0">
+                            <Table>
+                                <TableBody>
+                                    {
+                                        newsData.length > 0 ?
+                                            newsData.map((news) => {
+                                                return (
+                                                    <TableRow key={news.id} className="cursor-pointer hover:bg-accent" onClick={() => {
+                                                        window.open(news.url, "_blank")
+                                                        return null
+                                                    }}>
+                                                        <TableCell>
+                                                            <p>{news.headline}</p>
+                                                            <p className="text-xs text-muted-foreground mt-1">@{news.source} - {news.author}</p>
+                                                        </TableCell>
+                                                        <TableCell className="w-32 text-xs text-muted-foreground text-right">
+                                                            <p>{new Date(news.created_at).toUTCString()}</p>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            }) : (
+                                                <TableRow>
+                                                    <TableCell className="text-center" colSpan={7}>No Data</TableCell>
+                                                </TableRow>
+                                            )
+                                    }
+                                </TableBody>
+                            </Table>
+                        </CardHeader>
                     </Card>
                 </div>
             </div>
