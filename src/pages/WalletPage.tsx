@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { UserContext, UserContextValues } from "@/context/UserContext"
-import { createAchRelationship, createTransfer, deleteAchRelationship, getAchRelationships, getAssetData, getPositions } from "@/lib/server_service"
+import { createAchRelationship, createTransfer, deleteAchRelationship, getAchRelationships, getAssetData, getPositions, getTransfers } from "@/lib/server_service"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useContext, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -79,13 +79,16 @@ const WalletPage = () => {
         if (isLoggedIn && user) {
             Promise.all([
                 getAchRelationships(user.account_number),
+                getTransfers(user.account_number),
                 getPositions(user.account_number),
             ]).then((data) => {
                 if (data) {
                     if (data[0])
                         setAchData(data[0])
                     if (data[1])
-                        setPositions(data[1])
+                        setTransfers(data[1])
+                    if (data[2])
+                        setPositions(data[2])
                 }
             })
         }

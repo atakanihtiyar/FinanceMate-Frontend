@@ -320,7 +320,24 @@ export const createTransfer = async (account_number: Number, transferData: Trans
     })
 
     let data = await response.json()
-    console.log(data)
+    if (response.status === 200) {
+        return data
+    }
+    else {
+        return false
+    }
+}
+
+export const getTransfers = async (account_number: Number) => {
+    const response = await fetch(`${SERVER_URL}/users/${account_number}/ach/transfers`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+
+    let data = await response.json()
     if (response.status === 200) {
         return data
     }
