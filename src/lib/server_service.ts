@@ -300,3 +300,31 @@ export const deleteAchRelationship = async (account_number: Number, ach_relation
         return false
     }
 }
+
+export interface TransferData {
+    transfer_type: "ach",
+    relationship_id: string,
+    amount: number,
+    direction: "INCOMING" | "OUTGOING",
+    timing: "immediate",
+}
+
+export const createTransfer = async (account_number: Number, transferData: TransferData) => {
+    const response = await fetch(`${SERVER_URL}/users/${account_number}/ach/transfers`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transferData)
+    })
+
+    let data = await response.json()
+    console.log(data)
+    if (response.status === 200) {
+        return data
+    }
+    else {
+        return false
+    }
+}

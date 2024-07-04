@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { UserContext, UserContextValues } from "@/context/UserContext"
-import { createAchRelationship, deleteAchRelationship, getAchRelationships, getAssetData, getPositions } from "@/lib/server_service"
+import { createAchRelationship, createTransfer, deleteAchRelationship, getAchRelationships, getAssetData, getPositions } from "@/lib/server_service"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useContext, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -24,6 +24,10 @@ const AchFormSchema = z.object({
     bank_account_type: z.enum(["CHECKING", "SAVINGS"]),
     bank_account_number: z.string(),
     bank_routing_number: z.string(),
+})
+
+const TransferFormSchema = z.object({
+    amount: z.coerce.number().min(0),
 })
 
 const WalletPage = () => {
@@ -45,6 +49,16 @@ const WalletPage = () => {
         current_price: "0",
         change_today: "0"
     }])
+    const [transfers, setTransfers] = useState<{
+        id: string,
+        type: string,
+        status: string,
+        reason: string,
+        amount: number,
+        direction: string,
+        created_at: string,
+    }[]>([])
+    const [isNewTransfer, setIsNewTransfer] = useState<"INCOMING" | "OUTGOING" | false>(false)
 
 
     const [isNewAch, setIsNewAch] = useState(false)
@@ -90,7 +104,7 @@ const WalletPage = () => {
         }
     })
 
-    function onSubmit(data: z.infer<typeof AchFormSchema>) {
+    function onNewAchSubmit(data: z.infer<typeof AchFormSchema>) {
         const sendData = async () => {
             const resData = await createAchRelationship(user?.account_number!, data)
             if (resData) {
@@ -106,7 +120,7 @@ const WalletPage = () => {
         sendData()
     }
 
-    function onDelete(achId: string) {
+    function onAchDelete(achId: string) {
         const deleteAch = async () => {
             const resData = await deleteAchRelationship(user?.account_number!, achId)
 
@@ -120,6 +134,51 @@ const WalletPage = () => {
             }
         }
         deleteAch()
+    }
+
+    const transferForm = useForm<z.infer<typeof TransferFormSchema>>({
+        resolver: zodResolver(TransferFormSchema),
+        defaultValues: {
+            amount: 0,
+        }
+    })
+
+    function onAchTransfer(data: z.infer<typeof TransferFormSchema>) {
+        if (!isNewTransfer) return
+
+        const transfer_type = "ach"
+        const relationship_id = achData[0].relation_id
+        const amount = data.amount
+        const direction = isNewTransfer
+        const timing = "immediate"
+
+        const transfer = async () => {
+            const resData = await createTransfer(user?.account_number!, {
+                transfer_type,
+                relationship_id,
+                amount,
+                direction,
+                timing
+            })
+
+            if (resData) {
+                setTransfers(oldTransfers => {
+                    return [
+                        ...oldTransfers,
+                        {
+                            id: resData.id,
+                            type: resData.type,
+                            status: resData.status,
+                            reason: resData.reason,
+                            amount: resData.amount,
+                            direction: resData.direction,
+                            created_at: resData.created_at,
+                        }
+                    ]
+                })
+            }
+        }
+        transfer()
     }
 
     return (
@@ -234,109 +293,186 @@ const WalletPage = () => {
                                         </TableBody>
                                     </Table>
                                 </CardContent>
-                                <CardFooter className="w-full flex flex-row justify-center">
-                                    <Button variant="destructive" onClick={() => onDelete(ach.relation_id)}>Delete</Button>
-                                </CardFooter>
+                                {
+                                    isNewTransfer ?
+                                        <CardFooter>
+                                            <Form {...transferForm}>
+                                                <form onSubmit={transferForm.handleSubmit(onAchTransfer)} className="w-full flex flex-col justify-end items-center gap-4">
+                                                    <FormField
+                                                        control={transferForm.control}
+                                                        name="amount"
+                                                        render={({ field }) => (
+                                                            <FormItem className="w-full">
+                                                                <FormControl>
+                                                                    <Input type="number" placeholder="Amount" {...field} />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <div className="w-full flex flex-row justify-evenly mt-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            onClick={() => {
+                                                                transferForm.reset()
+                                                                setIsNewTransfer(false)
+                                                            }}
+                                                        >
+                                                            Cancel
+                                                        </Button>
+                                                        <Button variant="default" type="submit">Create</Button>
+                                                    </div>
+                                                </form>
+                                            </Form>
+                                        </CardFooter>
+                                        :
+                                        <CardFooter className="w-full flex flex-row justify-evenly">
+                                            <Button variant="destructive" onClick={() => onAchDelete(ach.relation_id)}>Delete</Button>
+                                            <Button variant="secondary" onClick={() => setIsNewTransfer("INCOMING")}>Deposit</Button>
+                                            <Button variant="secondary" onClick={() => setIsNewTransfer("OUTGOING")}>Withdrawal</Button>
+                                        </CardFooter>
+                                }
                             </Card>
                         )
                     }))}
                     {
-                        isNewAch ?
-                            <Card className="min-w-[360px] h-[436px] flex flex-col">
-                                <CardHeader>
-                                    <CardTitle className="w-full text-center">Create New ACH</CardTitle>
-                                </CardHeader>
-                                <CardContent className="flex flex-col grow justify-center">
-                                    <Form {...achForm}>
-                                        <form onSubmit={achForm.handleSubmit(onSubmit)} className="w-full h-full flex flex-col justify-end items-center gap-4">
-                                            <FormField
-                                                control={achForm.control}
-                                                name="nickname"
-                                                render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormControl>
-                                                            <Input type="text" placeholder="Name" {...field} />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={achForm.control}
-                                                name="account_owner_name"
-                                                render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormControl>
-                                                            <Input type="text" placeholder="Bank Account Owner" {...field} />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={achForm.control}
-                                                name="bank_account_type"
-                                                render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        !achData || achData.length === 0 &&
+                        (
+                            isNewAch ?
+                                <Card className="min-w-[360px] h-[436px] flex flex-col">
+                                    <CardHeader>
+                                        <CardTitle className="w-full text-center">Create New ACH</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="flex flex-col grow justify-center">
+                                        <Form {...achForm}>
+                                            <form onSubmit={achForm.handleSubmit(onNewAchSubmit)} className="w-full h-full flex flex-col justify-end items-center gap-4">
+                                                <FormField
+                                                    control={achForm.control}
+                                                    name="nickname"
+                                                    render={({ field }) => (
+                                                        <FormItem className="w-full">
                                                             <FormControl>
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Bank Account Type" />
-                                                                </SelectTrigger>
+                                                                <Input type="text" placeholder="Name" {...field} />
                                                             </FormControl>
-                                                            <SelectContent>
-                                                                <SelectItem value="CHECKING">Checking</SelectItem>
-                                                                <SelectItem value="SAVINGS">Savings</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={achForm.control}
-                                                name="bank_account_number"
-                                                render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormControl>
-                                                            <Input type="text" placeholder="Bank Account Number" {...field} />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={achForm.control}
-                                                name="bank_routing_number"
-                                                render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormControl>
-                                                            <Input type="text" placeholder="Bank Routing" {...field} />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={achForm.control}
+                                                    name="account_owner_name"
+                                                    render={({ field }) => (
+                                                        <FormItem className="w-full">
+                                                            <FormControl>
+                                                                <Input type="text" placeholder="Bank Account Owner" {...field} />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={achForm.control}
+                                                    name="bank_account_type"
+                                                    render={({ field }) => (
+                                                        <FormItem className="w-full">
+                                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                                <FormControl>
+                                                                    <SelectTrigger>
+                                                                        <SelectValue placeholder="Bank Account Type" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    <SelectItem value="CHECKING">Checking</SelectItem>
+                                                                    <SelectItem value="SAVINGS">Savings</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={achForm.control}
+                                                    name="bank_account_number"
+                                                    render={({ field }) => (
+                                                        <FormItem className="w-full">
+                                                            <FormControl>
+                                                                <Input type="text" placeholder="Bank Account Number" {...field} />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={achForm.control}
+                                                    name="bank_routing_number"
+                                                    render={({ field }) => (
+                                                        <FormItem className="w-full">
+                                                            <FormControl>
+                                                                <Input type="text" placeholder="Bank Routing" {...field} />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
 
-                                            <div className="w-full flex flex-row justify-evenly mt-2">
-                                                <Button
-                                                    variant="outline"
-                                                    onClick={() => {
-                                                        achForm.reset()
-                                                        setIsNewAch(false)
-                                                    }}
-                                                >
-                                                    Cancel
-                                                </Button>
-                                                <Button variant="default" type="submit">Create</Button>
-                                            </div>
-                                        </form>
-                                    </Form>
-                                </CardContent>
-                            </Card> :
-                            <Button
-                                variant="outline"
-                                className="min-w-[360px] h-[436px] flex justify-center items-center text-xl"
-                                onClick={() => setIsNewAch(true)}
-                            >
-                                Create New Ach
-                            </Button>
+                                                <div className="w-full flex flex-row justify-evenly mt-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        onClick={() => {
+                                                            achForm.reset()
+                                                            setIsNewAch(false)
+                                                        }}
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                    <Button variant="default" type="submit">Create</Button>
+                                                </div>
+                                            </form>
+                                        </Form>
+                                    </CardContent>
+                                </Card> :
+                                <Button
+                                    variant="outline"
+                                    className="min-w-[360px] h-[436px] flex justify-center items-center text-xl"
+                                    onClick={() => setIsNewAch(true)}
+                                >
+                                    Create New Ach
+                                </Button>
+                        )
                     }
+                    <Card className="basis-2/3 border-0">
+                        <CardHeader>
+                            <CardTitle>Transfers</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Type</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead>Reason</TableHead>
+                                        <TableHead>Amoun</TableHead>
+                                        <TableHead>Direction</TableHead>
+                                        <TableHead>Created At</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {
+                                        transfers && transfers.length > 0 ?
+                                            transfers.map((transfer) => {
+                                                return (
+                                                    <TableRow key={transfer.id} className="cursor-pointer hover:bg-accent">
+                                                        <TableCell>{transfer.type}</TableCell>
+                                                        <TableCell>{transfer.status}</TableCell>
+                                                        <TableCell>{transfer.reason}</TableCell>
+                                                        <TableCell>{transfer.amount}</TableCell>
+                                                        <TableCell>{transfer.direction}</TableCell>
+                                                        <TableCell>{new Date(transfer.created_at).toUTCString()}</TableCell>
+                                                    </TableRow>)
+                                            }) : (
+                                                <TableRow>
+                                                    <TableCell className="text-center" colSpan={6}>No Data</TableCell>
+                                                </TableRow>
+                                            )
+                                    }
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </div >
