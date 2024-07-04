@@ -233,7 +233,6 @@ export const getNews = async (symbol_or_asset_id: String) => {
     })
 
     let data = await response.json()
-
     if (response.status === 200) {
         return data
     }

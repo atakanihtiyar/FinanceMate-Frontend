@@ -91,17 +91,19 @@ const AssetPage = () => {
         source: string,
     }[]>([])
     const [timeFrame, setTimeFrame] = useState<HistoricalBarsTimeFrameType>("1Day")
-    const fetchData = async () => {
-        const barResponse = await getHistoricalBars(assetData.symbol, timeFrame)
-        if (barResponse.status === 200) {
-            setChartData(barResponse.data.bars)
-        }
-        else
-            setChartData([])
 
-        const newsResponse = await getNews(assetData.symbol)
-        setNewsData(newsResponse.news)
+    const fetchData = async () => {
+        Promise.all([getHistoricalBars(assetData.symbol, timeFrame), getNews(assetData.symbol)])
+            .then((data) => {
+                if (data[0].status === 200) {
+                    setChartData(data[0].data.bars)
+                }
+                if (data[1].news) {
+                    setNewsData(data[1].news)
+                }
+            })
     }
+
     useEffect(() => {
         if (assetData)
             fetchData()
@@ -372,8 +374,9 @@ const AssetPage = () => {
                             <Table>
                                 <TableBody>
                                     {
-                                        newsData.length > 0 ?
+                                        newsData && newsData.length > 0 ?
                                             newsData.map((news) => {
+                                                console.log(news)
                                                 return (
                                                     <TableRow key={news.id} className="cursor-pointer hover:bg-accent" onClick={() => {
                                                         window.open(news.url, "_blank")
