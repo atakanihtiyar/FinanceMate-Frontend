@@ -27,9 +27,10 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Separator } from "@/components/ui/separator"
-import { getAccountPortfolioHistory, getOrders, getPositions, getTradingData, PortfolioHistoryTimeFrameType } from "@/lib/server_service"
+import { getAccountPortfolioHistory, getAssetData, getOrders, getPositions, getTradingData, PortfolioHistoryTimeFrameType } from "@/lib/server_service"
 import LineChart from "@/components/parts/Charts/LineCharts/LineChart"
 import { Point } from "@/components/parts/Charts/LineCharts/Lines"
+import { Button } from "@/components/ui/button"
 
 const DashboardPage = () => {
     const navigate = useNavigate()
@@ -217,19 +218,22 @@ const DashboardPage = () => {
                         </CardHeader>
                     </Card>
                 </div>
-                <div className="w-full grid grid-cols-2 justify-center items-start gap-2">
-                    <Card>
+                <div className="w-full grid grid-cols-3 justify-center items-start gap-2">
+                    <Card className="col-span-1">
                         <CardHeader>
-                            <CardTitle>Positions</CardTitle>
+                            <CardTitle><span>Positions</span>
+                                <Button variant="link" className="text-sm text-muted-foreground"
+                                    onClick={() => navigate("/wallet")}>
+                                    view details
+                                </Button>
+                            </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Table>
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead className="w-[100px]">Symbol</TableHead>
-                                        <TableHead>Cost Basis</TableHead>
                                         <TableHead>Mkt Val</TableHead>
-                                        <TableHead>Unrealized PNL</TableHead>
                                         <TableHead>Last</TableHead>
                                         <TableHead className="text-right">Change %</TableHead>
                                     </TableRow>
@@ -239,11 +243,19 @@ const DashboardPage = () => {
                                         positions.length > 0 ?
                                             positions.map((item) => {
                                                 return (
-                                                    <TableRow key={item.symbol}>
+                                                    <TableRow key={item.symbol} className="cursor-pointer hover:bg-accent"
+                                                        onClick={() => {
+                                                            const getData = async () => {
+                                                                const asset = await getAssetData(item.symbol)
+                                                                if (asset.status === 200)
+                                                                    navigate(`/assets`, { state: { assetData: asset.data } })
+                                                                else
+                                                                    console.log(asset)
+                                                            }
+                                                            getData()
+                                                        }}>
                                                         <TableCell className="font-medium">{item.symbol}</TableCell>
-                                                        <TableCell>{item.cost_basis}</TableCell>
                                                         <TableCell>{item.market_value}</TableCell>
-                                                        <TableCell>{item.unrealized_pl}</TableCell>
                                                         <TableCell>{item.current_price}</TableCell>
                                                         <TableCell className="text-right">{(parseFloat(item.change_today) * 100).toFixed(2)}</TableCell>
                                                     </TableRow>)
@@ -257,7 +269,7 @@ const DashboardPage = () => {
                             </Table>
                         </CardContent>
                     </Card>
-                    <Card>
+                    <Card className="col-span-2">
                         <CardHeader>
                             <CardTitle>Orders</CardTitle>
                         </CardHeader>

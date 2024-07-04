@@ -9,9 +9,9 @@ import {
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { UserContext, UserContextValues } from "@/context/UserContext"
-import { createAchRelationship, deleteAchRelationship, getAchRelationships } from "@/lib/server_service"
+import { createAchRelationship, deleteAchRelationship, getAchRelationships, getAssetData, getPositions } from "@/lib/server_service"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useContext, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -29,6 +29,24 @@ const AchFormSchema = z.object({
 const WalletPage = () => {
     const navigate = useNavigate()
     const { user, isLoggedIn, isAuthRequestEnd } = useContext(UserContext) as UserContextValues
+
+    const [positions, setPositions] = useState([{
+        symbol: "",
+        exchange: "",
+        avg_entry_price: "0",
+        qty: "0",
+        side: "",
+        cost_basis: "0",
+        market_value: "0",
+        unrealized_pl: "0",
+        unrealized_plpc: "0",
+        unrealized_intraday_pl: "0",
+        unrealized_intraday_plpc: "0",
+        current_price: "0",
+        change_today: "0"
+    }])
+
+
     const [isNewAch, setIsNewAch] = useState(false)
     const [achData, setAchData] = useState<{
         nickname: string,
@@ -45,12 +63,17 @@ const WalletPage = () => {
     useEffect(() => {
         if (!isAuthRequestEnd) return
         if (isLoggedIn && user) {
-            getAchRelationships(user.account_number)
-                .then((data) => {
-                    if (data) {
-                        setAchData(data)
-                    }
-                })
+            Promise.all([
+                getAchRelationships(user.account_number),
+                getPositions(user.account_number),
+            ]).then((data) => {
+                if (data) {
+                    if (data[0])
+                        setAchData(data[0])
+                    if (data[1])
+                        setPositions(data[1])
+                }
+            })
         }
         else {
             navigate("/")
@@ -100,11 +123,68 @@ const WalletPage = () => {
     }
 
     return (
-        <div className="min-w-screen min-h-screen flex flex-col justify-center items-center space-x-48">
+        <div className="min-w-screen min-h-screen flex flex-col justify-center items-center">
+            <div className="w-8/12 grow py-8 flex flex-col justify-start items-start gap-12">
+                <Card className="w-full border-0">
+                    <CardHeader>
+                        <CardTitle>Positions</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Symbol</TableHead>
+                                    <TableHead>Quantity</TableHead>
+                                    <TableHead>Last</TableHead>
+                                    <TableHead>Change %</TableHead>
+                                    <TableHead>Cost Basis</TableHead>
+                                    <TableHead>Mkt Val</TableHead>
+                                    <TableHead>Avg Val</TableHead>
+                                    <TableHead>Daily PNL</TableHead>
+                                    <TableHead>Unrealized PNL</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {
+                                    positions.length > 0 ?
+                                        positions.map((item) => {
+                                            return (
+                                                <TableRow key={item.symbol} className="cursor-pointer hover:bg-accent"
+                                                    onClick={() => {
+                                                        const getData = async () => {
+                                                            const asset = await getAssetData(item.symbol)
+                                                            if (asset.status === 200)
+                                                                navigate(`/assets`, { state: { assetData: asset.data } })
+                                                            else
+                                                                console.log(asset)
+                                                        }
+                                                        getData()
+                                                    }}>
+                                                    <TableCell>{item.symbol}</TableCell>
+                                                    <TableCell>{item.qty}</TableCell>
+                                                    <TableCell>{item.current_price}</TableCell>
+                                                    <TableCell>{(parseFloat(item.change_today) * 100).toFixed(2)}</TableCell>
+                                                    <TableCell>{item.cost_basis}</TableCell>
+                                                    <TableCell>{item.market_value}</TableCell>
+                                                    <TableCell>{item.avg_entry_price}</TableCell>
+                                                    <TableCell>{item.unrealized_intraday_pl}</TableCell>
+                                                    <TableCell>{item.unrealized_pl}</TableCell>
+                                                </TableRow>)
+                                        }) : (
+                                            <TableRow>
+                                                <TableCell className="text-center" colSpan={6}>No Data</TableCell>
+                                            </TableRow>
+                                        )
+                                }
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </div>
             <div className="w-8/12 grow py-8 flex flex-col justify-start items-start gap-12">
                 <Card className="border-0">
                     <CardHeader>
-                        <CardTitle className="text-xl">ACH Relationships</CardTitle>
+                        <CardTitle>ACH Relationships</CardTitle>
                     </CardHeader>
                 </Card>
                 <div className="w-full flex flex-row flex-wrap gap-4 justify-center">
