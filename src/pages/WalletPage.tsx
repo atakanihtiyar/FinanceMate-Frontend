@@ -286,7 +286,7 @@ const WalletPage = () => {
                             isNewAch ?
                                 <Card className="min-w-[360px] h-[436px] flex flex-col">
                                     <CardHeader>
-                                        <CardTitle className="w-full text-center">Create New ACH</CardTitle>
+                                        <CardTitle className="w-full text-center">Create New ACH Relationship</CardTitle>
                                     </CardHeader>
                                     <CardContent className="flex flex-col grow justify-center">
                                         <Form {...achForm}>
