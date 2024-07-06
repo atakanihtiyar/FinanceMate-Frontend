@@ -71,7 +71,7 @@ const RegisterStep1 = ({ goNextStep }: Props) => {
     }
 
     return (
-        <Card className="w-[400px] min-h-[250px]">
+        <Card className="w-[360px] min-h-[250px] border-0 sm:border-2 sm:w-[400px]">
             <CardHeader className="text-center">
                 <CardTitle className="font-thin text-5xl">Welcome Mate!</CardTitle>
                 <CardDescription className="tracking-wide font-thin text-lg">Start the journey with us today.</CardDescription>

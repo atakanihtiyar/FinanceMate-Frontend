@@ -188,7 +188,7 @@ const RegisterPage = () => {
     }
 
     return (
-        <div className='min-w-screen min-h-screen flex flex-col justify-center items-center'>
+        <div className='min-w-screen min-h-screen flex justify-center items-center'>
             <RegisterDataContext.Provider value={{ formData, setRegisterData, register: sendRegisterForm }}>
                 <RegisterSteps />
             </RegisterDataContext.Provider>

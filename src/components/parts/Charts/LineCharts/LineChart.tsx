@@ -58,7 +58,7 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
     if (data.length === 0) return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
 
     const { width, height } = dimensions
-    const margin = { top: 25, right: 25, bottom: 45, left: 75 }
+    const margin = { top: 15, right: 10, bottom: 40, left: 50 }
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom
 
@@ -187,11 +187,20 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
 
         setZoomTransform(newTransform)
     }
-
-    const yAxisFormat = (value: number) => value === 1 ? "0%" : d3.format("+.2%")(value - 1)
+    const yFormatRules = d3.formatLocale({
+        decimal: ",",
+        thousands: " ",
+        grouping: [3],
+        currency: ["$", ""],
+        numerals: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+        percent: "%",
+        minus: "",
+        nan: "NaN"
+    })
+    const yAxisFormat = (value: number) => value === 1 ? "0%" : yFormatRules.format(".2%")(value - 1)
 
     return (
-        <div ref={containerRef} className="w-full h-full flex flex-col border-[1px] border-[var(--muted)] rounded-sm justify-center items-center">
+        <div ref={containerRef} className="w-full h-full flex flex-col rounded-sm justify-center items-center">
             <IntervalButtons
                 ref={intervalBtnContainerRef}
                 intervals={intervals}
@@ -229,7 +238,8 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
                         scale={yScaleRef.current}
                         title="Dollars"
                         innerWidth={innerWidth}
-                        format={yAxisFormat}
+                        tickFormat={yAxisFormat}
+                        tickClassName={(value: number) => (value - 1 < 0 ? "fill-destructive" : value - 1 > 0 ? "fill-[--success]" : "fill-foreground")}
                     />
 
                     <Lines

@@ -82,7 +82,7 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
     }
 
     return (
-        <Card className="w-[400px] min-h-[250px]">
+        <Card className="w-[360px] min-h-[250px] border-0 sm:border-2 sm:w-[400px]">
             <CardHeader>
                 <Form {...form}>
                     <form className="flex flex-col justify-center items-center gap-2">
@@ -97,14 +97,15 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                         control={form.control}
                                         name="disclosures.is_control_person"
                                         render={({ field }) => (
-                                            <FormItem className="w-full flex flex-row justify-start items-center space-x-1 space-y-0">
+                                            <FormItem className="w-full flex flex-row justify-start items-start space-x-2 space-y-0">
                                                 <FormControl>
                                                     <Checkbox
                                                         checked={field.value}
                                                         onCheckedChange={field.onChange}
+                                                        className="mt-1"
                                                     />
                                                 </FormControl>
-                                                <FormLabel>
+                                                <FormLabel className="text-sm">
                                                     Do you hold a significant leadership role in a publicly traded company?
                                                 </FormLabel>
                                             </FormItem>
@@ -115,14 +116,15 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                         control={form.control}
                                         name="disclosures.is_affiliated_exchange_or_finra"
                                         render={({ field }) => (
-                                            <FormItem className="w-full flex flex-row justify-start items-center space-x-1 space-y-0">
+                                            <FormItem className="w-full flex flex-row justify-start items-start space-x-2 space-y-0">
                                                 <FormControl>
                                                     <Checkbox
                                                         checked={field.value}
                                                         onCheckedChange={field.onChange}
+                                                        className="mt-1"
                                                     />
                                                 </FormControl>
-                                                <FormLabel>
+                                                <FormLabel className="text-sm">
                                                     Are you affiliated with a stock exchange or FINRA?
                                                 </FormLabel>
                                             </FormItem>
@@ -133,14 +135,15 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                         control={form.control}
                                         name="disclosures.is_politically_exposed"
                                         render={({ field }) => (
-                                            <FormItem className="w-full flex flex-row justify-start items-center space-x-1 space-y-0">
+                                            <FormItem className="w-full flex flex-row justify-start items-start space-x-2 space-y-0">
                                                 <FormControl>
                                                     <Checkbox
                                                         checked={field.value}
                                                         onCheckedChange={field.onChange}
+                                                        className="mt-1"
                                                     />
                                                 </FormControl>
-                                                <FormLabel>
+                                                <FormLabel className="text-sm">
                                                     Are you a politically exposed person (PEP)
                                                 </FormLabel>
                                             </FormItem>
@@ -151,14 +154,15 @@ const RegisterStep4 = ({ goPreStep, goNextStep }: Props) => {
                                         control={form.control}
                                         name="disclosures.immediate_family_exposed"
                                         render={({ field }) => (
-                                            <FormItem className="w-full flex flex-row justify-start items-center space-x-1 space-y-0">
+                                            <FormItem className="w-full flex flex-row justify-start items-start space-x-2 space-y-0">
                                                 <FormControl>
                                                     <Checkbox
                                                         checked={field.value}
                                                         onCheckedChange={field.onChange}
+                                                        className="mt-1"
                                                     />
                                                 </FormControl>
-                                                <FormLabel>
+                                                <FormLabel className="text-sm">
                                                     Is any of your immediate family a PEP or hold a significant leadership role in a publicly traded company?
                                                 </FormLabel>
                                             </FormItem>

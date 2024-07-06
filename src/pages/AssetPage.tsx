@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useLocation, useNavigate } from "react-router-dom"
 
@@ -41,7 +41,7 @@ import { getHistoricalBars, postOrder, HistoricalBarsTimeFrameType, getNews } fr
 
 import CandlestickChart from "@/components/parts/Charts/CandlestickChart/CandlestickChart"
 import { Bar } from "@/components/parts/Charts/CandlestickChart/Candlesticks"
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
+import * as d3 from "d3"
 
 const FormSchema = z.object({
     is_limit: z.boolean(),
@@ -151,71 +151,44 @@ const AssetPage = () => {
 
     return (
         <div className="min-w-screen min-h-screen flex flex-col justify-center items-center space-x-48">
-            <div className="w-8/12 grow py-8 flex flex-col justify-start items-start gap-0">
-                <Card className="border-0">
-                    <CardHeader>
-                        <CardTitle className="text-xl">{assetData.symbol} - {assetData.name}</CardTitle>
-                    </CardHeader>
-                </Card>
-                <div className="w-full h-[512px] flex flex-col justify-center items-start lg:flex-row">
-                    <div className="w-full h-full flex-grow">
-                        <CandlestickChart
-                            data={chartData}
-                            intervals={[
-                                {
-                                    title: "5 Minutes",
-                                    timeFrame: "5Min",
-                                    timeOffset: 1000 * 60 * 5,
-                                },
-                                {
-                                    title: "15 Minutes",
-                                    timeFrame: "15Min",
-                                    timeOffset: 1000 * 60 * 15,
-                                },
-                                {
-                                    title: "30 Minutes",
-                                    timeFrame: "30Min",
-                                    timeOffset: 1000 * 60 * 30,
-                                },
-                                {
-                                    title: "1 Hour",
-                                    timeFrame: "1Hour",
-                                    timeOffset: 1000 * 60 * 60,
-                                },
-                                {
-                                    title: "1 Day",
-                                    timeFrame: "1Day",
-                                    timeOffset: 1000 * 60 * 60 * 24,
-                                    isDefault: true
-                                },
-                                {
-                                    title: "1 Week",
-                                    timeFrame: "1Week",
-                                    timeOffset: 1000 * 60 * 60 * 24 * 7,
-                                },
-                                {
-                                    title: "1 Month",
-                                    timeFrame: "1Month",
-                                    timeOffset: 1000 * 60 * 60 * 24 * 30,
-                                },
-                                {
-                                    title: "1 Year",
-                                    timeFrame: "12Month",
-                                    timeOffset: 1000 * 60 * 60 * 24 * 365,
-                                }
-                            ]}
-                            onIntervalBtnClicked={(timeFrame: string) => setTimeFrame(timeFrame as HistoricalBarsTimeFrameType)} />
-                    </div>
-                    <Card className="border-0 w-full h-full flex flex-col justify-around basis-6/12">
+            <div className="w-10/12 grow py-8 flex flex-col justify-start items-start gap-12 lg:w-8/12">
+                <div className="w-full h-full flex flex-col justify-center items-start gap-2 lg:flex-row">
+                    <Card className="w-full h-[512px] border-0 flex flex-col justify-between items-center text-center mb-8 [&>*:nth-child(odd)]:py-2 lg:w-[400px] lg:justify-between lg:items-end lg:text-end lg:mb-0">
+
                         <CardHeader>
-                            <CardTitle className="text-xl">Price: ${assetData.latest_closing.toFixed(2)}</CardTitle>
+                            <CardTitle className="text-3xl">{assetData.symbol}</CardTitle>
+                            <CardDescription className="text-base">{assetData.name}</CardDescription>
                         </CardHeader>
-                        <CardContent className="flex flex-col justify-end gap-2">
-                            <div className="text-sm text-muted-foreground">Class: <span className="text-foreground px-1">{assetData.class.split("_").join(" ").toUpperCase()}</span></div>
-                            <div className="text-sm text-muted-foreground">Exchange: <span className="text-foreground px-1">{assetData.exchange}</span></div>
-                            <div className="text-sm text-muted-foreground">Status: <span className="rounded-sm text-[--success] px-1">{assetData.status}</span></div>
+                        <Separator />
+                        <CardContent>
+                            <p>Price</p>
+                            <p className="text-muted-foreground">
+                                $ {assetData.latest_closing.toFixed(2)}
+                            </p>
                         </CardContent>
-                        <CardContent className="flex flex-col items-center space-y-4 border-0">
+                        <Separator />
+                        <CardContent>
+                            <p>Class</p>
+                            <p className="text-foreground">
+                                {assetData.class.split("_").join(" ").toUpperCase()}
+                            </p>
+                        </CardContent>
+                        <Separator />
+                        <CardContent>
+                            <p>Exchange</p>
+                            <p className="text-foreground">
+                                {assetData.exchange}
+                            </p>
+                        </CardContent>
+                        <Separator />
+                        <CardContent>
+                            <p>Status</p>
+                            <p className="rounded-sm text-[--success] px-1">
+                                {assetData.status}
+                            </p>
+                        </CardContent>
+                        <Separator />
+                        <CardContent className="w-full">
                             <Dialog open={isDialogOpen} onOpenChange={onDialogOpenChange}>
                                 <div className="w-full flex flex-row space-x-2 p-0">
                                     <DialogTrigger asChild>
@@ -362,44 +335,101 @@ const AssetPage = () => {
                             </Dialog>
                         </CardContent>
                     </Card>
+
+                    <div className="w-full h-[512px]">
+                        <CandlestickChart
+                            data={chartData}
+                            intervals={[
+                                {
+                                    title: "5 Minutes",
+                                    timeFrame: "5Min",
+                                    timeOffset: 1000 * 60 * 5,
+                                },
+                                {
+                                    title: "15 Minutes",
+                                    timeFrame: "15Min",
+                                    timeOffset: 1000 * 60 * 15,
+                                },
+                                {
+                                    title: "30 Minutes",
+                                    timeFrame: "30Min",
+                                    timeOffset: 1000 * 60 * 30,
+                                },
+                                {
+                                    title: "1 Hour",
+                                    timeFrame: "1Hour",
+                                    timeOffset: 1000 * 60 * 60,
+                                },
+                                {
+                                    title: "1 Day",
+                                    timeFrame: "1Day",
+                                    timeOffset: 1000 * 60 * 60 * 24,
+                                    isDefault: true
+                                },
+                                {
+                                    title: "1 Week",
+                                    timeFrame: "1Week",
+                                    timeOffset: 1000 * 60 * 60 * 24 * 7,
+                                },
+                                {
+                                    title: "1 Month",
+                                    timeFrame: "1Month",
+                                    timeOffset: 1000 * 60 * 60 * 24 * 30,
+                                },
+                                {
+                                    title: "1 Year",
+                                    timeFrame: "12Month",
+                                    timeOffset: 1000 * 60 * 60 * 24 * 365,
+                                }
+                            ]}
+                            onIntervalBtnClicked={(timeFrame: string) => setTimeFrame(timeFrame as HistoricalBarsTimeFrameType)} />
+                    </div>
                 </div>
-                <div className="w-full p-4">
+
+                <div className="w-full p-0">
                     <CardHeader>
                         <CardTitle>
                             NEWS
                         </CardTitle>
                     </CardHeader>
                     <Card className="w-full">
-                        <CardHeader className="w-full p-0">
-                            <Table>
-                                <TableBody>
-                                    {
-                                        newsData && newsData.length > 0 ?
-                                            newsData.map((news) => {
-                                                console.log(news)
-                                                return (
-                                                    <TableRow key={news.id} className="cursor-pointer hover:bg-accent" onClick={() => {
-                                                        window.open(news.url, "_blank")
-                                                        return null
-                                                    }}>
-                                                        <TableCell>
-                                                            <p>{news.headline}</p>
-                                                            <p className="text-xs text-muted-foreground mt-1">@{news.source} - {news.author}</p>
-                                                        </TableCell>
-                                                        <TableCell className="w-32 text-xs text-muted-foreground text-right">
-                                                            <p>{new Date(news.created_at).toUTCString()}</p>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                )
-                                            }) : (
-                                                <TableRow>
-                                                    <TableCell className="text-center" colSpan={7}>No Data</TableCell>
-                                                </TableRow>
-                                            )
-                                    }
-                                </TableBody>
-                            </Table>
-                        </CardHeader>
+                        <CardContent className="w-full flex flex-col p-0">
+                            {
+                                newsData && newsData.length > 0 ?
+                                    newsData.map((news) => {
+                                        return (
+                                            <Button variant="outline" className="w-full h-full flex flex-col grow text-left text-wrap gap-0 lg:flex-row" onClick={(e) => {
+                                                e.preventDefault()
+                                                window.open(news.url, "_blank")
+                                            }}>
+                                                <div className="w-full flex flex-col grow">
+                                                    <p className="text-sm text-foreground lg:text-base">{news.headline}</p>
+                                                    <p className="text-xs text-muted-foreground mt-2">@{news.source} - {news.author}</p>
+                                                    {
+                                                        (() => {
+                                                            const newsDate = new Date(news.created_at)
+                                                            const dateTxt = d3.utcFormat("%a, %d %b %Y")(newsDate)
+                                                            const timeTxt = d3.utcFormat("%H:%M:%S")(newsDate) + " GMT"
+                                                            return (
+                                                                <p className="flex flex-row text-xs text-muted-foreground gap-1">
+                                                                    <span>{dateTxt}</span>
+                                                                    <span>{timeTxt}</span>
+                                                                </p>
+                                                            )
+                                                        })()
+                                                    }
+                                                </div>
+                                            </Button>
+                                        )
+                                    }) : (
+                                        <Button variant="outline" className="min-h-min" onClick={(e) => {
+                                            e.preventDefault()
+                                        }}>
+                                            <p className="text-muted-foreground text-sm lg:text-base text-center">No Data</p>
+                                        </Button>
+                                    )
+                            }
+                        </CardContent>
                     </Card>
                 </div>
             </div>

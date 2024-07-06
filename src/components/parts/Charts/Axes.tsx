@@ -59,11 +59,11 @@ export const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
     let previousTick = { date: new Date(xMinDateTime), index: -1 }
 
     return (
-        <g transform={`translate(${0},${innerHeight})`} >
+        <g transform={`translate(${0},${innerHeight})`}>
             <text
                 x={xMax} dy={-5}
                 textAnchor="end"
-                className="font-semibold text-sm fill-foreground"
+                className="text-xs md:text-sm font-semibold fill-foreground"
             >
                 {title}
             </text>
@@ -91,10 +91,11 @@ export const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
                                 className="stroke-muted-foreground opacity-20"
                             />
                             <text
+                                x={dates.length === index + 1 ? - 15 : 0}
                                 y={16}
                                 dy="0.8em"
                                 textAnchor="middle"
-                                className="text-sm fill-muted-foreground"
+                                className="text-xs md:text-sm fill-muted-foreground"
                             >
                                 {formatter(date, previousTick.date)}
                             </text>
@@ -106,11 +107,12 @@ export const XAxis = ({ scale, intervalTimeOffset, title, innerHeight }:
     )
 }
 
-export const YAxis = ({ scale, title, innerWidth, format }:
+export const YAxis = ({ scale, title, innerWidth, tickClassName = (value: number) => value.toString(), tickFormat }:
     {
         scale: d3.ScaleLinear<number, number, never>,
         title: string, innerWidth: number,
-        format: (value: number) => string
+        tickClassName?: (value: number) => string,
+        tickFormat: (value: number) => string
     }) => {
 
     const [yMax, yMin] = scale.range()
@@ -121,7 +123,7 @@ export const YAxis = ({ scale, title, innerWidth, format }:
             <text
                 dx={4}
                 dy="0.8em"
-                className="font-semibold text-sm fill-foreground"
+                className="font-semibold text-xs md:text-sm fill-foreground"
             >
                 {title}
             </text>
@@ -129,7 +131,7 @@ export const YAxis = ({ scale, title, innerWidth, format }:
                 x1={0} x2={0} y1={yMin} y2={yMax}
                 className="stroke-muted-foreground" />
             {
-                ticks.map((value: number) => {
+                ticks.map((value: number, index: number) => {
                     const y = scale(value)
 
                     return <g key={value} transform={`translate(0,${y})`}>
@@ -142,12 +144,12 @@ export const YAxis = ({ scale, title, innerWidth, format }:
                             className="stroke-muted-foreground opacity-20"
                         />
                         <text
-                            dx={-16}
-                            dy="0.34em"
+                            dx={-12}
+                            dy={ticks.length === index + 1 ? "0.64em" : "0.34em"}
                             textAnchor="end"
-                            className="text-sm fill-muted-foreground"
+                            className={"text-xs md:text-sm opacity-85 fill-muted-foreground " + tickClassName(value)}
                         >
-                            {format(value)}
+                            {tickFormat(value)}
                         </text>
                     </g>
                 })

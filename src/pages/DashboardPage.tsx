@@ -128,46 +128,66 @@ const DashboardPage = () => {
         fetchPortfolioHistory()
     }, [isAuthRequestEnd, timeFrame])
 
-    const calculatePNL = (oldValue: string, newValue: string) => {
+    const getPctAsSpan = (oldValue: string, newValue: string) => {
         const _old = parseFloat(oldValue)
         const _new = parseFloat(newValue)
 
-        const pnl = _old === 0 && _new === 0 ? 0 : (_new * 100 / _old) - 100
+        const pct = _old === 0 && _new === 0 ? 0 : (_new * 100 / _old) - 100
         return (
-            <span className={`${pnl > 0 ? "text-[--success]" : (pnl < 0 ? "text-[--destructive]" : "text-foreground")}`}>
-                {pnl.toFixed(2)}%
+            <span className={"text-sm " + `${pct > 0 ? "text-[--success]" : (pct < 0 ? "text-[--destructive]" : "text-muted-foreground")}`}>
+                {pct.toFixed(2)}%
             </span>
         )
     }
 
     return (
         <div className="min-w-screen min-h-screen flex flex-col justify-center items-center space-x-48">
-            <div className="w-8/12 grow py-8 flex flex-col justify-start items-start gap-12">
-                <div className="w-full grid grid-cols-4 justify-center items-start gap-2">
-                    <div dir="rtl" className="">
-                        <Card className="border-0 mb-8">
-                            <CardHeader>
-                                <CardTitle className="text-xl">{user?.given_name + " " + user?.family_name}</CardTitle>
-                                <CardDescription className="text-sm">#{user?.account_number.toString()}</CardDescription>
-                            </CardHeader>
-                        </Card>
+            <div className="w-10/12 grow py-8 flex flex-col justify-start items-start gap-12 lg:w-8/12">
+                <div className="w-full h-full flex flex-col justify-center items-start gap-2 lg:flex-row">
+                    <Card className="w-full h-[512px] border-0 flex flex-col justify-between items-center text-center mb-8 [&>*:nth-child(odd)]:py-2 lg:w-[400px] lg:justify-between lg:items-end lg:text-end lg:mb-0">
+                        <CardHeader>
+                            <CardTitle className="text-3xl">{user?.given_name + " " + user?.family_name}</CardTitle>
+                            <CardDescription className="text-sm">#{user?.account_number.toString()}</CardDescription>
+                        </CardHeader>
                         <Separator />
-                        <Card className="border-0">
-                            <CardHeader className="flex flex-col">
-                                <CardDescription className="w-[50%] col-span-1">Portfolio Value</CardDescription>
-                                <CardDescription className="w-[50%] col-span-1">$ {tradingData.portfolio_value}</CardDescription>
-                            </CardHeader>
-                        </Card>
+                        <CardContent>
+                            <p>Portfolio Value</p>
+                            <p className="text-muted-foreground">
+                                {getPctAsSpan(tradingData.last_portfolio_value, tradingData.portfolio_value)}
+                                &nbsp;&nbsp;&nbsp;
+                                $ {parseFloat(tradingData.portfolio_value).toLocaleString()}
+                            </p>
+                        </CardContent>
                         <Separator />
-                        <Card className="border-0">
-                            <CardHeader className="flex flex-col">
-                                <CardDescription>Buying Power</CardDescription>
-                                <CardDescription>$ {tradingData.buying_power}</CardDescription>
-                            </CardHeader>
-                        </Card>
+                        <CardContent>
+                            <p>Buying Power</p>
+                            <p className="text-muted-foreground">
+                                {getPctAsSpan(tradingData.last_buying_power, tradingData.buying_power)}
+                                &nbsp;&nbsp;&nbsp;
+                                $ {parseFloat(tradingData.buying_power).toLocaleString()}
+                            </p>
+                        </CardContent>
                         <Separator />
-                    </div>
-                    <div className="h-[512px] w-full col-span-3">
+                        <CardContent>
+                            <p>Long Market Value</p>
+                            <p className="text-muted-foreground">
+                                {getPctAsSpan(tradingData.last_long_market_value, tradingData.long_market_value)}
+                                &nbsp;&nbsp;&nbsp;
+                                $ {parseFloat(tradingData.long_market_value).toLocaleString()}
+                            </p>
+                        </CardContent>
+                        <Separator />
+                        <CardContent>
+                            <p>Short Market Value</p>
+                            <p className="text-muted-foreground">
+                                {getPctAsSpan(tradingData.last_short_market_value, tradingData.short_market_value)}
+                                &nbsp;&nbsp;&nbsp;
+                                $ {parseFloat(tradingData.short_market_value).toLocaleString()}
+                            </p>
+                        </CardContent>
+                        <Separator />
+                    </Card>
+                    <div className="w-full h-[512px]">
                         <LineChart data={portfolioHistory} intervals={[
                             {
                                 title: "5 Minutes",
@@ -195,31 +215,8 @@ const DashboardPage = () => {
                         />
                     </div>
                 </div>
-                <div className="w-full grid grid-cols-3 justify-center items-start gap-2">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Cash</CardTitle>
-                            <p>$ {tradingData.cash}</p>
-                            <CardDescription>PNL: {calculatePNL(tradingData.last_cash, tradingData.cash)}</CardDescription>
-                        </CardHeader>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Long Market Value</CardTitle>
-                            <p>$ {tradingData.long_market_value}</p>
-                            <CardDescription>PNL: {calculatePNL(tradingData.last_long_market_value, tradingData.long_market_value)}</CardDescription>
-                        </CardHeader>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Short Market Value</CardTitle>
-                            <p>$ {tradingData.short_market_value}</p>
-                            <CardDescription>PNL: {calculatePNL(tradingData.last_short_market_value, tradingData.short_market_value)}</CardDescription>
-                        </CardHeader>
-                    </Card>
-                </div>
-                <div className="w-full grid grid-cols-3 justify-center items-start gap-2">
-                    <Card className="col-span-1">
+                <div className="w-full flex flex-col justify-center items-start gap-2 xl:flex-row">
+                    <Card className="w-full border-0 *:text-xs *:p-2 md:*:text-base md:*:p-4 xl:w-7/12 xl:border-2">
                         <CardHeader>
                             <CardTitle><span>Positions</span>
                                 <Button variant="link" className="text-sm text-muted-foreground"
@@ -231,7 +228,7 @@ const DashboardPage = () => {
                         <CardContent>
                             <Table>
                                 <TableHeader>
-                                    <TableRow>
+                                    <TableRow className="*:p-2 md:*:p-4">
                                         <TableHead className="w-[100px]">Symbol</TableHead>
                                         <TableHead>Mkt Val</TableHead>
                                         <TableHead>Last</TableHead>
@@ -243,7 +240,7 @@ const DashboardPage = () => {
                                         positions.length > 0 ?
                                             positions.map((item) => {
                                                 return (
-                                                    <TableRow key={item.symbol} className="cursor-pointer hover:bg-accent"
+                                                    <TableRow key={item.symbol} className="cursor-pointer *:text-xs *:p-2 md:*:text-base md:*:p-4 hover:bg-accent"
                                                         onClick={() => {
                                                             const getData = async () => {
                                                                 const asset = await getAssetData(item.symbol)
@@ -269,16 +266,16 @@ const DashboardPage = () => {
                             </Table>
                         </CardContent>
                     </Card>
-                    <Card className="col-span-2">
+                    <Card className="w-full border-0 *:text-xs *:p-2 md:*:text-base md:*:p-4 xl:w-7/12 xl:border-2">
                         <CardHeader>
                             <CardTitle>Orders</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Table>
                                 <TableHeader>
-                                    <TableRow>
+                                    <TableRow className="*:text-xs *:p-2 md:*:text-base md:*:p-4">
                                         <TableHead>Side</TableHead>
-                                        <TableHead className="w-[100px]">Symbol</TableHead>
+                                        <TableHead>Symbol</TableHead>
                                         <TableHead>Filled Qty</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead className="text-right">Created At</TableHead>
@@ -290,7 +287,7 @@ const DashboardPage = () => {
                                             orders.length > 0 ?
                                                 orders.map((item) => {
                                                     return (
-                                                        <TableRow key={item.order_id} className="cursor-pointer hover:bg-accent" onClick={() => {
+                                                        <TableRow key={item.order_id} className="cursor-pointer *:text-xs *:p-2 md:*:text-base md:*:p-4 hover:bg-accent" onClick={() => {
                                                             setDialogOpen(true)
                                                             setDialogOrder(item)
                                                         }}>

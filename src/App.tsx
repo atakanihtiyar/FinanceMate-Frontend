@@ -13,7 +13,11 @@ import AssetPage from './pages/AssetPage';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <>
+      <Navbar />
+      <HomePage />
+      <Footer />
+    </>,
   },
   {
     path: "/register",

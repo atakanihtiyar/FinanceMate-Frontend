@@ -145,7 +145,7 @@ const RegisterStep3 = ({ goPreStep, goNextStep }: Props) => {
     }
 
     return (
-        <Card className="w-[400px] min-h-[250px]">
+        <Card className="w-[360px] min-h-[250px] border-0 sm:border-2 sm:w-[400px]">
             <CardHeader>
                 <Form {...form}>
                     <form className="flex flex-col justify-center items-center gap-2">

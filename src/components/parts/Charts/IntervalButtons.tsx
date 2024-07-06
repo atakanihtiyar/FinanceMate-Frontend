@@ -15,12 +15,12 @@ interface IntervalButtonsProps extends React.RefAttributes<HTMLDivElement> {
 }
 
 const IntervalButtons = React.forwardRef<HTMLDivElement, IntervalButtonsProps>(({ intervals, pickedAt, onIntervalClick, ...props }, ref) => (
-    <div className="w-full min-h-min border-b-2" ref={ref} {...props}>
+    <div className="w-full min-h-min inline-flex flex-row flex-wrap border-2 border-muted rounded-sm *:grow" ref={ref} {...props}>
         {intervals.map((interval, index) => (
             <Button
                 key={interval.timeFrame}
-                variant={index === pickedAt ? "secondary" : "ghost"}
-                className={"rounded-sm" + (index === pickedAt && " pointer-events-none")}
+                variant={index === pickedAt ? "secondary" : "outline"}
+                className={"rounded-none" + (index === pickedAt ? " pointer-events-none" : "")}
                 onClick={() => onIntervalClick(interval.timeFrame)}
             >
                 {interval.title}
