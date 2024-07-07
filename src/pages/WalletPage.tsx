@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { createAchRelationship, createTransfer, deleteAchRelationship, getAchRelationships, getAssetData, getPositions, getTransfers } from "@/lib/server_service"
 import { zodResolver } from "@hookform/resolvers/zod"
+import * as d3 from "d3"
 import { useContext, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
@@ -186,105 +187,107 @@ const WalletPage = () => {
 
     return (
         <div className="min-w-screen min-h-screen flex flex-col justify-center items-center">
-            <div className="w-8/12 grow py-8 flex flex-col justify-start items-start gap-12">
-                <Card className="border-0">
-                    <CardHeader>
+            <div className="w-10/12 grow py-8 flex flex-col justify-start items-start gap-8 lg:w-8/12">
+                <Card className="w-full border-0">
+                    <CardHeader className="text-center lg:text-start">
                         <CardTitle>ACH Relationships</CardTitle>
                     </CardHeader>
                 </Card>
-                <div className="w-full flex flex-row flex-wrap gap-4 justify-center">
-                    {achData && achData.map((ach => {
-                        return (
-                            <Card key={ach.relation_id} className="min-w-[360px] h-[436px] flex flex-col">
-                                <CardHeader>
-                                    <CardTitle className="w-full text-center">{ach.nickname}</CardTitle>
-                                </CardHeader>
-                                <CardContent className="flex flex-col grow justify-center">
-                                    <Table>
-                                        <TableBody>
-                                            <TableRow className="cursor-pointer hover:bg-accent">
-                                                <TableCell>
-                                                    <p className="text-muted-foreground">Status</p>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <p className={ach.status === "APPROVED" ? "text-[--success]" :
-                                                        ach.status === "CANCEL_REQUESTED" ? "text-destructive" :
-                                                            "text-[--warning]"}>{ach.status}</p>
-                                                </TableCell>
-                                            </TableRow>
-                                            <TableRow className="cursor-pointer hover:bg-accent">
-                                                <TableCell>
-                                                    <p className="text-muted-foreground">Owner</p>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <p>{ach.account_owner_name}</p>
-                                                </TableCell>
-                                            </TableRow>
-                                            <TableRow className="cursor-pointer hover:bg-accent">
-                                                <TableCell>
-                                                    <p className="text-muted-foreground">Account Type</p>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <p>{ach.bank_account_type}</p>
-                                                </TableCell>
-                                            </TableRow>
-                                            <TableRow className="cursor-pointer hover:bg-accent">
-                                                <TableCell>
-                                                    <p className="text-muted-foreground">Account Number</p>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <p>{ach.bank_account_number}</p>
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableBody>
-                                    </Table>
-                                </CardContent>
-                                {
-                                    isNewTransfer ?
-                                        <CardFooter>
-                                            <Form {...transferForm}>
-                                                <form onSubmit={transferForm.handleSubmit(onAchTransfer)} className="w-full flex flex-col justify-end items-center gap-4">
-                                                    <FormField
-                                                        control={transferForm.control}
-                                                        name="amount"
-                                                        render={({ field }) => (
-                                                            <FormItem className="w-full">
-                                                                <FormControl>
-                                                                    <Input type="number" placeholder="Amount" {...field} />
-                                                                </FormControl>
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                    <div className="w-full flex flex-row justify-evenly mt-2">
-                                                        <Button
-                                                            variant="outline"
-                                                            onClick={() => {
-                                                                transferForm.reset()
-                                                                setIsNewTransfer(false)
-                                                            }}
-                                                        >
-                                                            Cancel
-                                                        </Button>
-                                                        <Button variant="default" type="submit">Create</Button>
-                                                    </div>
-                                                </form>
-                                            </Form>
-                                        </CardFooter>
-                                        :
-                                        <CardFooter className="w-full flex flex-row justify-evenly">
-                                            <Button variant="destructive" onClick={() => onAchDelete(ach.relation_id)}>Delete</Button>
-                                            <Button variant="secondary" onClick={() => setIsNewTransfer("INCOMING")}>Deposit</Button>
-                                            <Button variant="secondary" onClick={() => setIsNewTransfer("OUTGOING")}>Withdrawal</Button>
-                                        </CardFooter>
-                                }
-                            </Card>
-                        )
-                    }))}
+                <div className="w-full flex flex-col justify-center items-start gap-4 xl:h-[420px] xl:flex-row">
+                    {
+                        achData && achData.map((ach => {
+                            return (
+                                <Card key={ach.relation_id} className="w-full h-full flex flex-col justify-between border-0 *:text-xs *:p-2 md:*:text-base md:*:p-4 xl:w-4/12 xl:border-2">
+                                    <CardHeader>
+                                        <CardTitle className="w-full text-center">{ach.nickname}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="flex flex-col grow justify-center">
+                                        <Table>
+                                            <TableBody>
+                                                <TableRow className="cursor-pointer hover:bg-accent">
+                                                    <TableCell>
+                                                        <p className="text-muted-foreground">Status</p>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <p className={ach.status === "APPROVED" ? "text-[--success]" :
+                                                            ach.status === "CANCEL_REQUESTED" ? "text-destructive" :
+                                                                "text-[--warning]"}>{ach.status}</p>
+                                                    </TableCell>
+                                                </TableRow>
+                                                <TableRow className="cursor-pointer hover:bg-accent">
+                                                    <TableCell>
+                                                        <p className="text-muted-foreground">Owner</p>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <p>{ach.account_owner_name}</p>
+                                                    </TableCell>
+                                                </TableRow>
+                                                <TableRow className="cursor-pointer hover:bg-accent">
+                                                    <TableCell>
+                                                        <p className="text-muted-foreground">Account Type</p>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <p>{ach.bank_account_type}</p>
+                                                    </TableCell>
+                                                </TableRow>
+                                                <TableRow className="cursor-pointer hover:bg-accent">
+                                                    <TableCell>
+                                                        <p className="text-muted-foreground">Account Number</p>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <p>{ach.bank_account_number}</p>
+                                                    </TableCell>
+                                                </TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </CardContent>
+                                    {
+                                        isNewTransfer ?
+                                            <CardFooter>
+                                                <Form {...transferForm}>
+                                                    <form onSubmit={transferForm.handleSubmit(onAchTransfer)} className="w-full flex flex-col justify-end items-center gap-4">
+                                                        <FormField
+                                                            control={transferForm.control}
+                                                            name="amount"
+                                                            render={({ field }) => (
+                                                                <FormItem className="w-full">
+                                                                    <FormControl>
+                                                                        <Input type="number" placeholder="Amount" {...field} />
+                                                                    </FormControl>
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                        <div className="w-full flex flex-row justify-evenly mt-2">
+                                                            <Button
+                                                                variant="outline"
+                                                                onClick={() => {
+                                                                    transferForm.reset()
+                                                                    setIsNewTransfer(false)
+                                                                }}
+                                                            >
+                                                                Cancel
+                                                            </Button>
+                                                            <Button variant="default" type="submit">Create</Button>
+                                                        </div>
+                                                    </form>
+                                                </Form>
+                                            </CardFooter>
+                                            :
+                                            <CardFooter className="w-full flex flex-row justify-evenly space-x-1">
+                                                <Button variant="destructive" onClick={() => onAchDelete(ach.relation_id)}>Delete</Button>
+                                                <Button variant="secondary" onClick={() => setIsNewTransfer("INCOMING")}>Deposit</Button>
+                                                <Button variant="secondary" onClick={() => setIsNewTransfer("OUTGOING")}>Withdrawal</Button>
+                                            </CardFooter>
+                                    }
+                                </Card>
+                            )
+                        }))
+                    }
                     {
                         !achData || achData.length === 0 &&
                         (
                             isNewAch ?
-                                <Card className="min-w-[360px] h-[436px] flex flex-col">
+                                <Card className="w-full h-full border-0 *:text-xs *:p-2 md:*:text-base md:*:p-4 xl:w-4/12 xl:border-2">
                                     <CardHeader>
                                         <CardTitle className="w-full text-center">Create New ACH Relationship</CardTitle>
                                     </CardHeader>
@@ -371,28 +374,30 @@ const WalletPage = () => {
                                         </Form>
                                     </CardContent>
                                 </Card> :
-                                <Button
-                                    variant="outline"
-                                    className="min-w-[360px] h-[436px] flex justify-center items-center text-xl"
-                                    onClick={() => setIsNewAch(true)}
-                                >
-                                    Create New Ach
-                                </Button>
+                                <Card className="w-full border-0 *:text-xs *:p-2 md:*:text-base md:*:p-4 xl:w-4/12 xl:border-2">
+                                    <Button
+                                        variant="outline"
+                                        className="w-full h-full"
+                                        onClick={() => setIsNewAch(true)}
+                                    >
+                                        Create New Ach
+                                    </Button>
+                                </Card>
                         )
                     }
-                    <Card className="basis-2/3 border-0">
+                    <Card className="w-full h-full border-0 *:text-xs *:p-2 md:*:text-base md:*:p-4 xl:w-8/12 xl:border-2">
                         <CardHeader>
                             <CardTitle>Transfers</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Table>
                                 <TableHeader>
-                                    <TableRow>
+                                    <TableRow className="*:text-xs *:p-2 md:*:text-base md:*:p-4">
                                         <TableHead>Type</TableHead>
                                         <TableHead>Status</TableHead>
-                                        <TableHead>Amoun</TableHead>
+                                        <TableHead>Amount</TableHead>
                                         <TableHead>Direction</TableHead>
-                                        <TableHead>Created At</TableHead>
+                                        <TableHead className="text-right">Created At</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -400,12 +405,24 @@ const WalletPage = () => {
                                         transfers && transfers.length > 0 ?
                                             transfers.map((transfer) => {
                                                 return (
-                                                    <TableRow key={transfer.id} className="cursor-pointer hover:bg-accent">
+                                                    <TableRow key={transfer.id} className="cursor-pointer *:text-xs *:p-2 md:*:text-base md:*:p-4 hover:bg-accent">
                                                         <TableCell>{transfer.type}</TableCell>
-                                                        <TableCell>{transfer.status}</TableCell>
+                                                        <TableCell>{transfer.status.split("_").join(" ")}</TableCell>
                                                         <TableCell>{transfer.amount}</TableCell>
                                                         <TableCell>{transfer.direction}</TableCell>
-                                                        <TableCell>{new Date(transfer.created_at).toUTCString()}</TableCell>
+                                                        <TableCell className="flex justify-end text-right">{
+                                                            (() => {
+                                                                const transferDate = new Date(transfer.created_at)
+                                                                const dateTxt = d3.utcFormat("%a, %d %b %Y")(transferDate)
+                                                                const timeTxt = d3.utcFormat("%H:%M:%S")(transferDate) + " GMT"
+                                                                return (
+                                                                    <p className="w-24 flex flex-col text-xs text-muted-foreground gap-1">
+                                                                        <span>{dateTxt}</span>
+                                                                        <span>{timeTxt}</span>
+                                                                    </p>
+                                                                )
+                                                            })()
+                                                        }</TableCell>
                                                     </TableRow>)
                                             }) : (
                                                 <TableRow>
@@ -419,16 +436,16 @@ const WalletPage = () => {
                     </Card>
                 </div>
             </div>
-            <div className="w-8/12 grow py-8 flex flex-col justify-start items-start gap-12">
-                <Card className="w-full border-0">
+            <div className="w-10/12 grow py-8 flex flex-col justify-start items-start gap-12 lg:w-8/12">
+                <Card className="w-full border-0 *:text-xs *:p-2 md:*:text-base md:*:p-4 xl:w-8/12 xl:border-2">
                     <CardHeader>
                         <CardTitle>Positions</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <Table>
                             <TableHeader>
-                                <TableRow>
-                                    <TableHead>Symbol</TableHead>
+                                <TableRow className="*:text-xs *:p-2 md:*:text-base md:*:p-4">
+                                    <TableHead className="w-[100px]">Symbol</TableHead>
                                     <TableHead>Quantity</TableHead>
                                     <TableHead>Last</TableHead>
                                     <TableHead>Change %</TableHead>
@@ -436,7 +453,7 @@ const WalletPage = () => {
                                     <TableHead>Mkt Val</TableHead>
                                     <TableHead>Avg Val</TableHead>
                                     <TableHead>Daily PNL</TableHead>
-                                    <TableHead>Unrealized PNL</TableHead>
+                                    <TableHead className="text-right">Unrealized PNL</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -444,7 +461,7 @@ const WalletPage = () => {
                                     positions.length > 0 ?
                                         positions.map((item) => {
                                             return (
-                                                <TableRow key={item.symbol} className="cursor-pointer hover:bg-accent"
+                                                <TableRow key={item.symbol} className="cursor-pointer *:text-xs *:p-2 md:*:text-base md:*:p-4 hover:bg-accent"
                                                     onClick={() => {
                                                         const getData = async () => {
                                                             const asset = await getAssetData(item.symbol)
@@ -455,7 +472,7 @@ const WalletPage = () => {
                                                         }
                                                         getData()
                                                     }}>
-                                                    <TableCell>{item.symbol}</TableCell>
+                                                    <TableCell className="font-medium">{item.symbol}</TableCell>
                                                     <TableCell>{item.qty}</TableCell>
                                                     <TableCell>{item.current_price}</TableCell>
                                                     <TableCell>{(parseFloat(item.change_today) * 100).toFixed(2)}</TableCell>
@@ -463,7 +480,7 @@ const WalletPage = () => {
                                                     <TableCell>{item.market_value}</TableCell>
                                                     <TableCell>{item.avg_entry_price}</TableCell>
                                                     <TableCell>{item.unrealized_intraday_pl}</TableCell>
-                                                    <TableCell>{item.unrealized_pl}</TableCell>
+                                                    <TableCell className="text-right">{item.unrealized_pl}</TableCell>
                                                 </TableRow>)
                                         }) : (
                                             <TableRow>
