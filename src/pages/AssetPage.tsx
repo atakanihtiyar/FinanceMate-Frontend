@@ -151,7 +151,7 @@ const AssetPage = () => {
 
     return (
         <div className="min-w-screen min-h-screen flex flex-col justify-center items-center space-x-48">
-            <div className="w-10/12 grow py-8 flex flex-col justify-start items-start gap-12 lg:w-8/12">
+            <div className="w-10/12 grow py-8 flex flex-col justify-start items-start gap-12 xl:w-9/12 2xl:w-8/12">
                 <div className="w-full h-full flex flex-col justify-center items-start gap-2 lg:flex-row">
                     <Card className="w-full h-[512px] border-0 flex flex-col justify-between items-center text-center mb-8 [&>*:nth-child(odd)]:py-2 lg:w-[400px] lg:justify-between lg:items-end lg:text-end lg:mb-0">
 

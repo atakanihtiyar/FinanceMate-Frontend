@@ -200,7 +200,10 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
                     onIntervalBtnClicked(timeFrame)
                 }}
             />
-            <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="bg-transparent"
+            <div className="w-full h-full bg-transparent flex justify-center items-center text-center border-2 sm:hidden landscape:hidden">
+                <p>Turn your screen to see the chart</p>
+            </div>
+            <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="bg-transparent hidden sm:flex landscape:flex"
                 onMouseEnter={handleMouseEnter}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseHover}

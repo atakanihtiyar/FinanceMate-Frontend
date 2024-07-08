@@ -187,7 +187,7 @@ const WalletPage = () => {
 
     return (
         <div className="min-w-screen min-h-screen flex flex-col justify-center items-center">
-            <div className="w-10/12 grow py-8 flex flex-col justify-start items-start gap-8 lg:w-8/12">
+            <div className="w-10/12 grow py-8 flex flex-col justify-start items-start gap-8 xl:w-9/12 2xl:w-8/12">
                 <Card className="w-full border-0">
                     <CardHeader className="text-center lg:text-start">
                         <CardTitle>ACH Relationships</CardTitle>
