@@ -30,7 +30,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
     const yScaleRef = useRef<d3.ScaleLinear<number, number>>(d3.scaleLinear())
 
     const [isDragging, setIsDragging] = useState(false)
-    const [dragMousePos, setDragMousePos] = useState<{ x: number, y: number }>({ x: 0, y: 0 })
+    const [dragPointerPos, setDragPointerPos] = useState<{ x: number, y: number }>({ x: 0, y: 0 })
 
     const oldTouchDistanceRef = useRef<number>(0)
 
@@ -123,6 +123,30 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
         setZoomTransform(newTransform)
     }
 
+    const dragStart = ({ clientX, clientY }: { clientX: number, clientY: number }) => {
+        setIsDragging(true)
+        setDragPointerPos({ x: clientX, y: clientY })
+    }
+
+    const drag = ({ clientX, clientY }: { clientX: number, clientY: number }) => {
+        const relativeOffsetX = (clientX - dragPointerPos.x) / (zoomTransform.k)
+        const newX = relativeOffsetX
+        const newTransform = zoomTransform.translate(newX, 0)
+
+        const tringToGoLeft = newTransform.x > zoomTransform.x
+        const tringToGoRight = newTransform.x < zoomTransform.x
+
+        if (!(dataOnRight.current) && tringToGoRight) return
+        if (!(dataOnLeft.current) && tringToGoLeft) return
+
+        setZoomTransform(newTransform)
+        setDragPointerPos({ x: clientX, y: clientY })
+    }
+
+    const dragEnd = () => {
+        setIsDragging(false)
+    }
+
     const handleMouseEnter = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
         event.preventDefault()
         document.body.classList.add("h-full")
@@ -133,35 +157,23 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
         event.preventDefault()
         document.body.classList.remove("h-full")
         document.body.classList.remove("overflow-hidden")
-        setIsDragging(false)
+        dragEnd()
     }
 
     const handleMouseDown = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
         event.preventDefault()
-        setIsDragging(true)
-        setDragMousePos({ x: event.clientX, y: event.clientY })
+        dragStart(event)
     }
 
     const handleMouseHover = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
         event.preventDefault()
         if (isDragging) {
-            const relativeOffsetX = (event.clientX - dragMousePos.x) / (zoomTransform.k)
-            const newX = relativeOffsetX
-            const newTransform = zoomTransform.translate(newX, 0)
-
-            const tringToGoLeft = newTransform.x > zoomTransform.x
-            const tringToGoRight = newTransform.x < zoomTransform.x
-
-            if (!(dataOnRight.current) && tringToGoRight) return
-            if (!(dataOnLeft.current) && tringToGoLeft) return
-
-            setZoomTransform(newTransform)
-            setDragMousePos({ x: event.clientX, y: event.clientY })
+            drag(event)
         }
     }
 
     const handleMouseUp = () => {
-        setIsDragging(false)
+        dragEnd()
     }
 
     const handleMouseEnterCandle = (bar: Bar) => {
@@ -196,11 +208,15 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
 
             oldTouchDistanceRef.current = distance
         }
+        else if (event.touches.length === 1) {
+            dragStart(event.touches[0])
+        }
     }
 
     const handleTouchEnd = (event: React.TouchEvent<SVGSVGElement>) => {
         event.preventDefault()
         oldTouchDistanceRef.current = 0
+        dragEnd()
     }
 
     const handleTouchMove = (event: React.TouchEvent<SVGSVGElement>) => {
@@ -220,6 +236,9 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ data, intervals, on
             zoom(scaleFactor, pivotX)
 
             oldTouchDistanceRef.current = distance
+        }
+        else if (event.touches.length === 1) {
+            drag(event.touches[0])
         }
     }
 
