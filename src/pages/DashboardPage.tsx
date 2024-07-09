@@ -28,7 +28,7 @@ import { useContext, useEffect, useState } from "react"
 import { UserContext, UserContextValues } from "@/context/UserContext"
 import { Separator } from "@/components/ui/separator"
 import { getAccountPortfolioHistory, getAssetData, getOrders, getPositions, getTradingData, PortfolioHistoryTimeFrameType } from "@/lib/server_service"
-import LineChart from "@/components/parts/Charts/LineCharts/LineChart"
+import LineChart from "@/components/parts/Charts/LineCharts/LinePctChart"
 import { Point } from "@/components/parts/Charts/LineCharts/Lines"
 import { Button } from "@/components/ui/button"
 

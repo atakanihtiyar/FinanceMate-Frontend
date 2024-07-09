@@ -154,7 +154,6 @@ const AssetPage = () => {
             <div className="w-10/12 grow py-8 flex flex-col justify-start items-start gap-12 xl:w-9/12 2xl:w-8/12">
                 <div className="w-full h-full flex flex-col justify-center items-start gap-2 lg:flex-row">
                     <Card className="w-full h-[512px] border-0 flex flex-col justify-between items-center text-center mb-8 [&>*:nth-child(odd)]:py-2 lg:w-[400px] lg:justify-between lg:items-end lg:text-end lg:mb-0">
-
                         <CardHeader>
                             <CardTitle className="text-3xl">{assetData.symbol}</CardTitle>
                             <CardDescription className="text-base">{assetData.name}</CardDescription>
@@ -398,10 +397,15 @@ const AssetPage = () => {
                                 newsData && newsData.length > 0 ?
                                     newsData.map((news) => {
                                         return (
-                                            <Button variant="outline" className="w-full h-full flex flex-col grow text-left text-wrap gap-0 lg:flex-row" onClick={(e) => {
-                                                e.preventDefault()
-                                                window.open(news.url, "_blank")
-                                            }}>
+                                            <Button
+                                                key={news.id}
+                                                variant="outline"
+                                                className="w-full h-full flex flex-col grow text-left text-wrap gap-0 lg:flex-row"
+                                                onClick={(e) => {
+                                                    e.preventDefault()
+                                                    window.open(news.url, "_blank")
+                                                }}
+                                            >
                                                 <div className="w-full flex flex-col grow">
                                                     <p className="text-sm text-foreground lg:text-base">{news.headline}</p>
                                                     <p className="text-xs text-muted-foreground mt-2">@{news.source} - {news.author}</p>

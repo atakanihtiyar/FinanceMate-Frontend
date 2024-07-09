@@ -35,6 +35,9 @@ interface LinesProps {
     xScale: d3.ScaleBand<Date>,
     yScale: d3.ScaleLinear<number, number, never>,
     onWheel: (event: React.WheelEvent<SVGSVGElement>) => void,
+    onTouchStart: (event: React.TouchEvent<SVGSVGElement>) => void,
+    onTouchMove: (event: React.TouchEvent<SVGSVGElement>) => void,
+    onTouchEnd: (event: React.TouchEvent<SVGSVGElement>) => void,
     onMouseEnterLine: (point: Point, prevPoint: Point) => void
     onMouseExitLine: () => void
     onMouseHoverLine: (mousePosition: { x: number, y: number }) => void
@@ -42,7 +45,7 @@ interface LinesProps {
 
 const Lines = (
     {
-        data, xScale, yScale, onWheel,
+        data, xScale, yScale, onWheel, onTouchStart, onTouchMove, onTouchEnd,
         onMouseEnterLine, onMouseExitLine, onMouseHoverLine
     }: LinesProps) => {
 
@@ -59,6 +62,9 @@ const Lines = (
     return (
         <g
             onWheel={onWheel}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
             onMouseEnter={() => setIsHovering(true)}
             onMouseMove={(e: React.MouseEvent<SVGGElement, MouseEvent>) => {
                 const mousePos = d3.pointer(e)

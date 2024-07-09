@@ -32,6 +32,8 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
     const [tooltipPrevPoint, setTooltipPrevPoint] = useState<Point | null>(null)
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
 
+    const oldTouchDistanceRef = useRef<number>(0)
+
     const updateDimensions = () => {
         if (containerRef.current) {
             const { clientWidth: clientWidth, clientHeight: clientHeight } = containerRef.current
@@ -101,6 +103,32 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
     xScaleRef.current = xScale
     yScaleRef.current = yScale
 
+    const zoom = (scaleFactor: number, pivotX: number) => {
+        const newZoomLevel = zoomTransform.k * scaleFactor
+
+        const offsetX = (pivotX - zoomTransform.x) / zoomTransform.k
+        let newX = pivotX - offsetX * newZoomLevel
+
+        const tooFewBars = availablePointsRef.current.length < 12
+        const isZoomingIn = newZoomLevel > zoomTransform.k
+        const isZoomingOut = newZoomLevel < zoomTransform.k
+        if (!dataOnLeft.current && !dataOnRight.current && isZoomingOut) return
+        if (tooFewBars && isZoomingIn) return
+
+        const xMinZoom = (xMin - xMax) * newZoomLevel - (xMin - xMax)
+        const xMaxZoom = xMin
+        const lowerFromPositionRange = newX < xMinZoom
+        const upperFromPositionRange = newX > xMaxZoom
+        if (!dataOnRight.current && isZoomingOut && lowerFromPositionRange) newX = xMinZoom
+        if (!dataOnLeft.current && isZoomingOut && upperFromPositionRange) newX = xMaxZoom
+
+        const newTransform = d3.zoomIdentity
+            .translate(newX, 0)
+            .scale(newZoomLevel)
+
+        setZoomTransform(newTransform)
+    }
+
     const handleMouseEnter = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
         event.preventDefault()
         document.body.classList.add("h-full")
@@ -160,33 +188,50 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
         event.preventDefault()
 
         const scaleFactor = event.deltaY < 0 ? 1.05 : event.deltaY > 0 ? 0.95 : 1
-        const newZoomLevel = zoomTransform.k * scaleFactor
-
-        const mouseElementX = d3.pointer(event)[0]
-        const offsetX = (mouseElementX - zoomTransform.x) / zoomTransform.k
-        let newX = mouseElementX - offsetX * newZoomLevel
-
-        // check boundaries
-        const tooFewPoints = availablePointsRef.current.length < 12
-        const isZoomingIn = newZoomLevel > zoomTransform.k
-        const isZoomingOut = newZoomLevel < zoomTransform.k
-        if (!dataOnLeft.current && !dataOnRight.current && isZoomingOut) return
-        if (tooFewPoints && isZoomingIn) return
-
-        // fix position by boundaries
-        const xMinZoom = (xMin - xMax) * newZoomLevel - (xMin - xMax)
-        const xMaxZoom = xMin
-        const lowerFromPositionRange = newX < xMinZoom
-        const upperFromPositionRange = newX > xMaxZoom
-        if (!dataOnRight.current && isZoomingOut && lowerFromPositionRange) newX = xMinZoom
-        if (!dataOnLeft.current && isZoomingOut && upperFromPositionRange) newX = xMaxZoom
-
-        const newTransform = d3.zoomIdentity
-            .translate(newX, 0)
-            .scale(newZoomLevel)
-
-        setZoomTransform(newTransform)
+        const pivotX = d3.pointer(event)[0]
+        zoom(scaleFactor, pivotX)
     }
+
+    const handleTouchStart = (event: React.TouchEvent<SVGSVGElement>) => {
+        event.preventDefault()
+        if (event.touches.length === 2) {
+            const touch0 = event.touches[0]
+            const touch1 = event.touches[1]
+
+            const distance = Math.hypot(
+                touch1.pageX - touch0.pageX,
+                touch1.pageY - touch0.pageY
+            )
+
+            oldTouchDistanceRef.current = distance
+        }
+    }
+
+    const handleTouchEnd = (event: React.TouchEvent<SVGSVGElement>) => {
+        event.preventDefault()
+        oldTouchDistanceRef.current = 0
+    }
+
+    const handleTouchMove = (event: React.TouchEvent<SVGSVGElement>) => {
+        event.preventDefault()
+
+        if (event.touches.length === 2) {
+            const touch1 = event.touches[0]
+            const touch2 = event.touches[1]
+
+            const distance = Math.hypot(
+                touch2.pageX - touch1.pageX,
+                touch2.pageY - touch1.pageY
+            )
+
+            const scaleFactor = distance > oldTouchDistanceRef.current ? 1.05 : 0.95
+            const pivotX = d3.pointer(touch1)[0]
+            zoom(scaleFactor, pivotX)
+
+            oldTouchDistanceRef.current = distance
+        }
+    }
+
     const yFormatRules = d3.formatLocale({
         decimal: ",",
         thousands: " ",
@@ -222,7 +267,7 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
             <div className="w-full h-full bg-transparent flex justify-center items-center text-center border-2 sm:hidden landscape:hidden">
                 <p>Turn your screen to see the chart</p>
             </div>
-            <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="bg-transparent hidden sm:flex landscape:flex"
+            <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="bg-transparent hidden touch-none sm:flex landscape:flex"
                 onMouseEnter={handleMouseEnter}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseHover}
@@ -250,6 +295,9 @@ const LinePctChangeChart: React.FC<LinePctChangeChartProps> = ({ data, intervals
                         xScale={xScaleRef.current}
                         yScale={yScaleRef.current}
                         onWheel={handleWheel}
+                        onTouchStart={handleTouchStart}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
                         onMouseEnterLine={handleMouseEnterLine}
                         onMouseExitLine={handleMouseExitLine}
                         onMouseHoverLine={handleMouseHoverLine}
